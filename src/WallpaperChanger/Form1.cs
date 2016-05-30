@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Net;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -10,6 +11,8 @@ namespace WallpaperChanger
     public partial class Form1 : Form
     {
         bool firstLang = true, fisrtSource = true, fisrtPeriod = true, fisrtWallpaper = true, fisrtTray = true, fisrtAuto = true, exit = false;
+
+        bool isHide = false;
 
         public int Year { get { return Properties.Settings.Default.DateToUpdateY; } }
         public int Month { get { return Properties.Settings.Default.DateToUpdateM; } }
@@ -23,9 +26,13 @@ namespace WallpaperChanger
         public int CurrentHour { get { return DateTime.Now.Hour; } }
         public int CurrentMinute { get { return DateTime.Now.Minute; } }
 
-        public Form1()
+        public Form1(bool h = false)
         {
             InitializeComponent();
+            isHide = h;
+
+            if (Properties.Settings.Default.cbHideTrayChecked || isHide)
+                StartSet();
         }
 
         /// <summary>
@@ -44,11 +51,11 @@ namespace WallpaperChanger
         /// <summary>
         /// Apply background
         /// </summary>
-        async void ApplyBackground()
+        void ApplyBackground()
         {
             if (IsTime())
             {
-                Wallpaper.Set(new Uri(await Bing.GetImageUri()), (Wallpaper.Style)Properties.Settings.Default.cbWallpaperSetIndex);
+                SetWallppaper();
                 SetPeriod();
                 timerPeriod.Enabled = true;
             }
@@ -113,8 +120,39 @@ namespace WallpaperChanger
                                 return true;
             return false;
         }
+        /// <summary>
+        /// Setting wallpaper, time period and hide winodw
+        /// </summary>
+        void StartSet()
+        {
+            SetWallppaper();
+            timerPeriod.Enabled = true;
+            Hide();
+        }
+        /// <summary>
+        /// Setting wallpaper background with internet connetion checker.
+        /// </summary>
+        async void SetWallppaper()
+        {
+            if (CheckForInternetConnection())
+                Wallpaper.Set(new Uri(await Bing.GetImageUri()), (Wallpaper.Style)Properties.Settings.Default.cbWallpaperSetIndex);
+        }
+        /// <summary>
+        /// Conections cheker
+        /// </summary>
+        /// <returns>True - internet is on, False - without internet</returns>
+        bool CheckForInternetConnection()
+        {
+            try
+            {
+                using (var client = new WebClient())
+                using (var stream = client.OpenRead("http://www.google.com"))
+                    return true;
+            }
+            catch { return false; }
+        }
 
-        private async void formLoad(object sender, EventArgs e)
+        private void formLoad(object sender, EventArgs e)
         {
             cbSource.SelectedIndex = Properties.Settings.Default.cbSourceIndex;
             cbPeriod.SelectedIndex = Properties.Settings.Default.cbPeriodIndex;
@@ -128,18 +166,11 @@ namespace WallpaperChanger
             ComponentResourceManager resources = new ComponentResourceManager(typeof(Form1));
             resources.ApplyResources(this, "$this");
             ApplyResources(resources, Controls);
-
-            if (Properties.Settings.Default.cbHideTrayChecked)
-            {
-                Hide();
-                Wallpaper.Set(new Uri(await Bing.GetImageUri()), (Wallpaper.Style)Properties.Settings.Default.cbWallpaperSetIndex);
-                timerPeriod.Enabled = true;
-            }
         }
-        private async void btnApply_Click(object sender, EventArgs e)
+        private void btnApply_Click(object sender, EventArgs e)
         {
             SetPeriod();
-            Wallpaper.Set(new Uri(await Bing.GetImageUri()), (Wallpaper.Style)Properties.Settings.Default.cbWallpaperSetIndex);
+            SetWallppaper();
         }
         private void cbLangSelectedChanged(object sender, EventArgs e)
         {
@@ -194,10 +225,10 @@ namespace WallpaperChanger
             timerPeriod.Enabled = true;
             Hide();
         }
-        private async void ncpApplyNowClick(object sender, EventArgs e)
+        private void ncpApplyNowClick(object sender, EventArgs e)
         {
             SetPeriod();
-            Wallpaper.Set(new Uri(await Bing.GetImageUri()), (Wallpaper.Style)Properties.Settings.Default.cbWallpaperSetIndex);
+            SetWallppaper();
         }
         private void ncpExitClick(object sender, EventArgs e)
         {
