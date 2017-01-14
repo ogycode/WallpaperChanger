@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WallpaperChanger"
         mc:Ignorable="d"
-        Title="Wallpaper Changer" Width="500" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Background="{StaticResource BackgroundColor}" SizeToContent="Height" Icon="Assets/logo.png">
+        Title="Wallpaper Changer" Width="500" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Background="{StaticResource BackgroundColor}" SizeToContent="Height" Icon="Assets/logo.png" Loaded="windowLoaded" Closing="windowClosing">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <StackPanel>
             <Grid x:Name="gridLogo" Height="150" Margin="10,15,15,15">
@@ -22,19 +22,58 @@
                 <TextBlock Text="by Verloka Vadim" Grid.Column="1" Margin="0" VerticalAlignment="Top" FontSize="24" FontFamily="/WallpaperChanger;component/Fonts/#HelveticaNeueCyr" Grid.Row="1" Foreground="{StaticResource TextColor}"/>
             </Grid>
             <Grid x:Name="gridComboBox" Margin="15,0,15,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1.5*"/>
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="Wallpaper source" Grid.Column="0" Margin="0" VerticalAlignment="Center" FontSize="15" FontFamily="/WallpaperChanger;component/Fonts/#HelveticaNeueCyr" Foreground="{StaticResource TextColor}" HorizontalAlignment="Left"/>
-                <ComboBox Grid.Column="1"  FontFamily="/WallpaperChanger;component/Fonts/#HelveticaNeueCyr" FontSize="15" Foreground="{StaticResource TextColor}" Margin="20,0">
+                <TextBlock Text="Wallpaper source" Grid.Row="0" Grid.Column="0" Margin="0,3" VerticalAlignment="Center" FontSize="15" FontFamily="/WallpaperChanger;component/Fonts/#HelveticaNeueCyr" Foreground="{StaticResource TextColor}" HorizontalAlignment="Left"/>
+                <ComboBox x:Name="cbSource" Grid.Column="1" Grid.Row="0"  FontFamily="/WallpaperChanger;component/Fonts/#HelveticaNeueCyr" FontSize="15" Foreground="{StaticResource TextColor}" Margin="20,2">
                     <ComboBoxItem Content="Bing.com"/>
                     <ComboBoxItem Content="500.px" IsEnabled="False"/>
                 </ComboBox>
+                <TextBlock Text="Wallpaper style" Grid.Row="1" Grid.Column="0" Margin="0,3" VerticalAlignment="Center" FontSize="15" FontFamily="/WallpaperChanger;component/Fonts/#HelveticaNeueCyr" Foreground="{StaticResource TextColor}" HorizontalAlignment="Left"/>
+                <ComboBox x:Name="cbStyle" Grid.Column="1" Grid.Row="1" FontFamily="/WallpaperChanger;component/Fonts/#HelveticaNeueCyr" FontSize="15" Foreground="{StaticResource TextColor}" Margin="20,2">
+                    <ComboBoxItem Content="Tiled"/>
+                    <ComboBoxItem Content="Centered"/>
+                    <ComboBoxItem Content="Stretched"/>
+                </ComboBox>
+                <TextBlock Text="Time when update" Grid.Row="2" Grid.Column="0" Margin="0,3" VerticalAlignment="Center" FontSize="15" FontFamily="/WallpaperChanger;component/Fonts/#HelveticaNeueCyr" Foreground="{StaticResource TextColor}" HorizontalAlignment="Left"/>
+                <ComboBox x:Name="cbTime" Grid.Column="1" Grid.Row="2" FontFamily="/WallpaperChanger;component/Fonts/#HelveticaNeueCyr" FontSize="15" Foreground="{StaticResource TextColor}" Margin="20,2">
+                    <ComboBoxItem Content="00:00"/>
+                    <ComboBoxItem Content="01:00"/>
+                    <ComboBoxItem Content="02:00"/>
+                    <ComboBoxItem Content="03:00"/>
+                    <ComboBoxItem Content="04:00"/>
+                    <ComboBoxItem Content="05:00"/>
+                    <ComboBoxItem Content="06:00"/>
+                    <ComboBoxItem Content="07:00"/>
+                    <ComboBoxItem Content="08:00"/>
+                    <ComboBoxItem Content="09:00"/>
+                    <ComboBoxItem Content="10:00"/>
+                    <ComboBoxItem Content="11:00"/>
+                    <ComboBoxItem Content="12:00"/>
+                    <ComboBoxItem Content="13:00"/>
+                    <ComboBoxItem Content="14:00"/>
+                    <ComboBoxItem Content="15:00"/>
+                    <ComboBoxItem Content="16:00"/>
+                    <ComboBoxItem Content="17:00"/>
+                    <ComboBoxItem Content="18:00"/>
+                    <ComboBoxItem Content="19:00"/>
+                    <ComboBoxItem Content="20:00"/>
+                    <ComboBoxItem Content="21:00"/>
+                    <ComboBoxItem Content="22:00"/>
+                    <ComboBoxItem Content="23:00"/>
+                </ComboBox>
             </Grid>
             <StackPanel x:Name="spCheckBoxes" Margin="15,15,15,0">
-                <CheckBox Content="Startup application with Windows" FontFamily="/WallpaperChanger;component/Fonts/#HelveticaNeueCyr" Foreground="{StaticResource TextColor}" FontSize="15"/>
-                <CheckBox Content="Show message when there is no internet" FontFamily="/WallpaperChanger;component/Fonts/#HelveticaNeueCyr" Foreground="{StaticResource TextColor}" FontSize="15" Margin="0,10,0,0"/>
+                <CheckBox x:Name="cbStartup" Content="Startup application with Windows" FontFamily="/WallpaperChanger;component/Fonts/#HelveticaNeueCyr" Foreground="{StaticResource TextColor}" FontSize="15"/>
+                <CheckBox x:Name="cbShowNoItem" Content="Show message when there is no internet" FontFamily="/WallpaperChanger;component/Fonts/#HelveticaNeueCyr" Foreground="{StaticResource TextColor}" FontSize="15" Margin="0,10,0,0"/>
+                <CheckBox x:Name="cbUpdateStart" Content="Update wallpaper when application loaded" FontFamily="/WallpaperChanger;component/Fonts/#HelveticaNeueCyr" Foreground="{StaticResource TextColor}" FontSize="15" Margin="0,10,0,0"/>
             </StackPanel>
             <Grid x:Name="gridButtons" Margin="15,25,15,15">
                 <Button x:Name="btnUpdateWallpaper"  Content="Update Wallpaper" HorizontalAlignment="Center" Width="150" FontFamily="/WallpaperChanger;component/Fonts/#HelveticaNeueCyr" Foreground="{StaticResource TextColor}" FontSize="15" Click="btnUpdateWallpaperClick"/>

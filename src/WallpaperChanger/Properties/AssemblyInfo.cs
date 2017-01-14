@@ -7,13 +7,13 @@ using System.Windows;
 // Управление общими сведениями о сборке осуществляется с помощью 
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("WallpaperChanger")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Wallpaper Changer")]
+[assembly: AssemblyDescription("App for changing wallpaper on your desktop")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("WallpaperChanger")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCompany("Verloka")]
+[assembly: AssemblyProduct("Wallpaper Changer")]
+[assembly: AssemblyCopyright("Copyright © Verloka Vadim 2017")]
+[assembly: AssemblyTrademark("Verloka")]
 [assembly: AssemblyCulture("")]
 
 // Параметр ComVisible со значением FALSE делает типы в сборке невидимыми 
