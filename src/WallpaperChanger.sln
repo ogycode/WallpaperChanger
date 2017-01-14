@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WallpaperChanger", "WallpaperChanger\WallpaperChanger.csproj", "{53F1D66A-8267-4BF3-940B-15FCB1C243A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WallpaperChanger", "WallpaperChanger\WallpaperChanger.csproj", "{C162748A-173D-4EF4-B2DB-A913197B1BE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WallpaperChangerService", "WallpaperChangerService\WallpaperChangerService.csproj", "{F1DB308A-2852-4DB0-8A52-32EE3F140197}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WallpaperChangerLib", "WallpaperChangerLib\WallpaperChangerLib.csproj", "{36C35CC4-74AB-4311-A9CA-31B7D3743BD0}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "WallpaperChangerSetup", "WallpaperChangerSetup\WallpaperChangerSetup.vdproj", "{28AB7E74-1A6D-426B-B12C-5DB00E698B75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +15,16 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{53F1D66A-8267-4BF3-940B-15FCB1C243A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{53F1D66A-8267-4BF3-940B-15FCB1C243A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{53F1D66A-8267-4BF3-940B-15FCB1C243A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{53F1D66A-8267-4BF3-940B-15FCB1C243A8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F1DB308A-2852-4DB0-8A52-32EE3F140197}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F1DB308A-2852-4DB0-8A52-32EE3F140197}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F1DB308A-2852-4DB0-8A52-32EE3F140197}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F1DB308A-2852-4DB0-8A52-32EE3F140197}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C162748A-173D-4EF4-B2DB-A913197B1BE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C162748A-173D-4EF4-B2DB-A913197B1BE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C162748A-173D-4EF4-B2DB-A913197B1BE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C162748A-173D-4EF4-B2DB-A913197B1BE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36C35CC4-74AB-4311-A9CA-31B7D3743BD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36C35CC4-74AB-4311-A9CA-31B7D3743BD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36C35CC4-74AB-4311-A9CA-31B7D3743BD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36C35CC4-74AB-4311-A9CA-31B7D3743BD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28AB7E74-1A6D-426B-B12C-5DB00E698B75}.Debug|Any CPU.ActiveCfg = Debug
+		{28AB7E74-1A6D-426B-B12C-5DB00E698B75}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
