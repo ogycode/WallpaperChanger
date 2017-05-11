@@ -15,14 +15,36 @@ using System.Windows.Shapes;
 
 namespace WallpaperChanger2
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
         }
+
+        #region Window Events
+        private void DragWindow(object sender, MouseButtonEventArgs e)
+        {
+            try { DragMove(); }
+            catch { }
+        }
+        private void btnCloseClick()
+        {
+            /*if (App.Settings.GetValue<bool>("AppExit"))
+            {
+                Application.Current.Shutdown(0);
+            }
+            else
+            {
+                Hide();
+            }*/
+
+            Application.Current.Shutdown(0);
+        }
+        private void btnMinimazeClick()
+        {
+            WindowState = WindowState.Minimized;
+        }
+        #endregion
     }
 }
