@@ -10,14 +10,13 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace WallpaperChanger2
+namespace WallpaperChanger2.Windows
 {
-    public partial class MainWindow : Window
+    public partial class InfoWindow : Window
     {
-        public MainWindow()
+        public InfoWindow()
         {
             InitializeComponent();
         }
@@ -30,24 +29,11 @@ namespace WallpaperChanger2
         }
         private void btnCloseClick()
         {
-            /*if (App.Settings.GetValue<bool>("AppExit"))
-            {
-                Application.Current.Shutdown(0);
-            }
-            else
-            {
-                Hide();
-            }*/
-
-            Application.Current.Shutdown(0);
+            Close();
         }
         private void btnMinimazeClick()
         {
             WindowState = WindowState.Minimized;
-        }
-        private void btnHelpClick()
-        {
-            new Windows.InfoWindow().ShowDialog();
         }
         #endregion
     }

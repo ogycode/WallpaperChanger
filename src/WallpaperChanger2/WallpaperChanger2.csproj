@@ -59,6 +59,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Windows\InfoWindow.xaml.cs">
+      <DependentUpon>InfoWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="Constrols\MetroButton.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -86,6 +89,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Theme\Dark.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\InfoWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -135,6 +142,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\WindowHeadIconLight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\HelpIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\HelpIconLight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\Logo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

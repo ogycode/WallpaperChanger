@@ -5,15 +5,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Wallpaper Changer" 
-        Height="350" 
+        Title="Wallpaper Changer 2" 
         Width="525" 
         ResizeMode="NoResize" 
         WindowStartupLocation="CenterScreen"
         WindowStyle="None" 
         Background="{x:Null}"
         AllowsTransparency="True"
-        x:Name="mywindow" Icon="Icons/AppIcon.ico" >
+        x:Name="mywindow" 
+        Icon="Icons/AppIcon.ico" 
+        SizeToContent="Height" >
     <Grid x:Name="gridRoot">
         <Border Margin="3" BorderBrush="{DynamicResource WindowBorderColor}" BorderThickness="1">
             <Grid x:Name="gridWindow" Background="{DynamicResource WindowBackgroundColor}">
@@ -21,18 +22,58 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="30"/>
                         <ColumnDefinition/>
-                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="90"/>
                     </Grid.ColumnDefinitions>
                     <Image Grid.Column="0" Source="{DynamicResource IconWindowHead}" Margin="4" Stretch="UniformToFill"/>
                     <Grid Grid.Column="1" MouseDown="DragWindow">
                         <TextBlock Text="{Binding ElementName=mywindow, Path=Title, FallbackValue=window}" Foreground="{DynamicResource WindowHeadTextColor}" VerticalAlignment="Center" Margin="10,0" FontSize="16" FontFamily="{DynamicResource DefaultFontFamily}"/>
                     </Grid>
                     <Controls:WindowHeaderButton x:Name="btnClose" Grid.Column="2" Icon="{DynamicResource IconCloseButton}" HorizontalAlignment="Right" Click="btnCloseClick" />
-                    <Controls:WindowHeaderButton x:Name="btnMinimaze" Grid.Column="2" Icon="{DynamicResource IconMinimazingButton}" HorizontalAlignment="Left" Click="btnMinimazeClick" />
+                    <Controls:WindowHeaderButton x:Name="btnMinimaze" Grid.Column="2" Icon="{DynamicResource IconMinimazingButton}" HorizontalAlignment="Center" Click="btnMinimazeClick" />
+                    <Controls:WindowHeaderButton x:Name="btnHelp" Grid.Column="2" Icon="{DynamicResource IconHelp}" HorizontalAlignment="Left" Click="btnHelpClick" />
                 </Grid>
-                <Grid x:Name="gridBody" Margin="0,50,0,0">
-               
-                </Grid>
+                <StackPanel x:Name="gridBody" Margin="0,50,0,0">
+                    <!--Lang-->
+                    <Grid x:Name="gridSetLang" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="lang" Grid.Column="0" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" HorizontalAlignment="Right" Margin="0,0,10,0"/>
+                        <ComboBox Grid.Column="1" Margin="10,0"/>
+                    </Grid>
+                    <!--Theme-->
+                    <Grid x:Name="gridSetTheme" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="theme" Grid.Column="0" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" HorizontalAlignment="Right" Margin="0,0,10,0"/>
+                        <ComboBox Grid.Column="1" Margin="10,0"/>
+                    </Grid>
+                    <!--Source-->
+                    <Grid x:Name="gridSetSource" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="image source" Grid.Column="0" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" HorizontalAlignment="Right" Margin="0,0,10,0"/>
+                        <ComboBox Grid.Column="1" Margin="10,0"/>
+                    </Grid>
+                    <!--Timetable-->
+                    <Grid x:Name="gridSetTime" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="timetable" Grid.Column="0" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" HorizontalAlignment="Right" Margin="0,0,10,0"/>
+                        <ComboBox Grid.Column="1" Margin="10,0"/>
+                    </Grid>
+                    <!--startup-->
+                    <CheckBox Content="sturtup with windows" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" Margin="10,0,10,10"/>
+                    <!--Timetable-->
+                    <CheckBox Content="show message when no internet" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" Margin="10,0,10,20"/>
+                </StackPanel>
             </Grid>
         </Border>
     </Grid>

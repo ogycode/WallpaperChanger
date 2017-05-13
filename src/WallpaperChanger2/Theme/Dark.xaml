@@ -20,4 +20,5 @@
     <BitmapImage x:Key="IconCloseButton" UriSource="/WallpaperChanger2;component/Icons/CloseButtonIcon.png"/>
     <BitmapImage x:Key="IconMinimazingButton" UriSource="/WallpaperChanger2;component/Icons/MinimazeButton.png"/>
     <BitmapImage x:Key="IconWindowHead" UriSource="/WallpaperChanger2;component/Icons/WindowHeadIcon.png"/>
+    <BitmapImage x:Key="IconHelp" UriSource="/WallpaperChanger2;component/Icons/HelpIcon.png"/>
 </ResourceDictionary>
