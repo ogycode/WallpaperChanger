@@ -37,10 +37,10 @@
     <ApplicationIcon>Icons\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="HelperLib, Version=1.2.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Verloka.HelperLib.1.2.0.2\lib\net452\HelperLib.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -65,12 +65,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Model\Bing.cs" />
-    <Compile Include="Model\BingImage.cs" />
-    <Compile Include="Model\BingJson.cs" />
     <Compile Include="Model\Style.cs" />
-    <Compile Include="Model\Wallpaper.cs" />
     <Compile Include="Model\Web.cs" />
-    <Compile Include="Model\Worker.cs" />
     <Compile Include="Windows\InfoWindow.xaml.cs">
       <DependentUpon>InfoWindow.xaml</DependentUpon>
     </Compile>

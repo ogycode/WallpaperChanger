@@ -14,7 +14,7 @@
         AllowsTransparency="True"
         x:Name="mywindow" 
         Icon="Icons/AppIcon.ico" 
-        SizeToContent="Height" >
+        SizeToContent="Height" Loaded="mywindowLoaded" >
     <Grid x:Name="gridRoot">
         <Border Margin="3" BorderBrush="{DynamicResource WindowBorderColor}" BorderThickness="1">
             <Grid x:Name="gridWindow" Background="{DynamicResource WindowBackgroundColor}">
@@ -33,15 +33,6 @@
                     <Controls:WindowHeaderButton x:Name="btnHelp" Grid.Column="2" Icon="{DynamicResource IconHelp}" HorizontalAlignment="Left" Click="btnHelpClick" />
                 </Grid>
                 <StackPanel x:Name="gridBody" Margin="0,50,0,0">
-                    <!--Lang-->
-                    <Grid x:Name="gridSetLang" Margin="0,0,0,10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1.5*"/>
-                            <ColumnDefinition Width="3*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="lang" Grid.Column="0" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" HorizontalAlignment="Right" Margin="0,0,10,0"/>
-                        <ComboBox Grid.Column="1" Margin="10,0"/>
-                    </Grid>
                     <!--Theme-->
                     <Grid x:Name="gridSetTheme" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
@@ -49,15 +40,6 @@
                             <ColumnDefinition Width="3*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="theme" Grid.Column="0" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" HorizontalAlignment="Right" Margin="0,0,10,0"/>
-                        <ComboBox Grid.Column="1" Margin="10,0"/>
-                    </Grid>
-                    <!--Source-->
-                    <Grid x:Name="gridSetSource" Margin="0,0,0,10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1.5*"/>
-                            <ColumnDefinition Width="3*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="image source" Grid.Column="0" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" HorizontalAlignment="Right" Margin="0,0,10,0"/>
                         <ComboBox Grid.Column="1" Margin="10,0"/>
                     </Grid>
                     <!--Timetable-->
@@ -69,6 +51,8 @@
                         <TextBlock Text="timetable" Grid.Column="0" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" HorizontalAlignment="Right" Margin="0,0,10,0"/>
                         <ComboBox Grid.Column="1" Margin="10,0"/>
                     </Grid>
+                    <!--save image-->
+                    <CheckBox Content="save image in:" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" Margin="10,0,10,10"/>
                     <!--startup-->
                     <CheckBox Content="sturtup with windows" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" Margin="10,0,10,10"/>
                     <!--Timetable-->

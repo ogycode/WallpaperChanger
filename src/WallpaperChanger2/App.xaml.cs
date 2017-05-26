@@ -1,9 +1,32 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 
 namespace WallpaperChanger2
 {
     public partial class App : Application
     {
+        public static Verloka.HelperLib.Settings.RegSettings Settings;
+
+        public static void UpdateTheme(int num)
+        {
+            switch (num)
+            {
+                case 0:
+                default:
+                    ResourceDictionary dark = new ResourceDictionary();
+                    dark.Source = new Uri("Theme\\Dark.xaml", UriKind.Relative);
+                    Current.Resources.MergedDictionaries.Clear();
+                    Current.Resources.MergedDictionaries.Add(dark);
+                    break;
+                case 1:
+                    ResourceDictionary light = new ResourceDictionary();
+                    light.Source = new Uri("Theme\\Light.xaml", UriKind.Relative);
+                    Current.Resources.MergedDictionaries.Clear();
+                    Current.Resources.MergedDictionaries.Add(light);
+                    break;
+            }
+        }
+
         void AppStartup(object sender, StartupEventArgs e)
         {
             bool silent = false;
@@ -13,9 +36,8 @@ namespace WallpaperChanger2
 
 
             //INIT block
-            /*Settings = new Verloka.HelperLib.Settings.RegSettings("Weather Widget 2");
+            Settings = new Verloka.HelperLib.Settings.RegSettings("Wallpaper Changer 2");
             UpdateTheme(Settings.GetValue("Theme", 0));
-            UpdateLang(Settings.GetValue("Language", "English"));*/
 
             MainWindow mainWindow = new MainWindow();
             mainWindow.WindowState = silent ? WindowState.Minimized : WindowState.Normal;
