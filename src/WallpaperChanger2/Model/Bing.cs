@@ -1,6 +1,9 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace WallpaperChanger2.Model
 {
@@ -25,7 +28,13 @@ namespace WallpaperChanger2.Model
 
             var request = WebRequest.Create(url1 + url2);
 
-            return url1 + url2;
+            double w = SystemParameters.VirtualScreenWidth;
+            double h = SystemParameters.VirtualScreenHeight;
+
+            string name = Regex.Match((url1 + url2), @"(?<=_)(.*)(?=jpg)").ToString();
+            string resolution = Regex.Match(name, @"(?<=_)(.*)(?=.)").ToString();
+
+            return (url1 + url2).Replace(resolution, $"{Math.Round(w)}x{Math.Round(h)}"); ;
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Timers;
 using System.Windows;
 using System.Windows.Input;
+using WallpaperChanger2.Model;
 
 namespace WallpaperChanger2
 {
@@ -53,9 +55,72 @@ namespace WallpaperChanger2
 
             SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, tempPath, SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
         }
+        public async void Build()
+        {
+            LOG("Start build....");
+
+            string uid = App.Settings.GetValue("ImageUID", "");
+
+            string url = await Bing.ImageUrl();
+
+            if(CheckDate())
+            {
+                LOG("CheckDate() returned TRUE");
+
+                if (uid != url)
+                {
+                    LOG("ImageUID - uid != url");
+
+                    SetupImage(new Uri(url, UriKind.RelativeOrAbsolute), Model.Style.Stretched);
+
+                    LOG($"Setuped new image: {url}");
+
+                    var dt = DateTime.Now.Add(new TimeSpan(24, 0, 0));
+
+                    App.Settings["UpdateWallpaperMounth"] = dt.Month;
+                    App.Settings["UpdateWallpaperDay"] = dt.Day;
+                    App.Settings["UpdateWallpaperHour"] = dt.Hour;
+
+                    App.Settings["ImageUID"] = url;
+                }
+                else
+                {
+                    LOG("ImageUID - uid == url");
+                }
+            }
+            else
+            {
+                LOG("CheckDate() returned FALSE");
+            }
+        }
+        public bool CheckDate()
+        {
+            int mounth = DateTime.Now.Month;
+            int day = DateTime.Now.Day;
+            int hour = DateTime.Now.Hour;
+
+            LOG($"Date: Mounth - {App.Settings.GetValue("UpdateWallpaperMounth", 0)}/{mounth} Day - {App.Settings.GetValue("UpdateWallpaperDay", 0)}/{day} Hour - {App.Settings.GetValue("UpdateWallpaperHour", 0)}/{hour}");
+
+            if (mounth >= App.Settings.GetValue("UpdateWallpaperMounth", 0))
+                if (day >= App.Settings.GetValue("UpdateWallpaperDay", 0))
+                    if (hour > App.Settings.GetValue("UpdateWallpaperHour", 0))
+                        return true;
+
+            return false;
+        }
         double GetMilisec(int minunte)
         {
             return 60000 * minunte;
+        }
+
+        public static void LOG(string log)
+        {
+            string path = @"C:\Users\Верлока Вадим\Desktop\log.txt";
+            
+            using (StreamWriter sw = File.AppendText(path))
+            {
+                sw.WriteLine($"{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}: {log}");
+            }
         }
 
         #region Window Events
@@ -92,10 +157,14 @@ namespace WallpaperChanger2
             timer = new Timer(GetMilisec(60));
             timer.Elapsed += TimerElapsed;
             timer.Enabled = true;
+
+            LOG("Application loaded");
+
+            Build();
         }
         private void TimerElapsed(object sender, ElapsedEventArgs e)
         {
-
+            Build();
         }
     }
 }
