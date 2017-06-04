@@ -39,8 +39,11 @@
                             <ColumnDefinition Width="1.5*"/>
                             <ColumnDefinition Width="3*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="theme" Grid.Column="0" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" HorizontalAlignment="Right" Margin="0,0,10,0"/>
-                        <ComboBox Grid.Column="1" Margin="10,0"/>
+                        <TextBlock Text="Theme" Grid.Column="0" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" HorizontalAlignment="Right" Margin="0,0,10,0"/>
+                        <ComboBox x:Name="cbTheme" Grid.Column="1" Margin="10,0">
+                            <ComboBoxItem Content="Dark"/>
+                            <ComboBoxItem Content="Light"/>
+                        </ComboBox>
                     </Grid>
                     <!--Timetable-->
                     <Grid x:Name="gridSetTime" Margin="0,0,0,10">
@@ -48,15 +51,17 @@
                             <ColumnDefinition Width="1.5*"/>
                             <ColumnDefinition Width="3*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="timetable" Grid.Column="0" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" HorizontalAlignment="Right" Margin="0,0,10,0"/>
+                        <TextBlock Text="Update timetable" Grid.Column="0" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" HorizontalAlignment="Right" Margin="0,0,10,0"/>
                         <ComboBox Grid.Column="1" Margin="10,0"/>
                     </Grid>
                     <!--save image-->
-                    <CheckBox Content="save image in:" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" Margin="10,0,10,10"/>
+                    <CheckBox Content="Save wallpaper to:" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" Margin="10,0,10,10"/>
                     <!--startup-->
-                    <CheckBox Content="sturtup with windows" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" Margin="10,0,10,10"/>
+                    <CheckBox x:Name="cbStartup" Content="Sturtup application with Windows" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" Margin="10,0,10,10"/>
                     <!--Timetable-->
-                    <CheckBox Content="show message when no internet" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" Margin="10,0,10,20"/>
+                    <CheckBox x:Name="cbAlertInternet" Content="Show message when the connection is missing" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" Margin="10,0,10,10"/>
+                    <!--EXIT when push button-->
+                    <CheckBox x:Name="cbExit" Content="Exit from app when window is closing" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" Margin="10,0,10,20"/>
                 </StackPanel>
             </Grid>
         </Border>

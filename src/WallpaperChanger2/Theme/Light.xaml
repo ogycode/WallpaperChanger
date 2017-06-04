@@ -1,0 +1,24 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <FontFamily x:Key="DefaultFontFamily">/WeatherWidget2;component/Fonts/#HelveticaNeueCyr</FontFamily>
+
+    <SolidColorBrush x:Key="WindowBackgroundColor" Color="#eeeef2"/>
+    <SolidColorBrush x:Key="WindowCloseButtonBackground" Color="Black"/>
+    <SolidColorBrush x:Key="WindowHeadTextColor" Color="#525252"/>
+    <SolidColorBrush x:Key="WindowBorderColor" Color="#865fc5"/>
+    <SolidColorBrush x:Key="WindowAlertBorderColor" Color="#e74c3c"/>
+    <SolidColorBrush x:Key="WindowUpdateBorderColor" Color="#2ecc71"/>
+    <Color x:Key="WindowShadowColor" A="255" R="0" G="122" B="204"/>
+    <SolidColorBrush x:Key="WindowTextColor" Color="Black"/>
+    <SolidColorBrush x:Key="WindowTextLinkColor" Color="#6ce26c"/>
+
+    <SolidColorBrush x:Key="MetroButtonBorderColor" Color="Black"/>
+    <SolidColorBrush x:Key="MetroButtonForegraund" Color="Black"/>
+    <SolidColorBrush x:Key="MetroButtonBackground" Color="Black"/>
+    <SolidColorBrush x:Key="MetroButtonBackgroundTop" Color="#865fc5"/>
+
+    <BitmapImage x:Key="IconCloseButton" UriSource="/WallpaperChanger2;component/Icons/CloseButtonIconLight.png"/>
+    <BitmapImage x:Key="IconMinimazingButton" UriSource="/WallpaperChanger2;component/Icons/MinimazeButtonLight.png"/>
+    <BitmapImage x:Key="IconWindowHead" UriSource="/WallpaperChanger2;component/Icons/WindowHeadIconLight.png"/>
+    <BitmapImage x:Key="IconHelp" UriSource="/WallpaperChanger2;component/Icons/HelpIconLight.png"/>
+</ResourceDictionary>
