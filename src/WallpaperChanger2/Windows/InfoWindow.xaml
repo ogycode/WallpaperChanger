@@ -13,7 +13,7 @@
         AllowsTransparency="True"
         x:Name="mywindow" 
         Icon="../Icons/AppIcon.ico" 
-        SizeToContent="WidthAndHeight">
+        SizeToContent="WidthAndHeight" Loaded="mywindowLoaded">
     <Grid x:Name="gridRoot">
         <Border Margin="3" BorderBrush="{DynamicResource WindowBorderColor}" BorderThickness="1">
             <Grid x:Name="gridWindow" Background="{DynamicResource WindowBackgroundColor}">

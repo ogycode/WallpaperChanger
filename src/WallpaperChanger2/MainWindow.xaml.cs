@@ -1,12 +1,13 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Timers;
 using System.Windows;
 using System.Windows.Input;
+using Verloka.HelperLib.Update;
 using WallpaperChanger2.Model;
 
 namespace WallpaperChanger2
@@ -22,6 +23,10 @@ namespace WallpaperChanger2
 
         Timer timer;
         System.Windows.Forms.NotifyIcon notifyIcon;
+
+        UpdateClient updateClient;
+        UpdateItem updateContent;
+        const string UpdateUrl = "https://ogycode.github.io/WallpaperChanger/update.json";
 
         public MainWindow()
         {
@@ -57,39 +62,89 @@ namespace WallpaperChanger2
 
             SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, tempPath, SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
         }
-        public async void Build()
+        public async void Build(bool Update = false)
         {
+            if (!GetConnection())
+            {
+                //msg
+                return;
+            }
+
             string uid = App.Settings.GetValue("ImageUID", "");
 
             string url = await Bing.ImageUrl();
 
-            if (CheckDate())
+            if (CheckDate() || Update)
                 if (uid != url)
-                {
-                    SetupImage(new Uri(url, UriKind.RelativeOrAbsolute), Model.Style.Stretched);
-                    var dt = DateTime.Now.Add(new TimeSpan(24, 0, 0));
-
-                    App.Settings["UpdateWallpaperYear"] = dt.Year;
-                    App.Settings["UpdateWallpaperMounth"] = dt.Month;
-                    App.Settings["UpdateWallpaperDay"] = dt.Day;
-                    App.Settings["UpdateWallpaperHour"] = dt.Hour;
-
-                    App.Settings["ImageUID"] = url;
-                }
+                    Set(url);
         }
         public bool CheckDate()
         {
-            DateTime dt = new DateTime(App.Settings.GetValue("UpdateWallpaperYear", 2000), 
-                                       App.Settings.GetValue("UpdateWallpaperMounth", 1), 
-                                       App.Settings.GetValue("UpdateWallpaperDay", 1), 
+            DateTime dt = new DateTime(App.Settings.GetValue("UpdateWallpaperYear", 2000),
+                                       App.Settings.GetValue("UpdateWallpaperMounth", 1),
+                                       App.Settings.GetValue("UpdateWallpaperDay", 1),
                                        App.Settings.GetValue("UpdateWallpaperHour", 1), 0, 0);
 
 
             return (DateTime.Now > dt);
         }
+        public bool GetConnection()
+        {
+            try
+            {
+                using (var client = new WebClient())
+                using (var stream = client.OpenRead("http://www.google.com"))
+                    return true;
+            }
+            catch { return false; }
+        }
         double GetMilisec(int minunte)
         {
             return 60000 * minunte;
+        }
+        void Set(string url)
+        {
+            SetupImage(new Uri(url, UriKind.RelativeOrAbsolute), Model.Style.Stretched);
+            var dt = DateTime.Now.Add(getTimeSpan(App.Settings.GetValue<int>("Timetable")));
+
+            App.Settings["UpdateWallpaperYear"] = dt.Year;
+            App.Settings["UpdateWallpaperMounth"] = dt.Month;
+            App.Settings["UpdateWallpaperDay"] = dt.Day;
+            App.Settings["UpdateWallpaperHour"] = dt.Hour;
+
+            App.Settings["ImageUID"] = url;
+        }
+        TimeSpan getTimeSpan(int timetable)
+        {
+            TimeSpan ts;
+
+            switch (timetable)
+            {
+                case 0:
+                default:
+                    ts = new TimeSpan(1, 0, 0, 0);
+                    break;
+                case 1:
+                    ts = new TimeSpan(2, 0, 0, 0);
+                    break;
+                case 2:
+                    ts = new TimeSpan(3, 0, 0, 0);
+                    break;
+                case 3:
+                    ts = new TimeSpan(7, 0, 0, 0);
+                    break;
+                case 4:
+                    ts = new TimeSpan(14, 0, 0, 0);
+                    break;
+                case 5:
+                    ts = new TimeSpan(21, 0, 0, 0);
+                    break;
+                case 6:
+                    ts = new TimeSpan(30, 0, 0, 0);
+                    break;
+            }
+
+            return ts;
         }
 
         #region Window Events
@@ -159,9 +214,36 @@ namespace WallpaperChanger2
             cbAlertInternet.IsChecked = App.Settings.GetValue("ShowAlertInternetMsg", false);
             cbAlertInternet.Click += CbAlertInternetClick;
 
+            //cbTimetable
+            cbTimetable.SelectedIndex = App.Settings.GetValue("Timetable", 0);
+            cbTimetable.SelectionChanged += CbTimetableSelectionChanged;
+
+            //update
+            var assembly = Assembly.GetExecutingAssembly();
+            var version = assembly.GetName().Version;
+
+            updateClient = new UpdateClient(UpdateUrl);
+            updateClient.WebException += UpdateClientWebException;
+            updateClient.NewVersion += UpdateClientNewVersion;
+            updateClient.Check(new Verloka.HelperLib.Update.Version(version.Major, version.Minor, version.MajorRevision, version.MinorRevision));
+
+            //setup img
             Build();
         }
-
+        private void CbTimetableSelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            App.Settings["Timetable"] = cbTimetable.SelectedIndex;
+        }
+        private void UpdateClientWebException(WebException obj)
+        {
+            //msg
+        }
+        private void UpdateClientNewVersion(UpdateItem item)
+        {
+            updateBanner.Visibility = Visibility.Visible;
+            tbNewVersion.Text = $"New version is available - {item.VersionNumber.Major}.{item.VersionNumber.Minor}.{item.VersionNumber.Revision}.{item.VersionNumber.Build}";
+            updateContent = item;
+        }
         private void CbAlertInternetClick(object sender, RoutedEventArgs e)
         {
             App.Settings["ShowAlertInternetMsg"] = cbAlertInternet.IsChecked.Value;
@@ -198,7 +280,7 @@ namespace WallpaperChanger2
         }
         private void UpdateWallpaerClick(object sender, EventArgs e)
         {
-            //TODO
+            Build(true);
         }
         private void NotifyIconDoubleClick(object sender, EventArgs e)
         {

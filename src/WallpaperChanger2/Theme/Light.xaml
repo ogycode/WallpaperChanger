@@ -11,6 +11,7 @@
     <Color x:Key="WindowShadowColor" A="255" R="0" G="122" B="204"/>
     <SolidColorBrush x:Key="WindowTextColor" Color="Black"/>
     <SolidColorBrush x:Key="WindowTextLinkColor" Color="#6ce26c"/>
+    <SolidColorBrush x:Key="WindowUpdateBannerBackground" Color="#6ce26c"/>
 
     <SolidColorBrush x:Key="MetroButtonBorderColor" Color="Black"/>
     <SolidColorBrush x:Key="MetroButtonForegraund" Color="Black"/>

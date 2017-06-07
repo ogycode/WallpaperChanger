@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -36,5 +37,12 @@ namespace WallpaperChanger2.Windows
             WindowState = WindowState.Minimized;
         }
         #endregion
+
+        private void mywindowLoaded(object sender, RoutedEventArgs e)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var version = assembly.GetName().Version;
+            tbVersion.Text = $"Your version {version.Major}.{version.Minor}.{version.MajorRevision}.{version.MinorRevision}";
+        }
     }
 }

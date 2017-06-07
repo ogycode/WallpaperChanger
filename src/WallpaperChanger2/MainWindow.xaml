@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="Wallpaper Changer 2" 
         Width="525" 
+        MinWidth="525"
         ResizeMode="NoResize" 
         WindowStartupLocation="CenterScreen"
         WindowStyle="None" 
@@ -33,6 +34,10 @@
                     <Controls:WindowHeaderButton x:Name="btnHelp" Grid.Column="2" Icon="{DynamicResource IconHelp}" HorizontalAlignment="Left" Click="btnHelpClick" />
                 </Grid>
                 <StackPanel x:Name="gridBody" Margin="0,50,0,0">
+                    <Grid x:Name="updateBanner" Background="{DynamicResource WindowUpdateBannerBackground}" Margin="0,0,0,15" Visibility="Collapsed">
+                        <TextBlock x:Name="tbNewVersion" Text="New version is available - 0.0.0.0" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" HorizontalAlignment="Left" Margin="20,25,0,25"/>
+                        <Controls:MetroButton Grid.Column="1" Text="Update now" Margin="10,0,25,0" HorizontalAlignment="Right" VerticalContentAlignment="Center" VerticalAlignment="Center" Width="150" />
+                    </Grid>
                     <!--Theme-->
                     <Grid x:Name="gridSetTheme" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
@@ -52,7 +57,15 @@
                             <ColumnDefinition Width="3*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Update timetable" Grid.Column="0" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" HorizontalAlignment="Right" Margin="0,0,10,0"/>
-                        <ComboBox Grid.Column="1" Margin="10,0"/>
+                        <ComboBox x:Name="cbTimetable" Grid.Column="1" Margin="10,0">
+                            <ComboBoxItem Content="1 Day"/>
+                            <ComboBoxItem Content="2 Days"/>
+                            <ComboBoxItem Content="3 Days"/>
+                            <ComboBoxItem Content="1 Week"/>
+                            <ComboBoxItem Content="2 Weeks"/>
+                            <ComboBoxItem Content="3 Weeks"/>
+                            <ComboBoxItem Content="1 Month"/>
+                        </ComboBox>
                     </Grid>
                     <!--save image-->
                     <CheckBox Content="Save wallpaper to:" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" Margin="10,0,10,10"/>
