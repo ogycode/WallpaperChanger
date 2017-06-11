@@ -36,7 +36,7 @@
                 <StackPanel x:Name="gridBody" Margin="0,50,0,0">
                     <Grid x:Name="updateBanner" Background="{DynamicResource WindowUpdateBannerBackground}" Margin="0,0,0,15" Visibility="Collapsed">
                         <TextBlock x:Name="tbNewVersion" Text="New version is available - 0.0.0.0" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" HorizontalAlignment="Left" Margin="20,25,0,25"/>
-                        <Controls:MetroButton Grid.Column="1" Text="Update now" Margin="10,0,25,0" HorizontalAlignment="Right" VerticalContentAlignment="Center" VerticalAlignment="Center" Width="150" />
+                        <Controls:MetroButton x:Name="btnUpdate" Grid.Column="1" Text="Update now" Margin="10,0,25,0" HorizontalAlignment="Right" VerticalContentAlignment="Center" VerticalAlignment="Center" Width="150" Click="btnUpdateClick" />
                     </Grid>
                     <!--Theme-->
                     <Grid x:Name="gridSetTheme" Margin="0,0,0,10">
@@ -68,7 +68,15 @@
                         </ComboBox>
                     </Grid>
                     <!--save image-->
-                    <CheckBox Content="Save wallpaper to:" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" Margin="10,0,10,10"/>
+                    <CheckBox Content="Save wallpaper to:" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" Margin="10,10"/>
+                    <Grid x:Name="gridSaveTo" Margin="10,-5,10,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="300*"/>
+                            <ColumnDefinition Width="100*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="tbPathToSave" Text="C://" IsReadOnly="True" Grid.Column="0" Height="22" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="14"/>
+                        <Controls:MetroButton Grid.Column="1" Text="Browse" Margin="5,0"/>
+                    </Grid>
                     <!--startup-->
                     <CheckBox x:Name="cbStartup" Content="Sturtup application with Windows" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" Margin="10,0,10,10"/>
                     <!--Timetable-->

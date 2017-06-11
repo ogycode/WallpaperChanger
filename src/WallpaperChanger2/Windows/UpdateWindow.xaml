@@ -1,0 +1,43 @@
+﻿<Window x:Class="WallpaperChanger2.Windows.UpdateWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Controls="clr-namespace:WallpaperChanger2.Controls"
+        mc:Ignorable="d"
+        Title="Updating" 
+        ResizeMode="NoResize" 
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None" 
+        Background="{x:Null}"
+        Closing="mywindow_Closing"
+        AllowsTransparency="True"
+        x:Name="mywindow" 
+        SizeToContent="WidthAndHeight"
+        MinWidth="350">
+    <Grid x:Name="gridRoot">
+        <Border Margin="3" BorderBrush="{DynamicResource WindowUpdateBorderColor}" BorderThickness="1">
+            <Grid x:Name="gridWindow" Background="{DynamicResource WindowBackgroundColor}">
+                <Grid x:Name="gridHead" Height="30" VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="30"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="60"/>
+                    </Grid.ColumnDefinitions>
+                    <Image Grid.Column="0" Source="{DynamicResource IconWindowHead}" Margin="4" Stretch="UniformToFill"/>
+                    <Grid Grid.Column="1" MouseDown="DragWindow">
+                        <TextBlock Text="{Binding ElementName=mywindow, Path=Title, FallbackValue=window}" Foreground="{DynamicResource WindowHeadTextColor}" VerticalAlignment="Center" Margin="10,0" FontSize="16" FontFamily="{DynamicResource DefaultFontFamily}"/>
+                    </Grid>
+                    <Controls:WindowHeaderButton x:Name="btnClose" Grid.Column="2" Icon="{DynamicResource IconCloseButton}" HorizontalAlignment="Right" Click="btnCloseClick" />
+                    <Controls:WindowHeaderButton x:Name="btnMinimaze" Grid.Column="2" Icon="{DynamicResource IconMinimazingButton}" HorizontalAlignment="Left" Click="btnMinimazeClick" />
+                </Grid>
+                <Grid x:Name="gridBody" Margin="0,50,0,0" >
+                    <StackPanel >
+                        <TextBlock Text="Wait a minute..." Foreground="{DynamicResource WindowTextColor}" Margin="10" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <ProgressBar x:Name="pbProgress" Margin="10,5,10,15" Height="24" SmallChange="1"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

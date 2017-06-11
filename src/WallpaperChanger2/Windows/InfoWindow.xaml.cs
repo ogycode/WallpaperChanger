@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -43,6 +44,10 @@ namespace WallpaperChanger2.Windows
             var assembly = Assembly.GetExecutingAssembly();
             var version = assembly.GetName().Version;
             tbVersion.Text = $"Your version {version.Major}.{version.Minor}.{version.MajorRevision}.{version.MinorRevision}";
+        }
+        private void tbWhatNewClick(object sender, MouseButtonEventArgs e)
+        {
+            Process.Start("https://ogycode.github.io/WallpaperChanger/new.html");
         }
     }
 }

@@ -34,7 +34,7 @@
                     <Image Source="/WallpaperChanger2;component/Icons/Logo.png" Width="128" Height="128" Margin="75,25,75,20"/>
                     <StackPanel Margin="25,0,25,10" Orientation="Vertical">
                         <TextBlock Text="Wallpaper Changer 2" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="24" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Whats new?" Foreground="{DynamicResource WindowTextLinkColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" HorizontalAlignment="Center" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Whats new?" Cursor="Hand" Foreground="{DynamicResource WindowTextLinkColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" HorizontalAlignment="Center" Margin="5,0,0,0" VerticalAlignment="Center" MouseLeftButtonUp="tbWhatNewClick"/>
                     </StackPanel>
                     <Grid Margin="10,0,10,5">
                         <Grid.ColumnDefinitions>
@@ -49,7 +49,7 @@
                             <ColumnDefinition Width="1.5*"/>
                             <ColumnDefinition Width="150px"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="tbOpenImg" Grid.Column="0" Text="Open image" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="18" HorizontalAlignment="Center" Margin="25,0,25,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="tbOpenImg" Grid.Column="0" Text="Open current image" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="18" HorizontalAlignment="Center" Margin="25,0,25,0" VerticalAlignment="Center"/>
                         <Controls:MetroButton Grid.Column="1" Text="Open" Margin="10,0,10,0" />
                     </Grid>
                     <TextBlock Text="Develped in 2017 by Verloka" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="18" HorizontalAlignment="Center" Margin="25,25,25,10" VerticalAlignment="Center"/>

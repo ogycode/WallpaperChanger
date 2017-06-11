@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using Verloka.HelperLib.Update;
 using WallpaperChanger2.Model;
+using WallpaperChanger2.Windows;
 
 namespace WallpaperChanger2
 {
@@ -66,7 +67,7 @@ namespace WallpaperChanger2
         {
             if (!GetConnection())
             {
-                //msg
+                new MessageWindow().ShowDialog("Warning!!!", "To update wallpaper on your desktop, you need internet");
                 return;
             }
 
@@ -236,7 +237,7 @@ namespace WallpaperChanger2
         }
         private void UpdateClientWebException(WebException obj)
         {
-            //msg
+            new MessageWindow().ShowDialog("Warning!!!", obj.Message);
         }
         private void UpdateClientNewVersion(UpdateItem item)
         {
@@ -291,6 +292,16 @@ namespace WallpaperChanger2
         private void TimerElapsed(object sender, ElapsedEventArgs e)
         {
             Build();
+        }
+        private void btnUpdateClick()
+        {
+            if (updateContent == null)
+                return;
+
+            notifyIcon.Visible = false;
+            Hide();
+
+            new UpdateWindow(updateContent).Show();
         }
     }
 }
