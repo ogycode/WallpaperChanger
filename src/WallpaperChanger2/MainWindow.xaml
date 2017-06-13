@@ -68,8 +68,8 @@
                         </ComboBox>
                     </Grid>
                     <!--save image-->
-                    <CheckBox Content="Save wallpaper to:" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" Margin="10,10"/>
-                    <Grid x:Name="gridSaveTo" Margin="10,-5,10,5">
+                    <CheckBox Content="Save wallpaper to:" Visibility="Collapsed" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="16" Margin="10,10"/>
+                    <Grid x:Name="gridSaveTo" Margin="10,-5,10,5" Visibility="Collapsed">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="300*"/>
                             <ColumnDefinition Width="100*"/>
