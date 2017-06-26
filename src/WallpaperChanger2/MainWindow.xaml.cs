@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Timers;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Verloka.HelperLib.Update;
 using WallpaperChanger2.Model;
 using WallpaperChanger2.Windows;
@@ -67,7 +68,8 @@ namespace WallpaperChanger2
         {
             if (!GetConnection())
             {
-                new MessageWindow().ShowDialog("Warning!!!", "To update wallpaper on your desktop, you need internet");
+                if (App.Settings.GetValue("ShowAlertInternetMsg", false))
+                    Dispatcher.Invoke(DispatcherPriority.Background, new Action(() => new MessageWindow().ShowDialog("Warning!!!", "To update wallpaper on your desktop, you need internet")));
                 return;
             }
 
@@ -94,7 +96,7 @@ namespace WallpaperChanger2
             try
             {
                 using (var client = new WebClient())
-                using (var stream = client.OpenRead("http://www.google.com"))
+                using (var stream = client.OpenRead("https://www.google.com"))
                     return true;
             }
             catch { return false; }
@@ -237,7 +239,7 @@ namespace WallpaperChanger2
         }
         private void UpdateClientWebException(WebException obj)
         {
-            new MessageWindow().ShowDialog("Warning!!!", obj.Message);
+            Dispatcher.Invoke(DispatcherPriority.Background, new Action(() => new MessageWindow().ShowDialog("Warning!!!", obj.Message)));
         }
         private void UpdateClientNewVersion(UpdateItem item)
         {

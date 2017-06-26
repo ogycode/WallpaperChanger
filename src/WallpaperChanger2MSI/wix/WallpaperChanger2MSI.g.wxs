@@ -6,7 +6,7 @@
 </auto-generated>
 -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="ccbc43d1-172f-428f-ac8d-ad703d9b7535" Name="Wallpaper Changer 2" Language="1033" Codepage="Windows-1252" Version="2.0.0.0" UpgradeCode="ccbc43d1-172f-428f-ac8d-ad701d9b7534" Manufacturer="Verloka">
+  <Product Id="8a16ce2c-d952-4b54-80ff-1c087669b17b" Name="Wallpaper Changer 2" Language="1033" Codepage="Windows-1252" Version="2.0.0.1" UpgradeCode="8a16ce2c-d952-4b54-80ff-1c085669b179" Manufacturer="Verloka">
     <Package InstallerVersion="200" Compressed="yes" SummaryCodepage="Windows-1252" Languages="1033" />
     <Media Id="1" Cabinet="Wallpaper_Changer_2_.cab" EmbedCab="yes" />
 
@@ -15,29 +15,29 @@
         <Directory Id="ProgramFilesFolder.Verloka" Name="Verloka">
           <Directory Id="INSTALLDIR" Name="Wallpaper Changer 2">
 
-            <Component Id="Component.HelperLib.dll" Guid="ccbc43d1-172f-428f-ac8d-ad70d78c7812">
+            <Component Id="Component.HelperLib.dll" Guid="8a16ce2c-d952-4b54-80ff-1c08105ab457">
               <File Id="HelperLib.dll" Source="..\WallpaperChanger2\bin\Release\HelperLib.dll" />
             </Component>
 
-            <Component Id="Component._...ft.Expression.Interactions.dll" Guid="ccbc43d1-172f-428f-ac8d-ad7069fc3120">
+            <Component Id="Component._...ft.Expression.Interactions.dll" Guid="8a16ce2c-d952-4b54-80ff-1c08a2ca6d65">
               <File Id="_...ft.Expression.Interactions.dll" Source="..\WallpaperChanger2\bin\Release\Microsoft.Expression.Interactions.dll" />
             </Component>
 
-            <Component Id="Component._...stem.Windows.Interactivity.dll" Guid="ccbc43d1-172f-428f-ac8d-ad700f5f07dc">
+            <Component Id="Component._...stem.Windows.Interactivity.dll" Guid="8a16ce2c-d952-4b54-80ff-1c08482d4321">
               <File Id="_...stem.Windows.Interactivity.dll" Source="..\WallpaperChanger2\bin\Release\System.Windows.Interactivity.dll" />
             </Component>
 
-            <Component Id="Component.WallpaperChanger2.exe" Guid="ccbc43d1-172f-428f-ac8d-ad70f47cfec9">
+            <Component Id="Component.WallpaperChanger2.exe" Guid="8a16ce2c-d952-4b54-80ff-1c082d4a3a0e">
               <File Id="WallpaperChanger2.exe" Source="..\WallpaperChanger2\bin\Release\WallpaperChanger2.exe" />
             </Component>
 
             <Directory Id="INSTALLDIR.de" Name="de">
 
-              <Component Id="Component._...ion.Interactions.resources.dll" Guid="ccbc43d1-172f-428f-ac8d-ad70a41fe6fd">
+              <Component Id="Component._...ion.Interactions.resources.dll" Guid="8a16ce2c-d952-4b54-80ff-1c08dded2242">
                 <File Id="_...ion.Interactions.resources.dll" Source="..\WallpaperChanger2\bin\Release\de\Microsoft.Expression.Interactions.resources.dll" />
               </Component>
 
-              <Component Id="Component._...ws.Interactivity.resources.dll" Guid="ccbc43d1-172f-428f-ac8d-ad70023fd070">
+              <Component Id="Component._...ws.Interactivity.resources.dll" Guid="8a16ce2c-d952-4b54-80ff-1c083b0d0cb5">
                 <File Id="_...ws.Interactivity.resources.dll" Source="..\WallpaperChanger2\bin\Release\de\System.Windows.Interactivity.resources.dll" />
               </Component>
 
@@ -45,11 +45,11 @@
 
             <Directory Id="INSTALLDIR.en" Name="en">
 
-              <Component Id="Component._...ion.Interactions.resources.dll.1" Guid="ccbc43d1-172f-428f-ac8d-ad707f5651bf">
+              <Component Id="Component._...ion.Interactions.resources.dll.1" Guid="8a16ce2c-d952-4b54-80ff-1c08b8248d04">
                 <File Id="_...ion.Interactions.resources.dll.1" Source="..\WallpaperChanger2\bin\Release\en\Microsoft.Expression.Interactions.resources.dll" />
               </Component>
 
-              <Component Id="Component._...ws.Interactivity.resources.dll.1" Guid="ccbc43d1-172f-428f-ac8d-ad70715eb448">
+              <Component Id="Component._...ws.Interactivity.resources.dll.1" Guid="8a16ce2c-d952-4b54-80ff-1c08aa2cf08d">
                 <File Id="_...ws.Interactivity.resources.dll.1" Source="..\WallpaperChanger2\bin\Release\en\System.Windows.Interactivity.resources.dll" />
               </Component>
 
@@ -57,11 +57,11 @@
 
             <Directory Id="INSTALLDIR.es" Name="es">
 
-              <Component Id="Component._...ion.Interactions.resources.dll.2" Guid="ccbc43d1-172f-428f-ac8d-ad707f5751bf">
+              <Component Id="Component._...ion.Interactions.resources.dll.2" Guid="8a16ce2c-d952-4b54-80ff-1c08b8258d04">
                 <File Id="_...ion.Interactions.resources.dll.2" Source="..\WallpaperChanger2\bin\Release\es\Microsoft.Expression.Interactions.resources.dll" />
               </Component>
 
-              <Component Id="Component._...ws.Interactivity.resources.dll.2" Guid="ccbc43d1-172f-428f-ac8d-ad707161b448">
+              <Component Id="Component._...ws.Interactivity.resources.dll.2" Guid="8a16ce2c-d952-4b54-80ff-1c08aa2ff08d">
                 <File Id="_...ws.Interactivity.resources.dll.2" Source="..\WallpaperChanger2\bin\Release\es\System.Windows.Interactivity.resources.dll" />
               </Component>
 
@@ -69,11 +69,11 @@
 
             <Directory Id="INSTALLDIR.fr" Name="fr">
 
-              <Component Id="Component._...ion.Interactions.resources.dll.3" Guid="ccbc43d1-172f-428f-ac8d-ad707f5851bf">
+              <Component Id="Component._...ion.Interactions.resources.dll.3" Guid="8a16ce2c-d952-4b54-80ff-1c08b8268d04">
                 <File Id="_...ion.Interactions.resources.dll.3" Source="..\WallpaperChanger2\bin\Release\fr\Microsoft.Expression.Interactions.resources.dll" />
               </Component>
 
-              <Component Id="Component._...ws.Interactivity.resources.dll.3" Guid="ccbc43d1-172f-428f-ac8d-ad707160b448">
+              <Component Id="Component._...ws.Interactivity.resources.dll.3" Guid="8a16ce2c-d952-4b54-80ff-1c08aa2ef08d">
                 <File Id="_...ws.Interactivity.resources.dll.3" Source="..\WallpaperChanger2\bin\Release\fr\System.Windows.Interactivity.resources.dll" />
               </Component>
 
@@ -81,11 +81,11 @@
 
             <Directory Id="INSTALLDIR.it" Name="it">
 
-              <Component Id="Component._...ion.Interactions.resources.dll.4" Guid="ccbc43d1-172f-428f-ac8d-ad707f5951bf">
+              <Component Id="Component._...ion.Interactions.resources.dll.4" Guid="8a16ce2c-d952-4b54-80ff-1c08b8278d04">
                 <File Id="_...ion.Interactions.resources.dll.4" Source="..\WallpaperChanger2\bin\Release\it\Microsoft.Expression.Interactions.resources.dll" />
               </Component>
 
-              <Component Id="Component._...ws.Interactivity.resources.dll.4" Guid="ccbc43d1-172f-428f-ac8d-ad707163b448">
+              <Component Id="Component._...ws.Interactivity.resources.dll.4" Guid="8a16ce2c-d952-4b54-80ff-1c08aa31f08d">
                 <File Id="_...ws.Interactivity.resources.dll.4" Source="..\WallpaperChanger2\bin\Release\it\System.Windows.Interactivity.resources.dll" />
               </Component>
 
@@ -93,11 +93,11 @@
 
             <Directory Id="INSTALLDIR.ja" Name="ja">
 
-              <Component Id="Component._...ion.Interactions.resources.dll.5" Guid="ccbc43d1-172f-428f-ac8d-ad707f5a51bf">
+              <Component Id="Component._...ion.Interactions.resources.dll.5" Guid="8a16ce2c-d952-4b54-80ff-1c08b8288d04">
                 <File Id="_...ion.Interactions.resources.dll.5" Source="..\WallpaperChanger2\bin\Release\ja\Microsoft.Expression.Interactions.resources.dll" />
               </Component>
 
-              <Component Id="Component._...ws.Interactivity.resources.dll.5" Guid="ccbc43d1-172f-428f-ac8d-ad707162b448">
+              <Component Id="Component._...ws.Interactivity.resources.dll.5" Guid="8a16ce2c-d952-4b54-80ff-1c08aa30f08d">
                 <File Id="_...ws.Interactivity.resources.dll.5" Source="..\WallpaperChanger2\bin\Release\ja\System.Windows.Interactivity.resources.dll" />
               </Component>
 
@@ -105,11 +105,11 @@
 
             <Directory Id="INSTALLDIR.ko" Name="ko">
 
-              <Component Id="Component._...ion.Interactions.resources.dll.6" Guid="ccbc43d1-172f-428f-ac8d-ad707f5b51bf">
+              <Component Id="Component._...ion.Interactions.resources.dll.6" Guid="8a16ce2c-d952-4b54-80ff-1c08b8298d04">
                 <File Id="_...ion.Interactions.resources.dll.6" Source="..\WallpaperChanger2\bin\Release\ko\Microsoft.Expression.Interactions.resources.dll" />
               </Component>
 
-              <Component Id="Component._...ws.Interactivity.resources.dll.6" Guid="ccbc43d1-172f-428f-ac8d-ad707165b448">
+              <Component Id="Component._...ws.Interactivity.resources.dll.6" Guid="8a16ce2c-d952-4b54-80ff-1c08aa33f08d">
                 <File Id="_...ws.Interactivity.resources.dll.6" Source="..\WallpaperChanger2\bin\Release\ko\System.Windows.Interactivity.resources.dll" />
               </Component>
 
@@ -117,11 +117,11 @@
 
             <Directory Id="INSTALLDIR.ru" Name="ru">
 
-              <Component Id="Component._...ion.Interactions.resources.dll.7" Guid="ccbc43d1-172f-428f-ac8d-ad707f5c51bf">
+              <Component Id="Component._...ion.Interactions.resources.dll.7" Guid="8a16ce2c-d952-4b54-80ff-1c08b82a8d04">
                 <File Id="_...ion.Interactions.resources.dll.7" Source="..\WallpaperChanger2\bin\Release\ru\Microsoft.Expression.Interactions.resources.dll" />
               </Component>
 
-              <Component Id="Component._...ws.Interactivity.resources.dll.7" Guid="ccbc43d1-172f-428f-ac8d-ad707164b448">
+              <Component Id="Component._...ws.Interactivity.resources.dll.7" Guid="8a16ce2c-d952-4b54-80ff-1c08aa32f08d">
                 <File Id="_...ws.Interactivity.resources.dll.7" Source="..\WallpaperChanger2\bin\Release\ru\System.Windows.Interactivity.resources.dll" />
               </Component>
 
@@ -129,11 +129,11 @@
 
             <Directory Id="INSTALLDIR.zh_Hans" Name="zh-Hans">
 
-              <Component Id="Component._...ion.Interactions.resources.dll.8" Guid="ccbc43d1-172f-428f-ac8d-ad707f5d51bf">
+              <Component Id="Component._...ion.Interactions.resources.dll.8" Guid="8a16ce2c-d952-4b54-80ff-1c08b82b8d04">
                 <File Id="_...ion.Interactions.resources.dll.8" Source="..\WallpaperChanger2\bin\Release\zh-Hans\Microsoft.Expression.Interactions.resources.dll" />
               </Component>
 
-              <Component Id="Component._...ws.Interactivity.resources.dll.8" Guid="ccbc43d1-172f-428f-ac8d-ad707157b448">
+              <Component Id="Component._...ws.Interactivity.resources.dll.8" Guid="8a16ce2c-d952-4b54-80ff-1c08aa25f08d">
                 <File Id="_...ws.Interactivity.resources.dll.8" Source="..\WallpaperChanger2\bin\Release\zh-Hans\System.Windows.Interactivity.resources.dll" />
               </Component>
 
@@ -141,11 +141,11 @@
 
             <Directory Id="INSTALLDIR.zh_Hant" Name="zh-Hant">
 
-              <Component Id="Component._...ion.Interactions.resources.dll.9" Guid="ccbc43d1-172f-428f-ac8d-ad707f5e51bf">
+              <Component Id="Component._...ion.Interactions.resources.dll.9" Guid="8a16ce2c-d952-4b54-80ff-1c08b82c8d04">
                 <File Id="_...ion.Interactions.resources.dll.9" Source="..\WallpaperChanger2\bin\Release\zh-Hant\Microsoft.Expression.Interactions.resources.dll" />
               </Component>
 
-              <Component Id="Component._...ws.Interactivity.resources.dll.9" Guid="ccbc43d1-172f-428f-ac8d-ad707156b448">
+              <Component Id="Component._...ws.Interactivity.resources.dll.9" Guid="8a16ce2c-d952-4b54-80ff-1c08aa24f08d">
                 <File Id="_...ws.Interactivity.resources.dll.9" Source="..\WallpaperChanger2\bin\Release\zh-Hant\System.Windows.Interactivity.resources.dll" />
               </Component>
 
@@ -156,7 +156,7 @@
 
       <Directory Id="DesktopFolder" Name="DesktopFolder">
 
-        <Component Id="Wallpaper_Changer_2___" Guid="ccbc43d1-172f-428f-ac8d-ad7037e2e79a">
+        <Component Id="Wallpaper_Changer_2___" Guid="8a16ce2c-d952-4b54-80ff-1c0870b023df">
           <Shortcut Id="DesktopFolder.Wallpaper_Changer_2___" WorkingDirectory="INSTALLDIR" Target="[INSTALLDIR]WallpaperChanger2.exe" Name="Wallpaper Changer 2.lnk" />
 
           <RegistryKey Root="HKCU" Key="Software\WixSharp\Used">
@@ -169,9 +169,9 @@
 
     <WixVariable Id="WixUILicenseRtf" Value="C:\Projects\Windows\WallpaperChanger\src\WallpaperChanger2MSI\Lic.rtf" />
 
-    <Upgrade Id="ccbc43d1-172f-428f-ac8d-ad701d9b7534">
-      <UpgradeVersion Minimum="0.0.0.0" Maximum="2.0.0.0" IncludeMinimum="yes" IncludeMaximum="no" Property="UPGRADEFOUND" />
-      <UpgradeVersion Minimum="2.0.0.0" IncludeMinimum="no" OnlyDetect="no" Property="NEWPRODUCTFOUND" />
+    <Upgrade Id="8a16ce2c-d952-4b54-80ff-1c085669b179">
+      <UpgradeVersion Minimum="0.0.0.0" Maximum="2.0.0.1" IncludeMinimum="yes" IncludeMaximum="no" Property="UPGRADEFOUND" />
+      <UpgradeVersion Minimum="2.0.0.1" IncludeMinimum="no" OnlyDetect="no" Property="NEWPRODUCTFOUND" />
     </Upgrade>
 
     <Icon Id="app_icon.ico" SourceFile="..\WallpaperChanger2\Icons\AppIcon.ico" />

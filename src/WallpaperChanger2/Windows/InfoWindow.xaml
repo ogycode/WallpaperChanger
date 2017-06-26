@@ -39,7 +39,7 @@
                     <Grid Margin="10,0,10,5">
                         <TextBlock x:Name="tbVersion" Grid.Column="0" Text="Your version is 0.0.0.0" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="18" HorizontalAlignment="Center" Margin="25,0,25,0" VerticalAlignment="Center"/>
                     </Grid>
-                    <TextBlock Text="Develped in 2017 by Verloka" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="18" HorizontalAlignment="Center" Margin="25,25,25,10" VerticalAlignment="Center"/>
+                    <TextBlock Text="Developed in 2017 by Verloka" Foreground="{DynamicResource WindowTextColor}" FontFamily="{DynamicResource DefaultFontFamily}" FontSize="18" HorizontalAlignment="Center" Margin="25,25,25,10" VerticalAlignment="Center"/>
                 </StackPanel>
             </Grid>
         </Border>
