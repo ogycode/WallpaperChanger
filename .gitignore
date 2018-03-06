@@ -109,3 +109,4 @@ Backup*/
 UpgradeLog*.XML
 
 src/.vs/
+src/WallpaperChanger/.vs/
