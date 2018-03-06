@@ -4,4 +4,12 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>C:\Projects\Build\WallpaperChanger\Debug\netstandard2.0</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>C:\Projects\Build\WallpaperChanger\Release\netstandard2.0\</OutputPath>
+  </PropertyGroup>
+
 </Project>

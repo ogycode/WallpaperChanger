@@ -12,12 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Wallpapers.Client.Core;
 
 namespace Wallpapers.Client
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
@@ -44,5 +42,17 @@ namespace Wallpapers.Client
 
         }*/
         #endregion
+
+        private void WindowLoaded(object sender, RoutedEventArgs e)
+        {
+            SetupService.Initialize();
+
+
+            frame.Navigate(new Uri("Views/SelectSource.xaml", UriKind.Relative));
+        }
+        private void btnCloseWinodwClick(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }

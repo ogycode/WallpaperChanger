@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Wallpapers.Client
+namespace Wallpapers.Client.Core
 {
     [Flags]
     public enum ServiceManagerRights

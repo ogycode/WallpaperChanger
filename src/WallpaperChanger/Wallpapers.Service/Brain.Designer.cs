@@ -1,6 +1,6 @@
 ﻿namespace Wallpapers.Service
 {
-    partial class Service1
+    partial class Brain
     {
         /// <summary> 
         /// Обязательная переменная конструктора.
