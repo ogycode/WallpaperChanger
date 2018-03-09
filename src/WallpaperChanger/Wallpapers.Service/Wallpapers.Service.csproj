@@ -52,17 +52,19 @@
     <Compile Include="Brain.Designer.cs">
       <DependentUpon>Brain.cs</DependentUpon>
     </Compile>
+    <Compile Include="Connection.cs" />
+    <Compile Include="GetLogonSid.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SetupWallpaper.cs" />
+    <Compile Include="Source\BaseEngine.cs" />
+    <Compile Include="Source\Bing\Engine.cs" />
+    <Compile Include="Source\IEngine.cs" />
+    <Compile Include="Source\Point.cs" />
+    <Compile Include="WallpaperStyle.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Wallpapers\Wallpapers.csproj">
-      <Project>{2cc76f03-3fbc-4751-8437-094bae49e0e0}</Project>
-      <Name>Wallpapers</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

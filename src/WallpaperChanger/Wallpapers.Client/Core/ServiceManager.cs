@@ -187,7 +187,7 @@ namespace Wallpapers.Client.Core
                 IntPtr service = OpenService(scman, ServiceName, ServiceRights.QueryStatus | ServiceRights.Start);
                 if (service == IntPtr.Zero)
                 {
-                    service = CreateService(scman,
+                    /*service = CreateService(scman,
                                             ServiceName,
                                             DisplayName,
                                             ServiceRights.QueryStatus | ServiceRights.Start,
@@ -199,7 +199,22 @@ namespace Wallpapers.Client.Core
                                             IntPtr.Zero,
                                             null,
                                             null,
-                                            null);
+                                            null);*/
+
+                    service = CreateService(scman,
+                                                ServiceName,
+                                                DisplayName,
+                                                ServiceRights.QueryStatus | ServiceRights.Start,
+                                                SERVICE_WIN32_OWN_PROCESS,
+                                                start,
+                                                ServiceError.Ignore,
+                                                FileName,
+                                                null,
+                                                IntPtr.Zero,
+                                                null,
+                                                null,
+                                                null);
+
                 }
                 if (service == IntPtr.Zero)
                 {

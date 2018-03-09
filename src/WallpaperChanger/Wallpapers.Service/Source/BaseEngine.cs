@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace Wallpapers.Source
+namespace Wallpapers.Service.Source
 {
     public class BaseEngine : IEngine
     {

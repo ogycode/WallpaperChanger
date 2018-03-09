@@ -45,6 +45,10 @@ namespace Wallpapers.Client
 
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
+            ServiceManager.InstallAndStart("TEST___7", "TEST___7", $@"{Environment.CurrentDirectory}\Wallpapers.Service.exe", ServiceBootFlag.AutoStart);
+
+            //ServiceManager.Uninstall("TEST___4");
+
             SetupService.Initialize();
 
 

@@ -16,7 +16,7 @@ namespace Wallpapers.Service
         System.Timers.Timer timer;
 
         int source = -1, update = -1;
-        int timeout = 20;
+        int timeout = 2;
 
         public Brain()
         {
@@ -25,10 +25,12 @@ namespace Wallpapers.Service
 
         protected override void OnStart(string[] args)
         {
+            //SetupWallpaper.Setup(@"C:\Users\verlo\Pictures\Viber\11.jpg", WallpaperStyle.Centered);
+
             RegistryKey Key = Registry.LocalMachine.CreateSubKey($"SOFTWARE\\WallpaperChanger2\\Services data");
 
             int.TryParse(Key.GetValue("SOURCE", 0).ToString(), out source);
-            int.TryParse(Key.GetValue("UPDATE", 0).ToString(), out update);
+            int.TryParse(Key.GetValue("UPDATE", 20).ToString(), out update);
 
             timer = new System.Timers.Timer(1000 * 60 * timeout)
             {

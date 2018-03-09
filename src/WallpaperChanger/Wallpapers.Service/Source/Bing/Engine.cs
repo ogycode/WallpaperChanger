@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Wallpapers.Source.Bing
+namespace Wallpapers.Service.Source.Bing
 {
     public class Engine : BaseEngine
     {

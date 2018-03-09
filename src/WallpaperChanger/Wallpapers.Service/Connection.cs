@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Wallpapers
+namespace Wallpapers.Service
 {
     public static class Connection
     {
