@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Wallpapers.Client
+namespace WallpaperChanger
 {
     /// <summary>
     /// Логика взаимодействия для App.xaml

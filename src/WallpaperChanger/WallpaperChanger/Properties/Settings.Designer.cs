@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Wallpapers.Client.Properties
+namespace WallpaperChanger.Properties
 {
 
 
