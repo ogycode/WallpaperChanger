@@ -24,5 +24,23 @@ namespace WallpaperChanger
         {
             InitializeComponent();
         }
+
+        #region Window Events
+        private void DragWindow(object sender, MouseButtonEventArgs e)
+        {
+            try { DragMove(); }
+            catch { }
+        }
+        private void btnCloseWinodwClick(object sender, RoutedEventArgs e) => Close();
+        private void btnInfoClick(object sender, RoutedEventArgs e)
+        {
+            //ShowModal(true, ModalWindowType.About)
+        }
+        #endregion
+
+        private void WindowLoaded(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
