@@ -32,7 +32,7 @@
                 <Button x:Name="btnCloseWinodw" Grid.Column="3" FontFamily="Segoe MDL2 Assets" Content="&#xE711;" Width="35" Height="35" HorizontalAlignment="Center" VerticalAlignment="Center" Click="btnCloseWinodwClick"/>
             </Grid>
             <TabControl Grid.Row="1" Background="{x:Null}" BorderThickness="0">
-                <TabItem Header="Current" Tag="&#xE7F4;">
+                <TabItem x:Name="tiCurrent" Header="home" Tag="&#xE7F4;">
                     <Grid Margin="15">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="200"/>
@@ -45,9 +45,9 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="64px"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Text="Поставщик" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="tbSourceName" Text="source" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
                         <ComboBox x:Name="cbSource" SelectedIndex="{Binding Path=Source, Mode=TwoWay, FallbackValue=0}" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Height="30">
-                            <ComboBoxItem Content="Bing.com"/>
+                            <ComboBoxItem x:Name="cbBing" Content="bing.com"/>
                         </ComboBox>
                         <Button x:Name="btnSetupSource" Grid.Row="0" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Content="&#xE713;" HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding Height, ElementName=cbSource}" Height="{Binding Height, ElementName=cbSource}" FontSize="10" Margin="10,0"/>
                         <Image x:Name="imgImageThumb" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Source="Assets/picture.png"/>
@@ -57,13 +57,27 @@
                         <Button x:Name="btnRefresh"  HorizontalAlignment="Right" Grid.Column="3" Grid.Row="2" Width="150" VerticalAlignment="Bottom" Click="btnRefreshClick">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE72C;" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Refresh"/>
+                                <TextBlock x:Name="tbBtnRefresh" Text="refresh"/>
                             </StackPanel>
                         </Button>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Favorite" Tag="&#xE728;" BorderBrush="#FFC107">Вторая вкладка</TabItem>
-                <TabItem Header="Options" Tag="&#xE713;">Третья вкладка</TabItem>
+                <TabItem x:Name="tiFavorite" Header="favorite" Tag="&#xE728;" BorderBrush="#FFC107">Вторая вкладка</TabItem>
+                <TabItem x:Name="tiOptions" Header="options" Tag="&#xE713;">
+                    <ScrollViewer Margin="15,15,0,0">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="250"/>
+                                    <ColumnDefinition Width="250"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="tbLanguage" Grid.Column="0" Text="language"/>
+                                <ComboBox x:Name="cbLanguages" Grid.Column="1"/>
+                            </Grid>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
             </TabControl>
         </Grid>
     </Border>

@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Verloka.HelperLib.Localization;
 using Verloka.HelperLib.Settings;
 
 namespace WallpaperChanger
@@ -53,8 +54,10 @@ namespace WallpaperChanger
         }
 
         RegSettings rs;
+        Manager Lang;
         Timer timer;
         System.Windows.Forms.NotifyIcon notifyIcon;
+        bool LocaleLoaded = true;
 
         double w = SystemParameters.VirtualScreenWidth;
         double h = SystemParameters.VirtualScreenHeight;
@@ -63,6 +66,12 @@ namespace WallpaperChanger
         public MainWindow()
         {
             rs = new RegSettings("WallpaperChanger2");
+
+            Lang = new Manager($"{Directory.GetCurrentDirectory()}/Data/locales.ini");
+            Lang.LoadError += (s) => { LocaleLoaded = false; };
+            Lang.Load();
+            Lang.SetCurrent(rs.GetValue("LanguageCode", "en-us"));
+            Lang.LanguageChanged += LangLanguageChanged;
 
             InitializeComponent();
             DataContext = this;
@@ -83,6 +92,28 @@ namespace WallpaperChanger
             }
             catch { return false; }
         }
+        public Task SetupLocale()
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                if (!LocaleLoaded)
+                    return;
+
+                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                {
+                    tbSourceName.Text = Lang["Source"];
+                    tbLanguage.Text = Lang["tbLanguage"];
+
+                    cbBing.Content = Lang["cbBing"];
+
+                    tbBtnRefresh.Text = Lang["btnRefresh"];
+
+                    tiCurrent.Header = Lang["tiCurrent"];
+                    tiFavorite.Header = Lang["tiFavorite"];
+                    tiOptions.Header = Lang["tiOptions"];
+                }));
+            });
+        }
 
         void SetupWallpaper(bool Update = false)
         {
@@ -96,7 +127,7 @@ namespace WallpaperChanger
         }
         async void SetupWallpaperBing(bool Update = false)
         {
-            if(!GetConnection())
+            if (!GetConnection())
             {
                 //msg
                 return;
@@ -251,10 +282,17 @@ namespace WallpaperChanger
         }
         #endregion
 
-        private void WindowLoaded(object sender, RoutedEventArgs e)
+        private async void WindowLoaded(object sender, RoutedEventArgs e)
         {
+            await SetupLocale();
 
+            cbLanguages.ItemsSource = Lang.AvailableLanguages;
+            cbLanguages.SelectedItem = (from Language item in cbLanguages.Items
+                                       where (item as Language).Code == rs.GetValue<string>("LanguageCode")
+                                       select item).Single();
+            cbLanguages.SelectionChanged += CbLanguagesSelectionChanged;
         }
+
         private void windowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             notifyIcon.Visible = false;
@@ -266,6 +304,15 @@ namespace WallpaperChanger
         private void btnRefreshClick(object sender, RoutedEventArgs e)
         {
             SetupWallpaper(true);
+        }
+        private void CbLanguagesSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            rs["LanguageCode"] = (cbLanguages.SelectedItem as Language).Code;
+            Lang.SetCurrent(rs.GetValue<string>("LanguageCode"));
+        }
+        private async void LangLanguageChanged(Manager obj)
+        {
+            await SetupLocale();
         }
     }
 }
