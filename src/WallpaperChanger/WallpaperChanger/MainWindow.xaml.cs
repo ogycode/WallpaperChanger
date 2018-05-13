@@ -35,15 +35,15 @@ namespace WallpaperChanger
             get
             {
                 RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-                return (string)key.GetValue("WallpaperChanger2") == null ? false : true;
+                return (string)key.GetValue("Wallpaper Changer 2") == null ? false : true;
             }
             set
             {
                 RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
                 if (!value)
-                    key.DeleteValue("WallpaperChanger2", false);
+                    key.DeleteValue("Wallpaper Changer 2", false);
                 else
-                    key.SetValue("WallpaperChanger2", $"{Directory.GetCurrentDirectory()}/WallpaperChanger.exe -sl");
+                    key.SetValue("Wallpaper Changer 2", $@"{Directory.GetCurrentDirectory()}\WallpaperChanger.exe -sl");
             }
         }
         public int Source
@@ -102,6 +102,7 @@ namespace WallpaperChanger
                 {
                     tbSourceName.Text = Lang["Source"];
                     tbLanguage.Text = Lang["tbLanguage"];
+                    cbStartup.Content = Lang["cbStartup"];
 
                     cbBing.Content = Lang["cbBing"];
 
