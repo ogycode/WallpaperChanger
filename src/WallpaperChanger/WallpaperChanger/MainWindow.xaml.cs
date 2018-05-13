@@ -1,22 +1,16 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Verloka.HelperLib.Localization;
 using Verloka.HelperLib.Settings;
 
@@ -24,6 +18,11 @@ namespace WallpaperChanger
 {
     public partial class MainWindow : Window
     {
+        private static string AUTHOR = "Verloka Vadim";
+        private static string WEBSITE_AUTHOR = "verloka.github.io";
+        private static string WEBSITE_APP = "changer.pp.ua";
+        private static string VERSION = $"{Assembly.GetExecutingAssembly().GetName().Version.Major}.{Assembly.GetExecutingAssembly().GetName().Version.Minor}.{Assembly.GetExecutingAssembly().GetName().Version.Revision}";
+
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
 
@@ -243,26 +242,33 @@ namespace WallpaperChanger
             timer.Elapsed += TimerElapsed;
             timer.Enabled = true;
         }
-        void SetupNotifyIcon()
+        void SetupNotifyIcon(bool Update = false)
         {
             System.Windows.Forms.ContextMenu contextMenu = new System.Windows.Forms.ContextMenu();
-            contextMenu.MenuItems.Add("Open window", (sh, eh) => Show());
-            contextMenu.MenuItems.Add("Open favorite", (sh, eh) => Show());
-            contextMenu.MenuItems.Add("Open settings", (sh, eh) => Show());
+            contextMenu.MenuItems.Add(Lang["nfOpenWindow"], (sh, eh) => { Show(); tiCurrent.IsSelected = true; });
+            contextMenu.MenuItems.Add(Lang["nfOpenFavorite"], (sh, eh) => { Show(); tiFavorite.IsSelected = true; });
+            contextMenu.MenuItems.Add(Lang["nfOpenSettings"], (sh, eh) => { Show(); tiOptions.IsSelected = true; });
             contextMenu.MenuItems.Add("-");
-            contextMenu.MenuItems.Add("Refresh wallpaper", (sh, eh) => SetupWallpaper(true));
-            contextMenu.MenuItems.Add("Leave this wallpaper for [2 days]", (sh, eh) => Show());
-            contextMenu.MenuItems.Add("Add to favorite", (sh, eh) => Show());
+            contextMenu.MenuItems.Add(Lang["nfRefresh"], (sh, eh) => SetupWallpaper(true));
+            contextMenu.MenuItems.Add(Lang["nfLeave"], (sh, eh) => Show());
+            contextMenu.MenuItems.Add(Lang["nfAddFav"], (sh, eh) => Show());
             contextMenu.MenuItems.Add("-");
-            contextMenu.MenuItems.Add("Exit", (sh, eh) => Close());
+            contextMenu.MenuItems.Add(Lang["nfExit"], (sh, eh) => Close());
 
-            notifyIcon = new System.Windows.Forms.NotifyIcon
+            if (Update)
+                notifyIcon.ContextMenu = contextMenu;
+            else
             {
-                Text = "Wallpaper Changer 2",
-                Icon = Properties.Resources.photo,
-                Visible = true,
-                ContextMenu = contextMenu
-            };
+                notifyIcon = new System.Windows.Forms.NotifyIcon
+                {
+                    Text = "Wallpaper Changer 2",
+                    Icon = Properties.Resources.photo,
+                    Visible = true,
+                    ContextMenu = contextMenu
+                };
+
+                notifyIcon.DoubleClick += (sh, eh) => Show();
+            }
         }
         double GetMilisec(int minunte)
         {
@@ -278,7 +284,10 @@ namespace WallpaperChanger
         private void btnCloseWinodwClick(object sender, RoutedEventArgs e) => Hide();
         private void btnInfoClick(object sender, RoutedEventArgs e)
         {
-            new MessageWindow("About", "Author: Verloka Vadim\nVersion: 18.05\nverloka.github.io\n(c) 2018", Core.MessageWindowIcon.Info, Core.MessageWindowIconColor.Orange).ShowDialog();
+            new MessageWindow("About", $"{Lang["Author"]}: \t    {AUTHOR} ({WEBSITE_AUTHOR})\n" +
+                                       $"{Lang["Version"]}: \t    {VERSION}\n"+
+                                       $"{Lang["AppWebsite"]}: \t    {WEBSITE_APP}\n\n" +
+                                       $"{Lang["Copyright"]} © {AUTHOR}, {DateTime.Now.Year}", Core.MessageWindowIcon.Info, Core.MessageWindowIconColor.Orange, 840, 300).ShowDialog();
         }
         #endregion
 
@@ -288,8 +297,8 @@ namespace WallpaperChanger
 
             cbLanguages.ItemsSource = Lang.AvailableLanguages;
             cbLanguages.SelectedItem = (from Language item in cbLanguages.Items
-                                       where (item as Language).Code == rs.GetValue<string>("LanguageCode")
-                                       select item).Single();
+                                        where (item as Language).Code == rs.GetValue<string>("LanguageCode")
+                                        select item).Single();
             cbLanguages.SelectionChanged += CbLanguagesSelectionChanged;
         }
 
@@ -313,6 +322,7 @@ namespace WallpaperChanger
         private async void LangLanguageChanged(Manager obj)
         {
             await SetupLocale();
+            SetupNotifyIcon(true);
         }
     }
 }

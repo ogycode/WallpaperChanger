@@ -8,7 +8,9 @@
         Title="MessageWindow" 
         WindowStyle="None"  
         ResizeMode="NoResize" 
-        SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" Icon="Assets/photo.png" >
+        SizeToContent="WidthAndHeight" 
+        WindowStartupLocation="CenterScreen" 
+        Icon="Assets/photo.png" >
     <Border x:Name="brd" BorderThickness="1" BorderBrush="#FF007ACC" MaxWidth="640" MaxHeight="250">
         <Grid Background="#FF2D2D30">
             <Grid.RowDefinitions>

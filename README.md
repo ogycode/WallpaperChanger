@@ -3,4 +3,4 @@
 ## Wallpaper Changer 2
 **Application for change wallpaper on your desktop**
 
-*For more information go to the website [ogycode.github.io/WallpaperChanger](https://ogycode.github.io/WallpaperChanger/)*
+*For more information go to the website [changer.pp.ua](https://changer.pp.ua)*

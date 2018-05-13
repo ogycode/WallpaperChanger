@@ -8,9 +8,12 @@ namespace WallpaperChanger
 {
     public partial class MessageWindow : Window
     {
-        public MessageWindow(string title, string message, MessageWindowIcon icon, MessageWindowIconColor iconColor)
+        public MessageWindow(string title, string message, MessageWindowIcon icon, MessageWindowIconColor iconColor, double maxWidth = 640, double maxHeight = 250)
         {
             InitializeComponent();
+
+            brd.MaxWidth = maxWidth;
+            brd.MaxHeight = maxHeight;
 
             Title = title;
             tbMsg.Text = message;

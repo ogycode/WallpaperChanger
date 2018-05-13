@@ -7,13 +7,13 @@ using System.Windows;
 // Общие сведения об этой сборке предоставляются следующим набором
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("WallpaperChanger")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Wallpaper Changer 2")]
+[assembly: AssemblyDescription("Application for automatic change wallpapers by timetable")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("WallpaperChanger")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCompany("Verloka")]
+[assembly: AssemblyProduct("Wallpaper 2Changer 2")]
+[assembly: AssemblyCopyright("Copyright © Verloka Vadim 2018")]
+[assembly: AssemblyTrademark("Verloka")]
 [assembly: AssemblyCulture("")]
 
 // Установка значения False для параметра ComVisible делает типы в этой сборке невидимыми
@@ -51,5 +51,5 @@ using System.Windows;
 // Можно задать все значения или принять номер сборки и номер редакции по умолчанию.
 // используя "*", как показано ниже:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("18.5.0.*")]
+[assembly: AssemblyFileVersion("18.5.0.0")]
