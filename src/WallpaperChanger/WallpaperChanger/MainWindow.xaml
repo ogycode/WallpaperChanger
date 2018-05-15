@@ -74,7 +74,27 @@
                                     <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock x:Name="tbLanguage" Grid.Column="0" Text="language"/>
-                                <ComboBox x:Name="cbLanguages" Grid.Column="1" />
+                                <ComboBox x:Name="cbLanguages" Grid.Column="1"  Height="30"/>
+                            </Grid>
+                            <Grid Margin="0,5,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="250"/>
+                                    <ColumnDefinition Width="250"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="tbTimetable" Grid.Column="0" Text="timetable"/>
+                                <ComboBox x:Name="cbTimetable" SelectedIndex="{Binding Path=Timetable, Mode=TwoWay}" Grid.Column="1" Height="30">
+                                    <ComboBoxItem x:Name="cbiTimetable0" Content="6 houre"/>
+                                    <ComboBoxItem x:Name="cbiTimetable1" Content="12 houre"/>
+                                    <ComboBoxItem x:Name="cbiTimetable2" Content="1 day"/>
+                                    <ComboBoxItem x:Name="cbiTimetable3" Content="2 days"/>
+                                    <ComboBoxItem x:Name="cbiTimetable4" Content="3 days"/>
+                                    <ComboBoxItem x:Name="cbiTimetable5" Content="7 days"/>
+                                    <ComboBoxItem x:Name="cbiTimetable6" Content="14 days"/>
+                                    <ComboBoxItem x:Name="cbiTimetable7" Content="21 days"/>
+                                    <ComboBoxItem x:Name="cbiTimetable8" Content="30 days"/>
+                                </ComboBox>
+                                <Button x:Name="btnTimetableHelp" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Content="&#xF142;" HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding Height, ElementName=cbTimetable}" Height="{Binding Height, ElementName=cbSource}" FontSize="11" Margin="10,0" Click="btnTimetableHelpClick"/>
                             </Grid>
                             <CheckBox x:Name="cbStartup" Content="startup with windows" IsChecked="{Binding Path=Startup, Mode=TwoWay}" VerticalContentAlignment="Center" FontSize="18" Margin="0,5,0,0"/>
                         </StackPanel>

@@ -43,7 +43,7 @@ namespace WallpaperChanger
                 if (!value)
                     key.DeleteValue("Wallpaper Changer 2", false);
                 else
-                    key.SetValue("Wallpaper Changer 2", $@"{Directory.GetCurrentDirectory()}\WallpaperChanger.exe -sl");
+                    key.SetValue("Wallpaper Changer 2", $@"{"\""}{Directory.GetCurrentDirectory()}\WallpaperChanger.exe{"\""} -sl");
             }
         }
         public int Source
@@ -51,12 +51,16 @@ namespace WallpaperChanger
             get => rs.GetValue("Source", 0);
             set => rs.SetValue("Source", value);
         }
+        public int Timetable
+        {
+            get => rs.GetValue("Timetable", 2);
+            set => rs.SetValue("Timetable", value);
+        }
 
         RegSettings rs;
         Manager Lang;
         Timer timer;
         System.Windows.Forms.NotifyIcon notifyIcon;
-        bool LocaleLoaded = true;
 
         double w = SystemParameters.VirtualScreenWidth;
         double h = SystemParameters.VirtualScreenHeight;
@@ -65,9 +69,7 @@ namespace WallpaperChanger
         public MainWindow()
         {
             rs = new RegSettings("WallpaperChanger2");
-
-            Lang = new Manager($"{Directory.GetCurrentDirectory()}/Data/locales.ini");
-            Lang.LoadError += (s) => { LocaleLoaded = false; };
+            Lang = new Manager($@"{AppDomain.CurrentDomain.BaseDirectory}\Data\locales.ini");
             Lang.Load();
             Lang.SetCurrent(rs.GetValue("LanguageCode", "en-us"));
             Lang.LanguageChanged += LangLanguageChanged;
@@ -95,13 +97,22 @@ namespace WallpaperChanger
         {
             return Task.Factory.StartNew(() =>
             {
-                if (!LocaleLoaded)
-                    return;
-
                 Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                 {
                     tbSourceName.Text = Lang["Source"];
                     tbLanguage.Text = Lang["tbLanguage"];
+                    tbTimetable.Text = Lang["tbTimetable"];
+
+                    cbiTimetable0.Content = Lang["cbiTimetable0"];
+                    cbiTimetable1.Content = Lang["cbiTimetable1"];
+                    cbiTimetable2.Content = Lang["cbiTimetable2"];
+                    cbiTimetable3.Content = Lang["cbiTimetable3"];
+                    cbiTimetable4.Content = Lang["cbiTimetable4"];
+                    cbiTimetable5.Content = Lang["cbiTimetable5"];
+                    cbiTimetable6.Content = Lang["cbiTimetable6"];
+                    cbiTimetable7.Content = Lang["cbiTimetable7"];
+                    cbiTimetable8.Content = Lang["cbiTimetable8"];
+
                     cbStartup.Content = Lang["cbStartup"];
 
                     cbBing.Content = Lang["cbBing"];
@@ -156,7 +167,7 @@ namespace WallpaperChanger
         }
         void WriteDate()
         {
-            var dt = DateTime.Now.Add(GetTimeSpan(rs.GetValue<int>("Timetable")));
+            var dt = DateTime.Now.Add(GetTimeSpan(Timetable));
 
             rs["UpdateWallpaperYear"] = dt.Year;
             rs["UpdateWallpaperMounth"] = dt.Month;
@@ -297,9 +308,15 @@ namespace WallpaperChanger
             await SetupLocale();
 
             cbLanguages.ItemsSource = Lang.AvailableLanguages;
-            cbLanguages.SelectedItem = (from Language item in cbLanguages.Items
-                                        where (item as Language).Code == rs.GetValue<string>("LanguageCode")
-                                        select item).Single();
+
+            try
+            {
+                cbLanguages.SelectedItem = (from Language item in cbLanguages.Items
+                                            where (item as Language).Code == rs.GetValue<string>("LanguageCode")
+                                            select item).Single();
+            }
+            catch { }
+
             cbLanguages.SelectionChanged += CbLanguagesSelectionChanged;
         }
 
@@ -311,12 +328,12 @@ namespace WallpaperChanger
         {
             SetupWallpaper(false);
         }
-        private void btnRefreshClick(object sender, RoutedEventArgs e)
-        {
-            SetupWallpaper(true);
-        }
+        private void btnRefreshClick(object sender, RoutedEventArgs e) => SetupWallpaper(true);
         private void CbLanguagesSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (cbLanguages.SelectedIndex == -1)
+                return;
+
             rs["LanguageCode"] = (cbLanguages.SelectedItem as Language).Code;
             Lang.SetCurrent(rs.GetValue<string>("LanguageCode"));
         }
@@ -325,5 +342,6 @@ namespace WallpaperChanger
             await SetupLocale();
             SetupNotifyIcon(true);
         }
+        private void btnTimetableHelpClick(object sender, RoutedEventArgs e) => new MessageWindow(Lang["MsgInfoTitle"], Lang["MsgInfoTimtable"], Core.MessageWindowIcon.Info, Core.MessageWindowIconColor.Blue).ShowDialog();
     }
 }
