@@ -110,3 +110,4 @@ UpgradeLog*.XML
 
 src/.vs/
 src/WallpaperChanger/.vs/
+src/WallpaperChanger/BridgeHelper/wpf/

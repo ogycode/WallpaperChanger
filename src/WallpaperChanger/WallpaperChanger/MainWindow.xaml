@@ -1,10 +1,11 @@
-﻿<Window x:Class="WallpaperChanger.MainWindow"
-        x:Name="window"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WallpaperChanger"
+        xmlns:Controlls="clr-namespace:WallpaperChanger.Controlls" x:Class="WallpaperChanger.MainWindow"
+        x:Name="window"
         mc:Ignorable="d"
          Title="Wallpaper Changer 2" 
         Height="450" 
@@ -26,8 +27,8 @@
                     <ColumnDefinition Width="32px"/>
                     <ColumnDefinition Width="32px"/>
                 </Grid.ColumnDefinitions>
-                <Image Grid.Column="0" Source="{Binding ElementName=window, Path=Icon}" Margin="6"/>
-                <TextBlock Grid.Column="1" Text="{Binding ElementName=window, Path=Title, FallbackValue=window}" Foreground="#FFF0EFF1" VerticalAlignment="Center" Margin="0" HorizontalAlignment="Center" FontSize="14"/>
+                <Image Grid.Column="0" Source="{Binding Icon, ElementName=window}" Margin="6"/>
+                <TextBlock Grid.Column="1" Text="{Binding Title, ElementName=window, FallbackValue=window}" Foreground="#FFF0EFF1" VerticalAlignment="Center" Margin="0" HorizontalAlignment="Center" FontSize="14"/>
                 <Button x:Name="btnInfo" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Content="&#xF142;" FontSize="16" Width="35" Height="35" HorizontalAlignment="Center" VerticalAlignment="Center" Click="btnInfoClick"/>
                 <Button x:Name="btnCloseWinodw" Grid.Column="3" FontFamily="Segoe MDL2 Assets" Content="&#xE711;" Width="35" Height="35" HorizontalAlignment="Center" VerticalAlignment="Center" Click="btnCloseWinodwClick"/>
             </Grid>
@@ -46,12 +47,11 @@
                             <RowDefinition Height="64px"/>
                         </Grid.RowDefinitions>
                         <TextBlock x:Name="tbSourceName" Text="source" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
-                        <ComboBox x:Name="cbSource" SelectedIndex="{Binding Path=Source, Mode=TwoWay, FallbackValue=0}" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Height="30">
+                        <ComboBox x:Name="cbSource" SelectedIndex="{Binding Source, FallbackValue=0, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Height="30">
                             <ComboBoxItem x:Name="cbBing" Content="bing.com"/>
                         </ComboBox>
                         <Button x:Name="btnSetupSource" Grid.Row="0" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Content="&#xE713;" HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding Height, ElementName=cbSource}" Height="{Binding Height, ElementName=cbSource}" FontSize="10" Margin="10,0"/>
                         <Image x:Name="imgImageThumb" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Source="Assets/picture.png"/>
-                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xEB52;" Margin="0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="72" RenderTransformOrigin="0.5,0.5"/>
                         <ScrollViewer Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="1" HorizontalScrollBarVisibility="Disabled" Margin="0">
                             <TextBlock x:Name="tbImageInfo" TextWrapping="Wrap"/>
                         </ScrollViewer>
@@ -61,9 +61,10 @@
                                 <TextBlock x:Name="tbBtnRefresh" Text="refresh"/>
                             </StackPanel>
                         </Button>
+                        <Controlls:LikeButton Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiFavorite" Header="favorite" Tag="&#xE728;" BorderBrush="#FFC107">WIP</TabItem>
+                <TabItem x:Name="tiFavorite" Header="favorite" Tag="&#xE728;" BorderBrush="#FFC107" Content="WIP"/>
                 <TabItem x:Name="tiOptions" Header="options" Tag="&#xE713;">
                     <ScrollViewer Margin="15,15,0,0">
                         <StackPanel>
@@ -83,7 +84,7 @@
                                     <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock x:Name="tbTimetable" Grid.Column="0" Text="timetable"/>
-                                <ComboBox x:Name="cbTimetable" SelectedIndex="{Binding Path=Timetable, Mode=TwoWay}" Grid.Column="1" Height="30">
+                                <ComboBox x:Name="cbTimetable" SelectedIndex="{Binding Timetable, Mode=TwoWay}" Grid.Column="1" Height="30">
                                     <ComboBoxItem x:Name="cbiTimetable0" Content="6 houre"/>
                                     <ComboBoxItem x:Name="cbiTimetable1" Content="12 houre"/>
                                     <ComboBoxItem x:Name="cbiTimetable2" Content="1 day"/>
@@ -96,7 +97,7 @@
                                 </ComboBox>
                                 <Button x:Name="btnTimetableHelp" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Content="&#xF142;" HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding Height, ElementName=cbTimetable}" Height="{Binding Height, ElementName=cbSource}" FontSize="11" Margin="10,0" Click="btnTimetableHelpClick"/>
                             </Grid>
-                            <CheckBox x:Name="cbStartup" Content="startup with windows" IsChecked="{Binding Path=Startup, Mode=TwoWay}" VerticalContentAlignment="Center" FontSize="18" Margin="0,5,0,0"/>
+                            <CheckBox x:Name="cbStartup" Content="startup with windows" IsChecked="{Binding Startup, Mode=TwoWay}" VerticalContentAlignment="Center" FontSize="18" Margin="0,5,0,0"/>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>
