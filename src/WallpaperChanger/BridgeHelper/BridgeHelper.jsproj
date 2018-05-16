@@ -67,6 +67,7 @@
     <Content Include="wpf\WallpaperChanger.exe" />
     <Content Include="wpf\WallpaperChanger.exe.config" />
     <Content Include="wpf\WallpaperChanger.pdb" />
+    <Content Include="wpf\Windows.WinMD" />
     <Content Include="wpf\WPFToolkit.dll" />
     <None Include="BridgeHelper_StoreKey.pfx" />
     <Content Include="images\BadgeLogo.scale-100.png" />
@@ -132,6 +133,7 @@
     <Copy SourceFiles="..\WallpaperChanger\bin\Release\System.Windows.Controls.Input.Toolkit.dll" DestinationFolder="wpf" />
     <Copy SourceFiles="..\WallpaperChanger\bin\Release\Newtonsoft.Json.dll" DestinationFolder="wpf" />
     <Copy SourceFiles="..\WallpaperChanger\bin\Release\HelperLib.dll" DestinationFolder="wpf" />
+    <Copy SourceFiles="..\WallpaperChanger\bin\Release\Windows.WinMD" DestinationFolder="wpf" />
     <Copy SourceFiles="..\WallpaperChanger\bin\Release\Data\locales.ini" DestinationFolder="wpf\Data" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below then uncomment

@@ -18,6 +18,7 @@ namespace WallpaperChanger
 {
     public partial class MainWindow : Window
     {
+        private static string ID = "WallpaperChanger2";
         private static string AUTHOR = "Verloka Vadim";
         private static string WEBSITE_AUTHOR = "verloka.github.io";
         private static string WEBSITE_APP = "changer.pp.ua";
@@ -34,16 +35,46 @@ namespace WallpaperChanger
         {
             get
             {
-                RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-                return (string)key.GetValue("Wallpaper Changer 2") == null ? false : true;
+                try
+                {
+                    var startupTask = Windows.ApplicationModel.StartupTask.GetAsync(ID).GetResults();
+
+                    switch (startupTask.State)
+                    {
+                        default:
+                        case Windows.ApplicationModel.StartupTaskState.Disabled:
+                        case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
+                            return false;
+                        case Windows.ApplicationModel.StartupTaskState.Enabled:
+                            return true;
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+
+                /*RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                return (string)key.GetValue("Wallpaper Changer 2") == null ? false : true;*/
             }
             set
             {
-                RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                try
+                {
+                    var startupTask = Windows.ApplicationModel.StartupTask.GetAsync(ID).GetResults();
+
+                    if (value)
+                        startupTask.RequestEnableAsync().GetResults();
+                    else
+                        startupTask.Disable();
+                }
+                catch { }
+
+                /*RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
                 if (!value)
                     key.DeleteValue("Wallpaper Changer 2", false);
                 else
-                    key.SetValue("Wallpaper Changer 2", $@"{"\""}{Directory.GetCurrentDirectory()}\WallpaperChanger.exe{"\""} -sl");
+                    key.SetValue("Wallpaper Changer 2", $@"{"\""}{Directory.GetCurrentDirectory()}\WallpaperChanger.exe{"\""} -sl");*/
             }
         }
         public int Source
@@ -83,7 +114,7 @@ namespace WallpaperChanger
             SetupWallpaper(false);
         }
 
-        public bool GetConnection()
+        bool GetConnection()
         {
             try
             {
@@ -93,7 +124,7 @@ namespace WallpaperChanger
             }
             catch { return false; }
         }
-        public Task SetupLocale()
+        Task SetupLocale()
         {
             return Task.Factory.StartNew(() =>
             {
@@ -125,7 +156,6 @@ namespace WallpaperChanger
                 }));
             });
         }
-
         void SetupWallpaper(bool Update = false)
         {
             switch (rs.GetValue("Source", 0))
@@ -146,23 +176,24 @@ namespace WallpaperChanger
 
             var imgData = await Core.Source.Bing.Bing.Get(w, h);
 
+            try
+            {
+                imgImageThumb.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { imgImageThumb.Source = new BitmapImage(new Uri(imgData.Item2)); });
+                tbImageInfo.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { tbImageInfo.Text = imgData.Item3; });
+            }
+            catch
+            {
+                imgImageThumb.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { imgImageThumb.Source = new BitmapImage(new Uri("www.bing.com/az/hprichbg/rb/OchaBatake_ROW10481280883_400x240.jpg")); });
+                tbImageInfo.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { tbImageInfo.Text = "Error"; });
+            }
+
             if (CheckDate() || Update)
                 if (rs.GetValue("ImageUID", "") != imgData.Item1)
                 {
                     WriteDate();
                     SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute), rs.GetValue<Core.Style>("WallpaperStyle"));
-                    rs["ImageUID"] = "";
-
-                    try
-                    {
-                        imgImageThumb.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { imgImageThumb.Source = new BitmapImage(new Uri(imgData.Item2)); });
-                        tbImageInfo.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { tbImageInfo.Text = imgData.Item3; });
-                    }
-                    catch
-                    {
-                        imgImageThumb.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { imgImageThumb.Source = new BitmapImage(new Uri("www.bing.com/az/hprichbg/rb/OchaBatake_ROW10481280883_400x240.jpg")); });
-                        tbImageInfo.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { tbImageInfo.Text = "Error"; });
-                    }
+                    rs["ImageUID"] = imgData.Item1;
+                    rs["ImageUIDThumbnail"] = imgData.Item2;
                 }
         }
         void WriteDate()
@@ -286,6 +317,12 @@ namespace WallpaperChanger
         {
             return 60000 * minunte;
         }
+        async void GetTaskStartup()
+        {
+           // Windows.ApplicationModel.StartupTask startupTask = await Windows.ApplicationModel.StartupTask.GetForCurrentPackageAsync();
+
+            //return startupTask;
+        }
 
         #region Window Events
         private void DragWindow(object sender, MouseButtonEventArgs e)
@@ -297,7 +334,7 @@ namespace WallpaperChanger
         private void btnInfoClick(object sender, RoutedEventArgs e)
         {
             new MessageWindow("About", $"{Lang["Author"]}: \t    {AUTHOR} ({WEBSITE_AUTHOR})\n" +
-                                       $"{Lang["Version"]}: \t    {VERSION}\n"+
+                                       $"{Lang["Version"]}: \t    {VERSION}\n" +
                                        $"{Lang["AppWebsite"]}: \t    {WEBSITE_APP}\n\n" +
                                        $"{Lang["Copyright"]} © {AUTHOR}, {DateTime.Now.Year}", Core.MessageWindowIcon.Info, Core.MessageWindowIconColor.Orange, 840, 300).ShowDialog();
         }
