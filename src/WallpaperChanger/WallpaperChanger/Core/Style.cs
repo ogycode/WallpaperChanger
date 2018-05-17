@@ -2,7 +2,7 @@
 {
     public enum Style : int
     {
-        Tiled,
+        Tiled = 0,
         Centered,
         Stretched
     }

@@ -41,6 +41,11 @@ namespace WallpaperChanger
             get => rs.GetValue("Timetable", 2);
             set => rs.SetValue("Timetable", value);
         }
+        public int WallpaperStyle
+        {
+            get => rs.GetValue("WallpaperStyle", 0);
+            set => rs.SetValue("WallpaperStyle", value);
+        }
 
         RegSettings rs;
         Manager Lang;
@@ -87,6 +92,7 @@ namespace WallpaperChanger
                     tbSourceName.Text = Lang["Source"];
                     tbLanguage.Text = Lang["tbLanguage"];
                     tbTimetable.Text = Lang["tbTimetable"];
+                    tbStyle.Text = Lang["tbStyle"];
 
                     cbiTimetable0.Content = Lang["cbiTimetable0"];
                     cbiTimetable1.Content = Lang["cbiTimetable1"];
@@ -97,6 +103,10 @@ namespace WallpaperChanger
                     cbiTimetable6.Content = Lang["cbiTimetable6"];
                     cbiTimetable7.Content = Lang["cbiTimetable7"];
                     cbiTimetable8.Content = Lang["cbiTimetable8"];
+
+                    cbStyle0.Content = Lang["cbStyle0"];
+                    cbStyle1.Content = Lang["cbStyle1"];
+                    cbStyle2.Content = Lang["cbStyle2"];
 
                     cbStartup.Content = Lang["cbStartup"];
 
@@ -145,7 +155,7 @@ namespace WallpaperChanger
                 if (rs.GetValue("ImageUID", "") != imgData.Item1)
                 {
                     WriteDate();
-                    SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute), rs.GetValue<Core.Style>("WallpaperStyle"));
+                    SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute), (Core.Style)WallpaperStyle);
                     rs["ImageUID"] = imgData.Item1;
                     rs["ImageUIDThumbnail"] = imgData.Item2;
                 }

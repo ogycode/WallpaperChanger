@@ -97,6 +97,19 @@
                                 </ComboBox>
                                 <Button x:Name="btnTimetableHelp" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Content="&#xF142;" HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding Height, ElementName=cbTimetable}" Height="{Binding Height, ElementName=cbSource}" FontSize="11" Margin="10,0" Click="btnTimetableHelpClick"/>
                             </Grid>
+                            <Grid Margin="0,5,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="250"/>
+                                    <ColumnDefinition Width="250"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="tbStyle" Grid.Column="0" Text="style"/>
+                                <ComboBox x:Name="cbStyle" SelectedIndex="{Binding WallpaperStyle, Mode=TwoWay}" Grid.Column="1" Height="30">
+                                    <ComboBoxItem x:Name="cbStyle0" Content="tiled"/>
+                                    <ComboBoxItem x:Name="cbStyle1" Content="centered"/>
+                                    <ComboBoxItem x:Name="cbStyle2" Content="stretched"/>
+                                </ComboBox>
+                            </Grid>
                             <CheckBox x:Name="cbStartup" Content="startup with windows" VerticalContentAlignment="Center" FontSize="18" Margin="0,5,0,0"/>
                         </StackPanel>
                     </ScrollViewer>
