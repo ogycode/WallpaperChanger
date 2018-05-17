@@ -31,52 +31,6 @@ namespace WallpaperChanger
         const int SPIF_UPDATEINIFILE = 0x01;
         const int SPIF_SENDWININICHANGE = 0x02;
 
-        public bool Startup
-        {
-            get
-            {
-                try
-                {
-                    var startupTask = Windows.ApplicationModel.StartupTask.GetAsync(ID).GetResults();
-
-                    switch (startupTask.State)
-                    {
-                        default:
-                        case Windows.ApplicationModel.StartupTaskState.Disabled:
-                        case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
-                            return false;
-                        case Windows.ApplicationModel.StartupTaskState.Enabled:
-                            return true;
-                    }
-                }
-                catch
-                {
-                    return false;
-                }
-
-                /*RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-                return (string)key.GetValue("Wallpaper Changer 2") == null ? false : true;*/
-            }
-            set
-            {
-                try
-                {
-                    var startupTask = Windows.ApplicationModel.StartupTask.GetAsync(ID).GetResults();
-
-                    if (value)
-                        startupTask.RequestEnableAsync().GetResults();
-                    else
-                        startupTask.Disable();
-                }
-                catch { }
-
-                /*RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-                if (!value)
-                    key.DeleteValue("Wallpaper Changer 2", false);
-                else
-                    key.SetValue("Wallpaper Changer 2", $@"{"\""}{Directory.GetCurrentDirectory()}\WallpaperChanger.exe{"\""} -sl");*/
-            }
-        }
         public int Source
         {
             get => rs.GetValue("Source", 0);
@@ -317,11 +271,45 @@ namespace WallpaperChanger
         {
             return 60000 * minunte;
         }
-        async void GetTaskStartup()
+        async void GetStartup()
         {
-           // Windows.ApplicationModel.StartupTask startupTask = await Windows.ApplicationModel.StartupTask.GetForCurrentPackageAsync();
+            var startupTask = await Windows.ApplicationModel.StartupTask.GetAsync(ID);
+            switch (startupTask.State)
+            {
+                case Windows.ApplicationModel.StartupTaskState.Disabled:
+                    cbStartup.IsChecked = false;
+                    break;
+                case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
+                    cbStartup.IsChecked = false;
+                    break;
+                case Windows.ApplicationModel.StartupTaskState.Enabled:
+                    cbStartup.IsChecked = true;
+                    break;
+            }
 
-            //return startupTask;
+            cbStartup.Click += CbStartupClick;
+        }
+        async void SetStartup()
+        {
+            var startupTask = await Windows.ApplicationModel.StartupTask.GetAsync(ID);
+            if (startupTask.State == Windows.ApplicationModel.StartupTaskState.Enabled)
+            {
+                startupTask.Disable();
+                cbStartup.IsChecked = false;
+            }
+            else
+            {
+                var state = await startupTask.RequestEnableAsync();
+                switch (state)
+                {
+                    case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
+                        cbStartup.IsChecked = false;
+                        break;
+                    case Windows.ApplicationModel.StartupTaskState.Enabled:
+                        cbStartup.IsChecked = true;
+                        break;
+                }
+            }
         }
 
         #region Window Events
@@ -355,8 +343,10 @@ namespace WallpaperChanger
             catch { }
 
             cbLanguages.SelectionChanged += CbLanguagesSelectionChanged;
-        }
 
+            GetStartup();
+        }
+        private void CbStartupClick(object sender, RoutedEventArgs e) => SetStartup();
         private void windowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             notifyIcon.Visible = false;

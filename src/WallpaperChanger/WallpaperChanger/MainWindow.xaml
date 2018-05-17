@@ -97,7 +97,7 @@
                                 </ComboBox>
                                 <Button x:Name="btnTimetableHelp" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Content="&#xF142;" HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding Height, ElementName=cbTimetable}" Height="{Binding Height, ElementName=cbSource}" FontSize="11" Margin="10,0" Click="btnTimetableHelpClick"/>
                             </Grid>
-                            <CheckBox x:Name="cbStartup" Content="startup with windows" IsChecked="{Binding Startup, Mode=TwoWay}" VerticalContentAlignment="Center" FontSize="18" Margin="0,5,0,0"/>
+                            <CheckBox x:Name="cbStartup" Content="startup with windows" VerticalContentAlignment="Center" FontSize="18" Margin="0,5,0,0"/>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>
