@@ -89,6 +89,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controlls\StoreButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -100,6 +104,10 @@
     <Compile Include="Controlls\LikeButton.xaml.cs">
       <DependentUpon>LikeButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controlls\StoreButton.xaml.cs">
+      <DependentUpon>StoreButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Favorite.cs" />
     <Compile Include="Core\MessageWindowIcon.cs" />
     <Compile Include="Core\MessageWindowIconColor.cs" />
     <Compile Include="Core\Source\Bing\Bing.cs" />

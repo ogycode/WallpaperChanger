@@ -18,7 +18,7 @@ namespace WallpaperChanger.Controlls
     public partial class LikeButton
     {
         bool pressed;
-        public event Action Clicked;
+        public event Action<bool> Clicked;
 
         public double LikeSize
         {
@@ -41,6 +41,7 @@ namespace WallpaperChanger.Controlls
                 isSwitched = value;
             }
         }
+        public static readonly DependencyProperty IsSwitchedProperty = DependencyProperty.Register("IsSwitched", typeof(double), typeof(LikeButton), null);
 
         public LikeButton()
         {
@@ -55,7 +56,7 @@ namespace WallpaperChanger.Controlls
             {
                 pressed = false;
                 IsSwitched = !IsSwitched;
-                Clicked?.Invoke();
+                Clicked?.Invoke(IsSwitched);
             }
         }
         private void gridMouseLeave(object sender, System.Windows.Input.MouseEventArgs e) => pressed = false;

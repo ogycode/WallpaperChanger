@@ -1,5 +1,7 @@
 ﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -13,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Verloka.HelperLib.Localization;
 using Verloka.HelperLib.Settings;
+using WallpaperChanger.Core;
 
 namespace WallpaperChanger
 {
@@ -23,6 +26,9 @@ namespace WallpaperChanger
         private static string WEBSITE_AUTHOR = "verloka.github.io";
         private static string WEBSITE_APP = "changer.pp.ua";
         private static string VERSION = $"{Assembly.GetExecutingAssembly().GetName().Version.Major}.{Assembly.GetExecutingAssembly().GetName().Version.Minor}.{Assembly.GetExecutingAssembly().GetName().Version.Revision}";
+        private static string FavoriteListPath = $@"{AppDomain.CurrentDomain.BaseDirectory}\Data\favorites.json";
+
+        public List<Favorite> FavoriteList { get; set; }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
@@ -64,6 +70,8 @@ namespace WallpaperChanger
             Lang.SetCurrent(rs.GetValue("LanguageCode", "en-us"));
             Lang.LanguageChanged += LangLanguageChanged;
 
+            LoadFavorite();
+
             InitializeComponent();
             DataContext = this;
 
@@ -73,62 +81,25 @@ namespace WallpaperChanger
             SetupWallpaper(false);
         }
 
-        bool GetConnection()
-        {
-            try
-            {
-                using (var client = new WebClient())
-                using (var stream = client.OpenRead("https://www.google.com"))
-                    return true;
-            }
-            catch { return false; }
-        }
-        Task SetupLocale()
-        {
-            return Task.Factory.StartNew(() =>
-            {
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
-                {
-                    tbSourceName.Text = Lang["Source"];
-                    tbLanguage.Text = Lang["tbLanguage"];
-                    tbTimetable.Text = Lang["tbTimetable"];
-                    tbStyle.Text = Lang["tbStyle"];
-
-                    cbiTimetable0.Content = Lang["cbiTimetable0"];
-                    cbiTimetable1.Content = Lang["cbiTimetable1"];
-                    cbiTimetable2.Content = Lang["cbiTimetable2"];
-                    cbiTimetable3.Content = Lang["cbiTimetable3"];
-                    cbiTimetable4.Content = Lang["cbiTimetable4"];
-                    cbiTimetable5.Content = Lang["cbiTimetable5"];
-                    cbiTimetable6.Content = Lang["cbiTimetable6"];
-                    cbiTimetable7.Content = Lang["cbiTimetable7"];
-                    cbiTimetable8.Content = Lang["cbiTimetable8"];
-
-                    cbStyle0.Content = Lang["cbStyle0"];
-                    cbStyle1.Content = Lang["cbStyle1"];
-                    cbStyle2.Content = Lang["cbStyle2"];
-
-                    cbStartup.Content = Lang["cbStartup"];
-
-                    cbBing.Content = Lang["cbBing"];
-
-                    tbBtnRefresh.Text = Lang["btnRefresh"];
-
-                    tiCurrent.Header = Lang["tiCurrent"];
-                    tiFavorite.Header = Lang["tiFavorite"];
-                    tiOptions.Header = Lang["tiOptions"];
-                }));
-            });
-        }
         void SetupWallpaper(bool Update = false)
         {
-            switch (rs.GetValue("Source", 0))
+            switch (rs.GetValue("Source", 1))
             {
                 default:
-                case 0:
+                case 1:
                     SetupWallpaperBing(Update);
                     break;
+                case 0:
+                    SetupWallpaperFavorite(Update);
+                    break;
             }
+
+            btnLike.IsSwitched = FavoritExist();
+        }
+
+        private void SetupWallpaperFavorite(bool update)
+        {
+
         }
         async void SetupWallpaperBing(bool Update = false)
         {
@@ -150,6 +121,10 @@ namespace WallpaperChanger
                 imgImageThumb.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { imgImageThumb.Source = new BitmapImage(new Uri("www.bing.com/az/hprichbg/rb/OchaBatake_ROW10481280883_400x240.jpg")); });
                 tbImageInfo.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { tbImageInfo.Text = "Error"; });
             }
+
+            rs["CurrentOriginal"] = imgData.Item1;
+            rs["CurrentThumb"] = imgData.Item2;
+            rs["CurrentCopy"] = imgData.Item3;
 
             if (CheckDate() || Update)
                 if (rs.GetValue("ImageUID", "") != imgData.Item1)
@@ -198,6 +173,8 @@ namespace WallpaperChanger
 
             SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, tempPath, SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
         }
+
+        //help
         bool CheckDate()
         {
             return DateTime.Now > new DateTime(rs.GetValue("UpdateWallpaperYear", 2000),
@@ -243,44 +220,80 @@ namespace WallpaperChanger
 
             return ts;
         }
-        void SetupTimer()
-        {
-            timer = new Timer(GetMilisec(TimerMinutes));
-            timer.Elapsed += TimerElapsed;
-            timer.Enabled = true;
-        }
-        void SetupNotifyIcon(bool Update = false)
-        {
-            System.Windows.Forms.ContextMenu contextMenu = new System.Windows.Forms.ContextMenu();
-            contextMenu.MenuItems.Add(Lang["nfOpenWindow"], (sh, eh) => { Show(); tiCurrent.IsSelected = true; });
-            contextMenu.MenuItems.Add(Lang["nfOpenFavorite"], (sh, eh) => { Show(); tiFavorite.IsSelected = true; });
-            contextMenu.MenuItems.Add(Lang["nfOpenSettings"], (sh, eh) => { Show(); tiOptions.IsSelected = true; });
-            contextMenu.MenuItems.Add("-");
-            contextMenu.MenuItems.Add(Lang["nfRefresh"], (sh, eh) => SetupWallpaper(true));
-            contextMenu.MenuItems.Add(Lang["nfLeave"], (sh, eh) => Show());
-            contextMenu.MenuItems.Add(Lang["nfAddFav"], (sh, eh) => Show());
-            contextMenu.MenuItems.Add("-");
-            contextMenu.MenuItems.Add(Lang["nfExit"], (sh, eh) => Close());
-
-            if (Update)
-                notifyIcon.ContextMenu = contextMenu;
-            else
-            {
-                notifyIcon = new System.Windows.Forms.NotifyIcon
-                {
-                    Text = "Wallpaper Changer 2",
-                    Icon = Properties.Resources.photo,
-                    Visible = true,
-                    ContextMenu = contextMenu
-                };
-
-                notifyIcon.DoubleClick += (sh, eh) => Show();
-            }
-        }
         double GetMilisec(int minunte)
         {
             return 60000 * minunte;
         }
+        bool GetConnection()
+        {
+            try
+            {
+                using (var client = new WebClient())
+                using (var stream = client.OpenRead("https://www.google.com"))
+                    return true;
+            }
+            catch { return false; }
+        }
+        void ShowToast(string title, string msg)
+        {
+            string xml = $@"<toast>
+                    <visual>
+                        <binding template='ToastGeneric'>
+                            <text>{title}</text>
+                            <text>{msg}</text>
+                        </binding>
+                    </visual>
+                </toast>";
+
+            Windows.Data.Xml.Dom.XmlDocument doc = new Windows.Data.Xml.Dom.XmlDocument();
+            doc.LoadXml(xml);
+
+            Windows.UI.Notifications.ToastNotification toast = new Windows.UI.Notifications.ToastNotification(doc);
+            Windows.UI.Notifications.ToastNotificationManager.CreateToastNotifier().Show(toast);
+        }
+        void SaveFavorite()
+        {
+            if (File.Exists(FavoriteListPath))
+                File.Delete(FavoriteListPath);
+
+            using (StreamWriter sw = File.CreateText(FavoriteListPath))
+                sw.Write(JsonConvert.SerializeObject(FavoriteList));
+        }
+        void LoadFavorite()
+        {
+            if (File.Exists(FavoriteListPath))
+                using (StreamReader sr = File.OpenText(FavoriteListPath))
+                    FavoriteList = JsonConvert.DeserializeObject<List<Favorite>>(sr.ReadToEnd());
+            else
+                FavoriteList = new List<Favorite>();
+        }
+        bool FavoritExist()
+        {
+            try
+            {
+                return FavoriteList.First((x) => x.Original == rs.GetValue<string>("CurrentOriginal")) != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        void AddToFavorite()
+        {
+            FavoriteList.Add(new Favorite()
+            {
+                Original = rs.GetValue<string>("CurrentOriginal"),
+                Thumbnail = rs.GetValue<string>("CurrentThumb"),
+                Copyright = rs.GetValue<string>("CurrentCopy"),
+                ThumbnailLocale = rs.GetValue<string>("CurrentThumb")
+            });
+        }
+        void RemoveFromFavorite()
+        {
+            FavoriteList.Remove(FavoriteList.First((x) => x.Original == rs.GetValue<string>("CurrentOriginal")));
+        }
+
+        //startup
         async void GetStartup()
         {
             var startupTask = await Windows.ApplicationModel.StartupTask.GetAsync(ID);
@@ -320,6 +333,87 @@ namespace WallpaperChanger
                         break;
                 }
             }
+        }
+
+        //init
+        void SetupTimer()
+        {
+            timer = new Timer(GetMilisec(TimerMinutes));
+            timer.Elapsed += TimerElapsed;
+            timer.Enabled = true;
+        }
+        void SetupNotifyIcon(bool Update = false)
+        {
+            System.Windows.Forms.ContextMenu contextMenu = new System.Windows.Forms.ContextMenu();
+            contextMenu.MenuItems.Add(Lang["nfOpenWindow"], (sh, eh) => { Show(); tiCurrent.IsSelected = true; });
+            contextMenu.MenuItems.Add(Lang["nfOpenFavorite"], (sh, eh) => { Show(); tiFavorite.IsSelected = true; });
+            contextMenu.MenuItems.Add(Lang["nfOpenSettings"], (sh, eh) => { Show(); tiOptions.IsSelected = true; });
+            contextMenu.MenuItems.Add("-");
+            contextMenu.MenuItems.Add(Lang["nfRefresh"], (sh, eh) => SetupWallpaper(true));
+            contextMenu.MenuItems.Add(Lang["nfLeave"], (sh, eh) => Show());
+            contextMenu.MenuItems.Add(Lang["nfAddFav"], (sh, eh) => 
+            {
+                if(!FavoritExist())
+                {
+                    AddToFavorite();
+                    btnLike.IsSwitched = FavoritExist();
+                }
+            });
+            contextMenu.MenuItems.Add("-");
+            contextMenu.MenuItems.Add(Lang["nfExit"], (sh, eh) => Close());
+
+            if (Update)
+                notifyIcon.ContextMenu = contextMenu;
+            else
+            {
+                notifyIcon = new System.Windows.Forms.NotifyIcon
+                {
+                    Text = "Wallpaper Changer 2",
+                    Icon = Properties.Resources.photo,
+                    Visible = true,
+                    ContextMenu = contextMenu
+                };
+
+                notifyIcon.DoubleClick += (sh, eh) => Show();
+            }
+        }
+        Task SetupLocale()
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                {
+                    tbSourceName.Text = Lang["Source"];
+                    tbLanguage.Text = Lang["tbLanguage"];
+                    tbTimetable.Text = Lang["tbTimetable"];
+                    tbStyle.Text = Lang["tbStyle"];
+
+                    cbiTimetable0.Content = Lang["cbiTimetable0"];
+                    cbiTimetable1.Content = Lang["cbiTimetable1"];
+                    cbiTimetable2.Content = Lang["cbiTimetable2"];
+                    cbiTimetable3.Content = Lang["cbiTimetable3"];
+                    cbiTimetable4.Content = Lang["cbiTimetable4"];
+                    cbiTimetable5.Content = Lang["cbiTimetable5"];
+                    cbiTimetable6.Content = Lang["cbiTimetable6"];
+                    cbiTimetable7.Content = Lang["cbiTimetable7"];
+                    cbiTimetable8.Content = Lang["cbiTimetable8"];
+
+                    cbStyle0.Content = Lang["cbStyle0"];
+                    cbStyle1.Content = Lang["cbStyle1"];
+                    cbStyle2.Content = Lang["cbStyle2"];
+
+                    cbStartup.Content = Lang["cbStartup"];
+
+                    cbBing.Content = Lang["cbBing"];
+                    cbFavorite.Content = Lang["cbFavorite"];
+
+                    tbBtnRefresh.Text = Lang["btnRefresh"];
+
+                    tiCurrent.Header = Lang["tiCurrent"];
+                    tiFavorite.Header = Lang["tiFavorite"];
+                    tiOptions.Header = Lang["tiOptions"];
+                }));
+            });
         }
 
         #region Window Events
@@ -380,5 +474,14 @@ namespace WallpaperChanger
             SetupNotifyIcon(true);
         }
         private void btnTimetableHelpClick(object sender, RoutedEventArgs e) => new MessageWindow(Lang["MsgInfoTitle"], Lang["MsgInfoTimtable"], Core.MessageWindowIcon.Info, Core.MessageWindowIconColor.Blue).ShowDialog();
+        private void btnLikeClick(bool IsSwitched)
+        {
+            if (!FavoritExist())
+                AddToFavorite();
+            else
+                RemoveFromFavorite();
+
+            SaveFavorite();
+        }
     }
 }
