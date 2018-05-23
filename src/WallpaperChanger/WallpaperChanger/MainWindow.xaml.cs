@@ -93,13 +93,24 @@ namespace WallpaperChanger
                 case 0:
                     SetupWallpaperFavorite(Update);
                     break;
+                case -1:
+                    SetupWallpaperLeave(Update);
+                    break;
             }
 
             btnLike.IsSwitched = FavoritExist();
         }
-        private void SetupWallpaperFavorite(bool update)
+        void SetupWallpaperFavorite(bool update)
         {
 
+        }
+        void SetupWallpaperLeave(bool Update)
+        {
+            if (CheckDate() || Update)
+            {
+                WriteDate();
+                SetupImage(new Uri(rs.GetValue<string>("LeaveUrl"), UriKind.RelativeOrAbsolute), (Core.Style)WallpaperStyle);
+            }
         }
         async void SetupWallpaperBing(bool Update = false)
         {
@@ -408,7 +419,11 @@ namespace WallpaperChanger
             contextMenu.MenuItems.Add(Lang["nfOpenSettings"], (sh, eh) => { Show(); tiOptions.IsSelected = true; });
             contextMenu.MenuItems.Add("-");
             contextMenu.MenuItems.Add(Lang["nfRefresh"], (sh, eh) => SetupWallpaper(true));
-            contextMenu.MenuItems.Add(Lang["nfLeave"], (sh, eh) => Show());
+            contextMenu.MenuItems.Add(Lang["nfLeave"], (sh, eh) =>
+            {
+                Source = -1;
+                rs["LeaveUrl"] = rs.GetValue<string>("ImageUID");
+            });
             contextMenu.MenuItems.Add(Lang["nfAddFav"], (sh, eh) =>
             {
                 if (!FavoritExist())
@@ -532,7 +547,7 @@ namespace WallpaperChanger
             await SetupLocale();
             SetupNotifyIcon(true);
         }
-        private void btnTimetableHelpClick(object sender, RoutedEventArgs e) => new MessageWindow(Lang["MsgInfoTitle"], Lang["MsgInfoTimtable"], Core.MessageWindowIcon.Info, Core.MessageWindowIconColor.Blue).ShowDialog();
+        private void btnTimetableHelpClick(object sender, RoutedEventArgs e) => ShowToast(Lang["MsgInfoTitle"], Lang["MsgInfoTimtable"]);
         private void btnLikeClick(bool IsSwitched)
         {
             if (!FavoritExist())

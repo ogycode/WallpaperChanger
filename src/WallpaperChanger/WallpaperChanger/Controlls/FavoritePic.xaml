@@ -6,9 +6,31 @@
              xmlns:local="clr-namespace:WallpaperChanger.Controlls"
              mc:Ignorable="d" 
              MaxHeight="100" MinWidth="150">
+    <UserControl.Resources>
+        <Storyboard x:Key="ENTER">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="gridBtn">
+                <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="LEAVE">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="gridBtn">
+                <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+    </UserControl.Resources>
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="UIElement.MouseEnter" SourceName="gridBtn">
+            <BeginStoryboard Storyboard="{StaticResource ENTER}"/>
+        </EventTrigger>
+        <EventTrigger RoutedEvent="UIElement.MouseLeave" SourceName="gridBtn">
+            <BeginStoryboard x:Name="LEAVE_BeginStoryboard" Storyboard="{StaticResource LEAVE}"/>
+        </EventTrigger>
+    </UserControl.Triggers>
     <Grid>
         <Image x:Name="img" Source="{Binding Path=Wallpaper, Mode=TwoWay}"/>
-        <Grid Background="#3FFFFFFF" x:Name="gridBtn">
+        <Grid Background="#3FFFFFFF" x:Name="gridBtn" Opacity="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
