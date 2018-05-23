@@ -65,7 +65,11 @@
                         <Controlls:LikeButton x:Name="btnLike" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Clicked="btnLikeClick"/>
                     </Grid>
                 </TabItem>
-                <TabItem x:Name="tiFavorite" Header="favorite" Tag="&#xE728;" BorderBrush="#FFC107" Content="WIP"/>
+                <TabItem x:Name="tiFavorite" Header="favorite" Tag="&#xE728;" BorderBrush="#FFC107">
+                    <ScrollViewer>
+                        <WrapPanel x:Name="wpFavorites" VerticalAlignment="Top" Margin="10,0,0,0"/>
+                    </ScrollViewer>
+                </TabItem>
                 <TabItem x:Name="tiOptions" Header="options" Tag="&#xE713;">
                     <ScrollViewer Margin="15,15,0,0">
                         <StackPanel>
