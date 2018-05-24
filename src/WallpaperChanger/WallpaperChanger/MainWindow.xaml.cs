@@ -28,6 +28,10 @@ namespace WallpaperChanger
         private static string VERSION = $"{Assembly.GetExecutingAssembly().GetName().Version.Major}.{Assembly.GetExecutingAssembly().GetName().Version.Minor}.{Assembly.GetExecutingAssembly().GetName().Version.Revision}";
         private static string FavoriteListPath = $@"{AppDomain.CurrentDomain.BaseDirectory}\Data\favorites.json";
 
+        const string WALLPAPER_URL = "ImageUID";
+        const string WALLPAPER_THUMBNAIL = "ImageUIDThumbnail";
+        const string WALLPAPER_COPYRIGHT = "CurrentCopy";
+
         public List<Favorite> FavoriteList { get; set; }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
@@ -82,13 +86,13 @@ namespace WallpaperChanger
         }
 
         //wallpaper
-        void SetupWallpaper(bool Update = false)
+        async void SetupWallpaper(bool Update = false)
         {
             switch (rs.GetValue("Source", 1))
             {
                 default:
                 case 1:
-                    SetupWallpaperBing(Update);
+                    await SetupWallpaperBing(Update);
                     break;
                 case 0:
                     SetupWallpaperFavorite(Update);
@@ -98,7 +102,7 @@ namespace WallpaperChanger
                     break;
             }
 
-            btnLike.IsSwitched = FavoritExist();
+            //btnLike.IsSwitched = IsFavorite();
         }
         void SetupWallpaperFavorite(bool update)
         {
@@ -106,48 +110,41 @@ namespace WallpaperChanger
         }
         void SetupWallpaperLeave(bool Update)
         {
-            if (CheckDate() || Update)
-            {
-                WriteDate();
-                SetupImage(new Uri(rs.GetValue<string>("LeaveUrl"), UriKind.RelativeOrAbsolute), (Core.Style)WallpaperStyle);
-            }
-        }
-        async void SetupWallpaperBing(bool Update = false)
-        {
-            if (!GetConnection())
-            {
-                //msg
+            if (!Update)
                 return;
-            }
 
-            var imgData = await Core.Source.Bing.Bing.Get(w, h);
+            WriteDate();
+            WriteThumbCopy(rs.GetValue<string>(WALLPAPER_THUMBNAIL), rs.GetValue<string>(WALLPAPER_COPYRIGHT));
 
-            if (CheckDate() || Update)
+            SetupImage(new Uri(rs.GetValue<string>(WALLPAPER_URL), UriKind.RelativeOrAbsolute), (Core.Style)WallpaperStyle);
+        }
+        async Task SetupWallpaperBing(bool Update = false)
+        {
+            Task.Factory.StartNew(() =>
             {
-                if (rs.GetValue("ImageUID", "") != imgData.Item1 || Update)
+                if (!GetConnection())
                 {
-                    WriteDate();
-                    SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute), (Core.Style)WallpaperStyle);
+                    //msg
+                    return;
+                }
 
-                    rs["ImageUID"] = imgData.Item1;
-                    rs["ImageUIDThumbnail"] = imgData.Item2;
+                var imgData = Core.Source.Bing.Bing.Get(w, h).Result;
 
-                    rs["CurrentOriginal"] = imgData.Item1;
-                    rs["CurrentThumb"] = imgData.Item2;
-                    rs["CurrentCopy"] = imgData.Item3;
-
-                    try
+                if (CheckDate() || Update)
+                {
+                    if (rs.GetValue(WALLPAPER_URL, "") != imgData.Item1 || Update)
                     {
-                        imgImageThumb.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { imgImageThumb.Source = new BitmapImage(new Uri(imgData.Item2)); });
-                        tbImageInfo.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { tbImageInfo.Text = imgData.Item3; });
-                    }
-                    catch
-                    {
-                        imgImageThumb.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { imgImageThumb.Source = new BitmapImage(new Uri("www.bing.com/az/hprichbg/rb/OchaBatake_ROW10481280883_400x240.jpg")); });
-                        tbImageInfo.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { tbImageInfo.Text = "Error"; });
+                        rs[WALLPAPER_URL] = imgData.Item1;
+                        rs[WALLPAPER_THUMBNAIL] = imgData.Item2;
+                        rs[WALLPAPER_COPYRIGHT] = imgData.Item3;
+
+                        WriteDate();
+                        WriteThumbCopy(imgData.Item2, imgData.Item3);
+
+                        SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute), (Core.Style)WallpaperStyle);
                     }
                 }
-            }
+            });
         }
         void WriteDate()
         {
@@ -157,6 +154,19 @@ namespace WallpaperChanger
             rs["UpdateWallpaperMounth"] = dt.Month;
             rs["UpdateWallpaperDay"] = dt.Day;
             rs["UpdateWallpaperHour"] = dt.Hour;
+        }
+        void WriteThumbCopy(string thumb, string copy)
+        {
+            try
+            {
+                imgImageThumb.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { imgImageThumb.Source = new BitmapImage(new Uri(thumb)); });
+                tbImageInfo.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { tbImageInfo.Text = copy; });
+            }
+            catch
+            {
+                imgImageThumb.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { imgImageThumb.Source = new BitmapImage(new Uri("www.bing.com/az/hprichbg/rb/OchaBatake_ROW10481280883_400x240.jpg")); });
+                tbImageInfo.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { tbImageInfo.Text = "Error"; });
+            }
         }
         void SetupImage(Uri uri, Core.Style style)
         {
@@ -186,6 +196,8 @@ namespace WallpaperChanger
             }
 
             SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, tempPath, SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
+
+            btnLike.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { btnLike.IsSwitched = IsFavorite(); });
         }
 
         //help
@@ -267,6 +279,12 @@ namespace WallpaperChanger
         }
 
         //favorites
+        bool IsFavorite()
+        {
+            return (from i in FavoriteList
+                    where i.Original == rs.GetValue<string>(WALLPAPER_URL)
+                    select i).Count() > 0;
+        }
         void SaveFavorite()
         {
             if (File.Exists(FavoriteListPath))
@@ -291,7 +309,9 @@ namespace WallpaperChanger
             {
                 Controlls.FavoritePic pf = new Controlls.FavoritePic()
                 {
-                    Wallpaper = item.Original,
+                    Original = item.Original,
+                    Wallpaper = item.ThumbnailLocale,
+                    Copyright = item.Copyright,
                     Margin = new Thickness(7)
                 };
 
@@ -301,11 +321,7 @@ namespace WallpaperChanger
                 wpFavorites.Children.Add(pf);
             }
         }
-        bool FavoritExist()
-        {
-            try { return FavoriteList.First((x) => x.Original == rs.GetValue<string>("CurrentOriginal")) != null; }
-            catch { return false; }
-        }
+
         void LikeWallpaper()
         {
             try
@@ -313,19 +329,21 @@ namespace WallpaperChanger
                 if (!Directory.Exists($@"{AppDomain.CurrentDomain.BaseDirectory}\fav"))
                     Directory.CreateDirectory($@"{AppDomain.CurrentDomain.BaseDirectory}\fav");
 
-                string localThumb = $@"{AppDomain.CurrentDomain.BaseDirectory}fav\{rs.GetValue<string>("CurrentThumb").Replace("/", "").Replace(":", "")}.jpg";
+                string localThumb = $@"{AppDomain.CurrentDomain.BaseDirectory}fav\{rs.GetValue<string>(WALLPAPER_THUMBNAIL).Replace("/", "").Replace(":", "")}.jpg";
                 using (WebClient wc = new WebClient())
-                    wc.DownloadFile(rs.GetValue<string>("CurrentThumb"), localThumb);
+                    wc.DownloadFile(rs.GetValue<string>(WALLPAPER_THUMBNAIL), localThumb);
 
                 FavoriteList.Add(new Favorite()
                 {
-                    Original = rs.GetValue<string>("CurrentOriginal"),
-                    Thumbnail = rs.GetValue<string>("CurrentThumb"),
-                    Copyright = rs.GetValue<string>("CurrentCopy"),
+                    Original = rs.GetValue<string>(WALLPAPER_URL),
+                    Thumbnail = rs.GetValue<string>(WALLPAPER_THUMBNAIL),
+                    Copyright = rs.GetValue<string>(WALLPAPER_COPYRIGHT),
                     ThumbnailLocale = localThumb
                 });
 
                 LoadFavoriteToPanel();
+                btnLike.IsSwitched = true;
+
             }
             catch { }
         }
@@ -333,7 +351,7 @@ namespace WallpaperChanger
         {
             try
             {
-                var item = FavoriteList.First((x) => x.Original == rs.GetValue<string>("CurrentOriginal"));
+                var item = FavoriteList.First((x) => x.Original == rs.GetValue<string>(WALLPAPER_URL));
 
                 if (item != null)
                 {
@@ -341,6 +359,7 @@ namespace WallpaperChanger
                     FavoriteList.Remove(item);
 
                     LoadFavoriteToPanel();
+                    btnLike.IsSwitched = false;
                 }
             }
             catch { }
@@ -419,19 +438,8 @@ namespace WallpaperChanger
             contextMenu.MenuItems.Add(Lang["nfOpenSettings"], (sh, eh) => { Show(); tiOptions.IsSelected = true; });
             contextMenu.MenuItems.Add("-");
             contextMenu.MenuItems.Add(Lang["nfRefresh"], (sh, eh) => SetupWallpaper(true));
-            contextMenu.MenuItems.Add(Lang["nfLeave"], (sh, eh) =>
-            {
-                Source = -1;
-                rs["LeaveUrl"] = rs.GetValue<string>("ImageUID");
-            });
-            contextMenu.MenuItems.Add(Lang["nfAddFav"], (sh, eh) =>
-            {
-                if (!FavoritExist())
-                {
-                    LikeWallpaper();
-                    btnLike.IsSwitched = FavoritExist();
-                }
-            });
+            contextMenu.MenuItems.Add(Lang["nfLeave"], (sh, eh) => cbSource.SelectedIndex = -1);
+            contextMenu.MenuItems.Add(Lang["nfAddFav"], (sh, eh) => LikeWallpaper());
             contextMenu.MenuItems.Add("-");
             contextMenu.MenuItems.Add(Lang["nfExit"], (sh, eh) => Close());
 
@@ -550,16 +558,22 @@ namespace WallpaperChanger
         private void btnTimetableHelpClick(object sender, RoutedEventArgs e) => ShowToast(Lang["MsgInfoTitle"], Lang["MsgInfoTimtable"]);
         private void btnLikeClick(bool IsSwitched)
         {
-            if (!FavoritExist())
-                LikeWallpaper();
-            else
+            if (IsFavorite())
                 UnlikeWallpaper();
+            else
+                LikeWallpaper();
 
             SaveFavorite();
         }
-        private void PfApplyEvent(string obj)
+        private void PfApplyEvent(string origin, string thumb, string copy)
         {
+            cbSource.SelectedIndex = -1;
 
+            rs[WALLPAPER_URL] = origin;
+            rs[WALLPAPER_THUMBNAIL] = thumb;
+            rs[WALLPAPER_COPYRIGHT] = copy;
+
+            SetupWallpaper(true);
         }
         private void PfDeleteEvent(string obj)
         {

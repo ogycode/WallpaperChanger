@@ -47,7 +47,7 @@
                             <RowDefinition Height="64px"/>
                         </Grid.RowDefinitions>
                         <TextBlock x:Name="tbSourceName" Text="source" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
-                        <ComboBox x:Name="cbSource" SelectedIndex="{Binding Source, FallbackValue=0, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Height="30">
+                        <ComboBox x:Name="cbSource" SelectedIndex="{Binding Source, FallbackValue=1, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Height="30">
                             <ComboBoxItem x:Name="cbFavorite" Content="favorite"/>
                             <ComboBoxItem x:Name="cbBing" Content="bing.com"/>
                         </ComboBox>
