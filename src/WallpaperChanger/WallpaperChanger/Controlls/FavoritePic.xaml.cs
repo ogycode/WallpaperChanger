@@ -18,7 +18,7 @@ namespace WallpaperChanger.Controlls
     public partial class FavoritePic : UserControl
     {
         public event Action<string, string, string> ApplyEvent;
-        public event Action<string> DeleteEvent;
+        public event Action<string, string> DeleteEvent;
 
         public string Wallpaper
         {
@@ -48,6 +48,6 @@ namespace WallpaperChanger.Controlls
         }
 
         private void btnApplyClick(object sender, RoutedEventArgs e) => ApplyEvent?.Invoke(Original, Wallpaper, Copyright);
-        private void btnRemoveClick(object sender, RoutedEventArgs e) => DeleteEvent?.Invoke(Original);
+        private void btnRemoveClick(object sender, RoutedEventArgs e) => DeleteEvent?.Invoke(Original, Wallpaper);
     }
 }

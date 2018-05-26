@@ -33,6 +33,7 @@ namespace WallpaperChanger
         const string WALLPAPER_COPYRIGHT = "CurrentCopy";
 
         public List<Favorite> FavoriteList { get; set; }
+        public string FavoritePath = $@"{AppDomain.CurrentDomain.BaseDirectory}\fav";
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
@@ -101,8 +102,6 @@ namespace WallpaperChanger
                     SetupWallpaperLeave(Update);
                     break;
             }
-
-            //btnLike.IsSwitched = IsFavorite();
         }
         void SetupWallpaperFavorite(bool update)
         {
@@ -197,7 +196,12 @@ namespace WallpaperChanger
 
             SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, tempPath, SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
 
-            btnLike.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { btnLike.IsSwitched = IsFavorite(); });
+            btnLike.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+            {
+                btnLike.IsSwitched = (from i in FavoriteList
+                                      where i.Original == rs.GetValue<string>(WALLPAPER_URL)
+                                      select i).Count() > 0;
+            });
         }
 
         //help
@@ -279,12 +283,6 @@ namespace WallpaperChanger
         }
 
         //favorites
-        bool IsFavorite()
-        {
-            return (from i in FavoriteList
-                    where i.Original == rs.GetValue<string>(WALLPAPER_URL)
-                    select i).Count() > 0;
-        }
         void SaveFavorite()
         {
             if (File.Exists(FavoriteListPath))
@@ -300,6 +298,11 @@ namespace WallpaperChanger
                     FavoriteList = JsonConvert.DeserializeObject<List<Favorite>>(sr.ReadToEnd());
             else
                 FavoriteList = new List<Favorite>();
+
+            foreach (var item in Directory.GetFiles(FavoritePath))
+                if (FavoriteList.FirstOrDefault((x) => x.ThumbnailLocale == item) == null)
+                    try { File.Delete(item); }
+                    catch { }
         }
         void LoadFavoriteToPanel()
         {
@@ -321,64 +324,50 @@ namespace WallpaperChanger
                 wpFavorites.Children.Add(pf);
             }
         }
+        string GetFavoritePath(string original) => $@"{FavoritePath}\{original.Replace(":", "").Replace("/", "")}.jpg";
 
         void LikeWallpaper()
         {
+            if (!Directory.Exists(FavoritePath))
+                Directory.CreateDirectory(FavoritePath);
+
             try
             {
-                if (!Directory.Exists($@"{AppDomain.CurrentDomain.BaseDirectory}\fav"))
-                    Directory.CreateDirectory($@"{AppDomain.CurrentDomain.BaseDirectory}\fav");
-
-                string localThumb = $@"{AppDomain.CurrentDomain.BaseDirectory}fav\{rs.GetValue<string>(WALLPAPER_THUMBNAIL).Replace("/", "").Replace(":", "")}.jpg";
-                using (WebClient wc = new WebClient())
-                    wc.DownloadFile(rs.GetValue<string>(WALLPAPER_THUMBNAIL), localThumb);
+                if (!File.Exists(GetFavoritePath(rs.GetValue<string>(WALLPAPER_URL))))
+                    using (WebClient wc = new WebClient())
+                        wc.DownloadFile(rs.GetValue<string>(WALLPAPER_THUMBNAIL), GetFavoritePath(rs.GetValue<string>(WALLPAPER_URL)));
 
                 FavoriteList.Add(new Favorite()
                 {
                     Original = rs.GetValue<string>(WALLPAPER_URL),
                     Thumbnail = rs.GetValue<string>(WALLPAPER_THUMBNAIL),
                     Copyright = rs.GetValue<string>(WALLPAPER_COPYRIGHT),
-                    ThumbnailLocale = localThumb
+                    ThumbnailLocale = GetFavoritePath(rs.GetValue<string>(WALLPAPER_URL))
                 });
 
                 LoadFavoriteToPanel();
                 btnLike.IsSwitched = true;
 
             }
-            catch { }
-        }
-        void UnlikeWallpaper()
-        {
-            try
+            catch (Exception e)
             {
-                var item = FavoriteList.First((x) => x.Original == rs.GetValue<string>(WALLPAPER_URL));
 
-                if (item != null)
-                {
-                    File.Delete(item.ThumbnailLocale);
-                    FavoriteList.Remove(item);
-
-                    LoadFavoriteToPanel();
-                    btnLike.IsSwitched = false;
-                }
             }
-            catch { }
         }
-        void RemoveFavorite(string uid)
+        void UnlikeWallpaper(string original = "")
         {
-            try
+            var a = rs.GetValue<string>(WALLPAPER_URL);
+            string path = string.IsNullOrWhiteSpace(original) ? rs.GetValue<string>(WALLPAPER_URL) : original;
+
+            if (FavoriteList.RemoveAll((x) => x.Original == path) > 0)
             {
-                var item = FavoriteList.First((x) => x.Original == uid);
+                LoadFavoriteToPanel();
 
-                if (item != null)
-                {
-                    File.Delete(item.ThumbnailLocale);
-                    FavoriteList.Remove(item);
+                try { File.Delete(GetFavoritePath(path)); }
+                catch { }
 
-                    LoadFavoriteToPanel();
-                }
+                btnLike.IsSwitched = false;
             }
-            catch { }
         }
 
         //startup
@@ -558,10 +547,10 @@ namespace WallpaperChanger
         private void btnTimetableHelpClick(object sender, RoutedEventArgs e) => ShowToast(Lang["MsgInfoTitle"], Lang["MsgInfoTimtable"]);
         private void btnLikeClick(bool IsSwitched)
         {
-            if (IsFavorite())
-                UnlikeWallpaper();
-            else
+            if (IsSwitched)
                 LikeWallpaper();
+            else
+                UnlikeWallpaper();
 
             SaveFavorite();
         }
@@ -575,9 +564,9 @@ namespace WallpaperChanger
 
             SetupWallpaper(true);
         }
-        private void PfDeleteEvent(string obj)
+        private void PfDeleteEvent(string original, string thumb)
         {
-            RemoveFavorite(obj);
+            UnlikeWallpaper(original);
             SaveFavorite();
         }
     }
