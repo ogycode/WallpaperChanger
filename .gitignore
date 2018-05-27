@@ -111,3 +111,4 @@ UpgradeLog*.XML
 src/.vs/
 src/WallpaperChanger/.vs/
 src/WallpaperChanger/BridgeHelper/wpf/
+src/WallpaperChanger/WallpaperChanger/Core/ApiKeysLocal.cs

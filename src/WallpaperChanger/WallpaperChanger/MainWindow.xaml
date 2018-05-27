@@ -50,6 +50,7 @@
                         <ComboBox x:Name="cbSource" SelectedIndex="{Binding Source, FallbackValue=1, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Height="30">
                             <ComboBoxItem x:Name="cbFavorite" Content="favorite"/>
                             <ComboBoxItem x:Name="cbBing" Content="bing.com"/>
+                            <ComboBoxItem x:Name="cbFlickr" Content="flickr.com"/>
                         </ComboBox>
                         <Button x:Name="btnSetupSource" Grid.Row="0" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Content="&#xE713;" HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding Height, ElementName=cbSource}" Height="{Binding Height, ElementName=cbSource}" FontSize="10" Margin="10,0"/>
                         <Image x:Name="imgImageThumb" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Source="Assets/picture.png"/>

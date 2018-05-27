@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using FlickrNet;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,7 @@ namespace WallpaperChanger
         const string WALLPAPER_URL = "ImageUID";
         const string WALLPAPER_THUMBNAIL = "ImageUIDThumbnail";
         const string WALLPAPER_COPYRIGHT = "CurrentCopy";
+        const string WALLPAPER_FAVORITE_NUMBER = "FuvNum";
 
         public List<Favorite> FavoriteList { get; set; }
         public string FavoritePath = $@"{AppDomain.CurrentDomain.BaseDirectory}\fav";
@@ -62,6 +64,7 @@ namespace WallpaperChanger
         Manager Lang;
         Timer timer;
         System.Windows.Forms.NotifyIcon notifyIcon;
+        Flickr flickr;
 
         double w = SystemParameters.VirtualScreenWidth;
         double h = SystemParameters.VirtualScreenHeight;
@@ -91,6 +94,9 @@ namespace WallpaperChanger
         {
             switch (rs.GetValue("Source", 1))
             {
+                case 2:
+                    SetupallpaperFlickr(Update);
+                    break;
                 default:
                 case 1:
                     await SetupWallpaperBing(Update);
@@ -103,9 +109,43 @@ namespace WallpaperChanger
                     break;
             }
         }
-        void SetupWallpaperFavorite(bool update)
+        async void SetupallpaperFlickr(bool Update = false)
         {
+            if (CheckDate() || Update)
+            {
+                var imgData = await Core.Source.FlickrSource.Finder.FindAsync(w, h, rs.GetValue(WALLPAPER_URL, ""), "sex,space,nature,landscape,beautiful,amazing");
 
+                rs[WALLPAPER_URL] = imgData.Item1;
+                rs[WALLPAPER_THUMBNAIL] = imgData.Item2;
+                rs[WALLPAPER_COPYRIGHT] = imgData.Item3;
+
+                WriteDate();
+                WriteThumbCopy(imgData.Item2, imgData.Item3);
+
+                SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute), (Core.Style)WallpaperStyle);
+            }
+
+        }
+        void SetupWallpaperFavorite(bool Update)
+        {
+            if (FavoriteList.Count == 0)
+            {
+                cbSource.SelectedIndex = 1;
+                SetupWallpaper(true);
+                return;
+            }
+
+            if (CheckDate() || Update)
+            {
+                int number = rs.GetValue(WALLPAPER_FAVORITE_NUMBER, -1) + 1;
+                rs[WALLPAPER_FAVORITE_NUMBER] = (number > FavoriteList.Count + 1) ? 0 : number;
+
+                rs[WALLPAPER_URL] = FavoriteList[number].Original;
+                rs[WALLPAPER_THUMBNAIL] = FavoriteList[number].Thumbnail;
+                rs[WALLPAPER_COPYRIGHT] = FavoriteList[number].Copyright;
+
+                SetupImage(new Uri(rs.GetValue<string>(WALLPAPER_URL), UriKind.RelativeOrAbsolute), (Core.Style)WallpaperStyle);
+            }
         }
         void SetupWallpaperLeave(bool Update)
         {
@@ -525,6 +565,9 @@ namespace WallpaperChanger
         private void windowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             notifyIcon.Visible = false;
+
+            if (Source == 2)
+                Core.Source.FlickrSource.Finder.SaveUsed();
         }
         private void TimerElapsed(object sender, ElapsedEventArgs e)
         {

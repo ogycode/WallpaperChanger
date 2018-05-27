@@ -39,6 +39,9 @@
     <ApplicationIcon>Assets\photo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FlickrNet, Version=3.25.0.0, Culture=neutral, PublicKeyToken=2491df59efa5d132, processorArchitecture=MSIL">
+      <HintPath>..\packages\FlickrNet.3.25.0\lib\net20\FlickrNet.dll</HintPath>
+    </Reference>
     <Reference Include="HelperLib, Version=1.4.0.5, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Verloka.HelperLib.1.4.0.5\lib\net452\HelperLib.dll</HintPath>
     </Reference>
@@ -114,6 +117,8 @@
     <Compile Include="Controlls\StoreButton.xaml.cs">
       <DependentUpon>StoreButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Core\ApiKeys.cs" />
+    <Compile Include="Core\ApiKeysLocal.cs" />
     <Compile Include="Core\Favorite.cs" />
     <Compile Include="Core\MessageWindowIcon.cs" />
     <Compile Include="Core\MessageWindowIconColor.cs" />
@@ -121,6 +126,7 @@
     <Compile Include="Core\Source\Bing\Image.cs" />
     <Compile Include="Core\Source\Bing\RootObject.cs" />
     <Compile Include="Core\Source\Bing\Tooltips.cs" />
+    <Compile Include="Core\Source\FlickrSource\Finder.cs" />
     <Compile Include="Core\Style.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -199,7 +205,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>cd $(ProjectDir)Core\
+
+if not exist ApiKeysLocal.cs (
+    type nul &gt; ApiKeysLocal.cs
+)</PreBuildEvent>
   </PropertyGroup>
 </Project>
