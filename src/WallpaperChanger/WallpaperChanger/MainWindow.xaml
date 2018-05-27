@@ -51,6 +51,7 @@
                             <ComboBoxItem x:Name="cbFavorite" Content="favorite"/>
                             <ComboBoxItem x:Name="cbBing" Content="bing.com"/>
                             <ComboBoxItem x:Name="cbFlickr" Content="flickr.com"/>
+                            <ComboBoxItem x:Name="cbUnsplash" Content="unsplash.com"/>
                         </ComboBox>
                         <Button x:Name="btnSetupSource" Grid.Row="0" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Content="&#xE713;" HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding Height, ElementName=cbSource}" Height="{Binding Height, ElementName=cbSource}" FontSize="10" Margin="10,0"/>
                         <Image x:Name="imgImageThumb" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Source="Assets/picture.png"/>
@@ -110,10 +111,13 @@
                                     <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock x:Name="tbStyle" Grid.Column="0" Text="style"/>
-                                <ComboBox x:Name="cbStyle" SelectedIndex="{Binding WallpaperStyle, Mode=TwoWay}" Grid.Column="1" Height="30">
+                                <ComboBox x:Name="cbStyle" Grid.Column="1" Height="30">
                                     <ComboBoxItem x:Name="cbStyle0" Content="tiled"/>
                                     <ComboBoxItem x:Name="cbStyle1" Content="centered"/>
                                     <ComboBoxItem x:Name="cbStyle2" Content="stretched"/>
+                                    <ComboBoxItem x:Name="cbStyle3" Content="span"/>
+                                    <ComboBoxItem x:Name="cbStyle4" Content="fit"/>
+                                    <ComboBoxItem x:Name="cbStyle5" Content="fill"/>
                                 </ComboBox>
                             </Grid>
                             <CheckBox x:Name="cbStartup" Content="startup with windows" VerticalContentAlignment="Center" FontSize="18" Margin="0,5,0,0"/>

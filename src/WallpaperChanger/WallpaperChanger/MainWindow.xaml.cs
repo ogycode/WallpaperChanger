@@ -17,6 +17,8 @@ using System.Windows.Media.Imaging;
 using Verloka.HelperLib.Localization;
 using Verloka.HelperLib.Settings;
 using WallpaperChanger.Core;
+using Windows.Storage;
+using Windows.System.UserProfile;
 
 namespace WallpaperChanger
 {
@@ -94,6 +96,9 @@ namespace WallpaperChanger
         {
             switch (rs.GetValue("Source", 1))
             {
+                case 3:
+                    SetupWallpaperUnsplash(Update);
+                    break;
                 case 2:
                     SetupallpaperFlickr(Update);
                     break;
@@ -109,6 +114,27 @@ namespace WallpaperChanger
                     break;
             }
         }
+        void SetupWallpaperUnsplash(bool Update = false)
+        {
+            if (CheckDate() || Update)
+            {
+                string url = $"http://source.unsplash.com/random/{w}x{h}";
+
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+                rs[WALLPAPER_URL] = response.ResponseUri.ToString();
+                rs[WALLPAPER_THUMBNAIL] = response.ResponseUri.ToString();
+                rs[WALLPAPER_COPYRIGHT] = "";
+
+                WriteDate();
+                WriteThumbCopy(response.ResponseUri.ToString(), "");
+
+                SetupImage(response.ResponseUri);
+
+                response.Close();
+            }
+        }
         async void SetupallpaperFlickr(bool Update = false)
         {
             if (CheckDate() || Update)
@@ -122,7 +148,7 @@ namespace WallpaperChanger
                 WriteDate();
                 WriteThumbCopy(imgData.Item2, imgData.Item3);
 
-                SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute), (Core.Style)WallpaperStyle);
+                SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute));
             }
 
         }
@@ -138,13 +164,18 @@ namespace WallpaperChanger
             if (CheckDate() || Update)
             {
                 int number = rs.GetValue(WALLPAPER_FAVORITE_NUMBER, -1) + 1;
-                rs[WALLPAPER_FAVORITE_NUMBER] = (number > FavoriteList.Count + 1) ? 0 : number;
+                number = (number > FavoriteList.Count - 1) ? 0 : number;
 
                 rs[WALLPAPER_URL] = FavoriteList[number].Original;
                 rs[WALLPAPER_THUMBNAIL] = FavoriteList[number].Thumbnail;
                 rs[WALLPAPER_COPYRIGHT] = FavoriteList[number].Copyright;
 
-                SetupImage(new Uri(rs.GetValue<string>(WALLPAPER_URL), UriKind.RelativeOrAbsolute), (Core.Style)WallpaperStyle);
+                rs[WALLPAPER_FAVORITE_NUMBER] = number;
+
+                WriteDate();
+                WriteThumbCopy(FavoriteList[number].Thumbnail, FavoriteList[number].Copyright);
+
+                SetupImage(new Uri(rs.GetValue<string>(WALLPAPER_URL), UriKind.RelativeOrAbsolute));
             }
         }
         void SetupWallpaperLeave(bool Update)
@@ -155,7 +186,7 @@ namespace WallpaperChanger
             WriteDate();
             WriteThumbCopy(rs.GetValue<string>(WALLPAPER_THUMBNAIL), rs.GetValue<string>(WALLPAPER_COPYRIGHT));
 
-            SetupImage(new Uri(rs.GetValue<string>(WALLPAPER_URL), UriKind.RelativeOrAbsolute), (Core.Style)WallpaperStyle);
+            SetupImage(new Uri(rs.GetValue<string>(WALLPAPER_URL), UriKind.RelativeOrAbsolute));
         }
         async Task SetupWallpaperBing(bool Update = false)
         {
@@ -180,7 +211,7 @@ namespace WallpaperChanger
                         WriteDate();
                         WriteThumbCopy(imgData.Item2, imgData.Item3);
 
-                        SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute), (Core.Style)WallpaperStyle);
+                        SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute));
                     }
                 }
             });
@@ -193,6 +224,44 @@ namespace WallpaperChanger
             rs["UpdateWallpaperMounth"] = dt.Month;
             rs["UpdateWallpaperDay"] = dt.Day;
             rs["UpdateWallpaperHour"] = dt.Hour;
+        }
+        void WriteRegistry(Core.Style style)
+        {
+            //use switch
+            RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true);
+
+            if (style == Core.Style.Fill)
+            {
+                key.SetValue(@"WallpaperStyle", 10.ToString());
+                key.SetValue(@"TileWallpaper", 0.ToString());
+            }
+            if (style == Core.Style.Fit)
+            {
+                key.SetValue(@"WallpaperStyle", 6.ToString());
+                key.SetValue(@"TileWallpaper", 0.ToString());
+            }
+            if (style == Core.Style.Span)
+            {
+                key.SetValue(@"WallpaperStyle", 22.ToString());
+                key.SetValue(@"TileWallpaper", 0.ToString());
+            }
+            if (style == Core.Style.Stretch)
+            {
+                key.SetValue(@"WallpaperStyle", 2.ToString());
+                key.SetValue(@"TileWallpaper", 0.ToString());
+            }
+            if (style == Core.Style.Tile)
+            {
+                key.SetValue(@"WallpaperStyle", 0.ToString());
+                key.SetValue(@"TileWallpaper", 1.ToString());
+            }
+            if (style == Core.Style.Center)
+            {
+                key.SetValue(@"WallpaperStyle", 0.ToString());
+                key.SetValue(@"TileWallpaper", 0.ToString());
+            }
+
+            key.Close();
         }
         void WriteThumbCopy(string thumb, string copy)
         {
@@ -207,7 +276,7 @@ namespace WallpaperChanger
                 tbImageInfo.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { tbImageInfo.Text = "Error"; });
             }
         }
-        void SetupImage(Uri uri, Core.Style style)
+        async void SetupImage(Uri uri)
         {
             Stream s = new WebClient().OpenRead(uri.ToString());
 
@@ -215,26 +284,11 @@ namespace WallpaperChanger
             string tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "wallpaper.bmp");
             img.Save(tempPath, System.Drawing.Imaging.ImageFormat.Bmp);
 
-            RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true);
-
-            switch (style)
-            {
-                case Core.Style.Tiled:
-                    key.SetValue(@"WallpaperStyle", 1.ToString());
-                    key.SetValue(@"TileWallpaper", 1.ToString());
-                    break;
-                case Core.Style.Centered:
-                    key.SetValue(@"WallpaperStyle", 1.ToString());
-                    key.SetValue(@"TileWallpaper", 0.ToString());
-                    break;
-                default:
-                case Core.Style.Stretched:
-                    key.SetValue(@"WallpaperStyle", 2.ToString());
-                    key.SetValue(@"TileWallpaper", 0.ToString());
-                    break;
-            }
-
             SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, tempPath, SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
+
+            /*UserProfilePersonalizationSettings ps = UserProfilePersonalizationSettings.Current;
+            await ps.TrySetWallpaperImageAsync(await StorageFile.GetFileFromPathAsync(""));*/
+
 
             btnLike.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
             {
@@ -558,6 +612,9 @@ namespace WallpaperChanger
 
             cbLanguages.SelectionChanged += CbLanguagesSelectionChanged;
 
+            cbStyle.SelectedIndex = Source;
+            cbStyle.SelectionChanged += CbStyleSelectionChanged;
+
             GetStartup();
             LoadFavoriteToPanel();
         }
@@ -611,6 +668,16 @@ namespace WallpaperChanger
         {
             UnlikeWallpaper(original);
             SaveFavorite();
+        }
+        private void CbStyleSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cbStyle.SelectedIndex == -1)
+                return;
+
+            WallpaperStyle = cbStyle.SelectedIndex;
+            WriteRegistry((Core.Style)WallpaperStyle);
+
+            SystemParametersInfo(SPI_SETDESKWALLPAPER, 1, System.IO.Path.Combine(System.IO.Path.GetTempPath(), "wallpaper.bmp"), SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
         }
     }
 }

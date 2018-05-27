@@ -2,8 +2,11 @@
 {
     public enum Style : int
     {
-        Tiled = 0,
-        Centered,
-        Stretched
+        Tile = 0,
+        Center,
+        Stretch,
+        Span,
+        Fit,
+        Fill
     }
 }
