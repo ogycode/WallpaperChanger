@@ -42,7 +42,7 @@ namespace WallpaperChanger
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
 
-        const int SPI_SETDESKWALLPAPER = 20;
+        const int SPI_SETDESKWALLPAPER = 0x14;
         const int SPIF_UPDATEINIFILE = 0x01;
         const int SPIF_SENDWININICHANGE = 0x02;
 
@@ -97,86 +97,89 @@ namespace WallpaperChanger
             switch (rs.GetValue("Source", 1))
             {
                 case 3:
-                    SetupWallpaperUnsplash(Update);
+                    await SetupWallpaperUnsplash(Update);
                     break;
                 case 2:
-                    SetupallpaperFlickr(Update);
+                    await SetupallpaperFlickr(Update);
                     break;
                 default:
                 case 1:
                     await SetupWallpaperBing(Update);
                     break;
                 case 0:
-                    SetupWallpaperFavorite(Update);
+                    await SetupWallpaperFavorite(Update);
                     break;
                 case -1:
                     SetupWallpaperLeave(Update);
                     break;
             }
         }
-        void SetupWallpaperUnsplash(bool Update = false)
+        async Task SetupWallpaperUnsplash(bool Update = false)
         {
-            if (CheckDate() || Update)
+            Task.Factory.StartNew(() =>
             {
-                string url = $"http://source.unsplash.com/random/{w}x{h}";
+                if (CheckDate() || Update)
+                {
+                    var imgData = Core.Source.Unsplash.Unsplash.Get(w, h);
 
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                    rs[WALLPAPER_URL] = imgData.Item1;
+                    rs[WALLPAPER_THUMBNAIL] = imgData.Item2;
+                    rs[WALLPAPER_COPYRIGHT] = Lang["UnsplashCopy"];
 
-                rs[WALLPAPER_URL] = response.ResponseUri.ToString();
-                rs[WALLPAPER_THUMBNAIL] = response.ResponseUri.ToString();
-                rs[WALLPAPER_COPYRIGHT] = "";
+                    WriteDate();
+                    WriteThumbCopy(imgData.Item1, Lang["UnsplashCopy"]);
 
-                WriteDate();
-                WriteThumbCopy(response.ResponseUri.ToString(), "");
-
-                SetupImage(response.ResponseUri);
-
-                response.Close();
-            }
+                    SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute));
+                }
+            });
         }
-        async void SetupallpaperFlickr(bool Update = false)
+        async Task SetupallpaperFlickr(bool Update = false)
         {
-            if (CheckDate() || Update)
+            Task.Factory.StartNew(() =>
             {
-                var imgData = await Core.Source.FlickrSource.Finder.FindAsync(w, h, rs.GetValue(WALLPAPER_URL, ""), "sex,space,nature,landscape,beautiful,amazing");
+                if (CheckDate() || Update)
+                {
+                    var imgData = Core.Source.FlickrSource.Finder.FindAsync(w, h, rs.GetValue(WALLPAPER_URL, ""), "sex,space,nature,landscape,beautiful,amazing").Result;
 
-                rs[WALLPAPER_URL] = imgData.Item1;
-                rs[WALLPAPER_THUMBNAIL] = imgData.Item2;
-                rs[WALLPAPER_COPYRIGHT] = imgData.Item3;
+                    rs[WALLPAPER_URL] = imgData.Item1;
+                    rs[WALLPAPER_THUMBNAIL] = imgData.Item2;
+                    rs[WALLPAPER_COPYRIGHT] = imgData.Item3;
 
-                WriteDate();
-                WriteThumbCopy(imgData.Item2, imgData.Item3);
+                    WriteDate();
+                    WriteThumbCopy(imgData.Item2, imgData.Item3);
 
-                SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute));
-            }
-
+                    SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute));
+                }
+            });
         }
-        void SetupWallpaperFavorite(bool Update)
+        async Task SetupWallpaperFavorite(bool Update)
         {
-            if (FavoriteList.Count == 0)
+            Task.Factory.StartNew(() =>
             {
-                cbSource.SelectedIndex = 1;
-                SetupWallpaper(true);
-                return;
-            }
+                if (FavoriteList.Count == 0)
+                {
+                    cbSource.SelectedIndex = 1;
+                    SetupWallpaper(true);
+                    return;
+                }
 
-            if (CheckDate() || Update)
-            {
-                int number = rs.GetValue(WALLPAPER_FAVORITE_NUMBER, -1) + 1;
-                number = (number > FavoriteList.Count - 1) ? 0 : number;
+                if (CheckDate() || Update)
+                {
+                    int number = rs.GetValue(WALLPAPER_FAVORITE_NUMBER, -1) + 1;
+                    number = (number > FavoriteList.Count - 1) ? 0 : number;
 
-                rs[WALLPAPER_URL] = FavoriteList[number].Original;
-                rs[WALLPAPER_THUMBNAIL] = FavoriteList[number].Thumbnail;
-                rs[WALLPAPER_COPYRIGHT] = FavoriteList[number].Copyright;
+                    rs[WALLPAPER_URL] = FavoriteList[number].Original;
+                    rs[WALLPAPER_THUMBNAIL] = FavoriteList[number].Thumbnail;
+                    rs[WALLPAPER_COPYRIGHT] = FavoriteList[number].Copyright;
 
-                rs[WALLPAPER_FAVORITE_NUMBER] = number;
+                    rs[WALLPAPER_FAVORITE_NUMBER] = number;
 
-                WriteDate();
-                WriteThumbCopy(FavoriteList[number].Thumbnail, FavoriteList[number].Copyright);
+                    WriteDate();
+                    WriteThumbCopy(FavoriteList[number].Thumbnail, FavoriteList[number].Copyright);
 
-                SetupImage(new Uri(rs.GetValue<string>(WALLPAPER_URL), UriKind.RelativeOrAbsolute));
-            }
+                    SetupImage(new Uri(rs.GetValue<string>(WALLPAPER_URL), UriKind.RelativeOrAbsolute));
+                }
+            });
         }
         void SetupWallpaperLeave(bool Update)
         {
@@ -285,10 +288,6 @@ namespace WallpaperChanger
             img.Save(tempPath, System.Drawing.Imaging.ImageFormat.Bmp);
 
             SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, tempPath, SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
-
-            /*UserProfilePersonalizationSettings ps = UserProfilePersonalizationSettings.Current;
-            await ps.TrySetWallpaperImageAsync(await StorageFile.GetFileFromPathAsync(""));*/
-
 
             btnLike.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
             {
@@ -418,7 +417,13 @@ namespace WallpaperChanger
                 wpFavorites.Children.Add(pf);
             }
         }
-        string GetFavoritePath(string original) => $@"{FavoritePath}\{original.Replace(":", "").Replace("/", "")}.jpg";
+        string GetFavoritePath(string original)
+        {
+            original = original.Remove(0, original.Length - 10);
+
+
+            return $@"{FavoritePath}\{original.Replace(":", "").Replace("/", "")}.jpg";
+        }
 
         void LikeWallpaper()
         {
@@ -565,11 +570,16 @@ namespace WallpaperChanger
                     cbStyle0.Content = Lang["cbStyle0"];
                     cbStyle1.Content = Lang["cbStyle1"];
                     cbStyle2.Content = Lang["cbStyle2"];
+                    cbStyle3.Content = Lang["cbStyle3"];
+                    cbStyle4.Content = Lang["cbStyle4"];
+                    cbStyle5.Content = Lang["cbStyle5"];
 
                     cbStartup.Content = Lang["cbStartup"];
 
                     cbBing.Content = Lang["cbBing"];
                     cbFavorite.Content = Lang["cbFavorite"];
+                    cbFlickr.Content = Lang["cbFlickr"];
+                    cbUnsplash.Content = Lang["cbUnsplash"];
 
                     tbBtnRefresh.Text = Lang["btnRefresh"];
 
@@ -589,7 +599,7 @@ namespace WallpaperChanger
         private void btnCloseWinodwClick(object sender, RoutedEventArgs e) => Hide();
         private void btnInfoClick(object sender, RoutedEventArgs e)
         {
-            new MessageWindow("About", $"{Lang["Author"]}: \t    {AUTHOR} ({WEBSITE_AUTHOR})\n" +
+            new MessageWindow(Lang["AboutTitle"], $"{ Lang["Author"]}: \t    {AUTHOR} ({WEBSITE_AUTHOR})\n" +
                                        $"{Lang["Version"]}: \t    {VERSION}\n" +
                                        $"{Lang["AppWebsite"]}: \t    {WEBSITE_APP}\n\n" +
                                        $"{Lang["Copyright"]} © {AUTHOR}, {DateTime.Now.Year}", Core.MessageWindowIcon.Info, Core.MessageWindowIconColor.Orange, 840, 300).ShowDialog();
@@ -676,8 +686,9 @@ namespace WallpaperChanger
 
             WallpaperStyle = cbStyle.SelectedIndex;
             WriteRegistry((Core.Style)WallpaperStyle);
-
+            
             SystemParametersInfo(SPI_SETDESKWALLPAPER, 1, System.IO.Path.Combine(System.IO.Path.GetTempPath(), "wallpaper.bmp"), SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
         }
+        private void btnStyleHelpClick(object sender, RoutedEventArgs e) => ShowToast(Lang["MsgInfoTitle"], string.Format(Lang["MsgInfoStyle"], VERSION));
     }
 }

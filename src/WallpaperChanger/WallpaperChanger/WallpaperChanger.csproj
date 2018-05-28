@@ -127,6 +127,7 @@
     <Compile Include="Core\Source\Bing\RootObject.cs" />
     <Compile Include="Core\Source\Bing\Tooltips.cs" />
     <Compile Include="Core\Source\FlickrSource\Finder.cs" />
+    <Compile Include="Core\Source\Unsplash\Unsplash.cs" />
     <Compile Include="Core\Style.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
