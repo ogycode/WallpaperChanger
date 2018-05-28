@@ -4,16 +4,22 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WallpaperChanger"
-        xmlns:Controlls="clr-namespace:WallpaperChanger.Controlls" x:Class="WallpaperChanger.MainWindow"
+        xmlns:Controlls="clr-namespace:WallpaperChanger.Controlls" 
+        x:Class="WallpaperChanger.MainWindow"
+        xmlns:core="clr-namespace:WallpaperChanger.Core"
         x:Name="window"
         mc:Ignorable="d"
-         Title="Wallpaper Changer 2" 
+        Title="Wallpaper Changer 2" 
         Height="450" 
         Width="800" 
         Loaded="WindowLoaded" 
         ResizeMode="NoResize" 
         WindowStartupLocation="CenterScreen" 
-        WindowStyle="None" Icon="Assets/photo.png" Closing="windowClosing"  >
+        WindowStyle="None" Icon="Assets/photo.png" 
+        Closing="windowClosing">
+    <Window.Resources>
+        <core:SelectedIndexToVisibilityConvert x:Key="selectedIndexToVisibilityConvert"/>
+    </Window.Resources>
     <Border BorderThickness="1" BorderBrush="#FF007ACC">
         <Grid Background="#FF2D2D30">
             <Grid.RowDefinitions>
@@ -38,7 +44,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="200"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
@@ -53,7 +59,7 @@
                             <ComboBoxItem x:Name="cbFlickr" Content="flickr.com"/>
                             <ComboBoxItem x:Name="cbUnsplash" Content="unsplash.com"/>
                         </ComboBox>
-                        <Button x:Name="btnSetupSource" Grid.Row="0" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Content="&#xE713;" HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding Height, ElementName=cbSource}" Height="{Binding Height, ElementName=cbSource}" FontSize="10" Margin="10,0"/>
+                        <Button x:Name="btnSetupSource" Grid.Row="0" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Content="&#xE713;" HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding Height, ElementName=cbSource}" Height="{Binding Height, ElementName=cbSource}" FontSize="10" Margin="10,0" Visibility="{Binding ElementName=cbSource, Path=SelectedIndex, Converter={StaticResource selectedIndexToVisibilityConvert}}"/>
                         <Image x:Name="imgImageThumb" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Source="Assets/picture.png"/>
                         <ScrollViewer Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="1" HorizontalScrollBarVisibility="Disabled" Margin="0">
                             <TextBlock x:Name="tbImageInfo" TextWrapping="Wrap"/>

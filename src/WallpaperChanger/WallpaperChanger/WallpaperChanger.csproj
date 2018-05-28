@@ -122,6 +122,7 @@
     <Compile Include="Core\Favorite.cs" />
     <Compile Include="Core\MessageWindowIcon.cs" />
     <Compile Include="Core\MessageWindowIconColor.cs" />
+    <Compile Include="Core\SelectedIndexToVisibilityConvert.cs" />
     <Compile Include="Core\Source\Bing\Bing.cs" />
     <Compile Include="Core\Source\Bing\Image.cs" />
     <Compile Include="Core\Source\Bing\RootObject.cs" />
