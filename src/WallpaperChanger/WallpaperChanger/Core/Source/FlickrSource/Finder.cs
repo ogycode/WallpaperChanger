@@ -32,6 +32,8 @@ namespace WallpaperChanger.Core.Source.FlickrSource
                 {
                     Tags = tags,
                     TagMode = TagMode.AnyTag,
+                    //ColorCodes = new List<string>() { "6" },
+                    Styles = new List<FlickrNet.Style>() { FlickrNet.Style.BlackAndWhite },
                     PerPage = 20,
                     Page = 1,
                     SafeSearch = SafetyLevel.None,

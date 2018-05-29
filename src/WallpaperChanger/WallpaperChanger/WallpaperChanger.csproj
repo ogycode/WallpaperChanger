@@ -88,6 +88,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controlls\ColorSwitchButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controlls\FavoritePic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -100,6 +104,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Core\Source\FlickrSource\FlickrSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -107,6 +115,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Controlls\ColorSwitchButton.xaml.cs">
+      <DependentUpon>ColorSwitchButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controlls\FavoritePic.xaml.cs">
       <DependentUpon>FavoritePic.xaml</DependentUpon>
@@ -128,6 +139,9 @@
     <Compile Include="Core\Source\Bing\RootObject.cs" />
     <Compile Include="Core\Source\Bing\Tooltips.cs" />
     <Compile Include="Core\Source\FlickrSource\Finder.cs" />
+    <Compile Include="Core\Source\FlickrSource\FlickrSettings.xaml.cs">
+      <DependentUpon>FlickrSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Core\Source\Unsplash\Unsplash.cs" />
     <Compile Include="Core\Style.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -204,6 +218,17 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\picture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\blackandwhite.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\depthoffield.png" />
+    <Resource Include="Assets\minimalism.png" />
+    <Resource Include="Assets\pattern.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\flickr.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

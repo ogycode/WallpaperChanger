@@ -690,5 +690,10 @@ namespace WallpaperChanger
             SystemParametersInfo(SPI_SETDESKWALLPAPER, 1, System.IO.Path.Combine(System.IO.Path.GetTempPath(), "wallpaper.bmp"), SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
         }
         private void btnStyleHelpClick(object sender, RoutedEventArgs e) => ShowToast(Lang["MsgInfoTitle"], string.Format(Lang["MsgInfoStyle"], VERSION));
+
+        private void btnSetupSourceClick(object sender, RoutedEventArgs e)
+        {
+            new Core.Source.FlickrSource.FlickrSettings().Show();
+        }
     }
 }

@@ -1,0 +1,90 @@
+﻿<Window 
+        x:Name="window"
+        xmlns:Controlls="clr-namespace:WallpaperChanger.Controlls"  
+        x:Class="WallpaperChanger.Core.Source.FlickrSource.FlickrSettings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WallpaperChanger.Core.Source.FlickrSource"
+        mc:Ignorable="d"
+        Title="MessageWindow" 
+        WindowStyle="None"  
+        ResizeMode="NoResize" 
+        SizeToContent="WidthAndHeight" 
+        WindowStartupLocation="CenterScreen" 
+        Icon="/WallpaperChanger;component/Assets/flickr.png" >
+    <Border x:Name="brd" BorderThickness="1" BorderBrush="#FF007ACC" MaxWidth="640" MaxHeight="400">
+        <Grid Background="#FF2D2D30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32px"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid x:Name="gridTitle" Background="#FF181818" MouseDown="DragWindow">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="32px"/>
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0" Source="{Binding Icon, ElementName=window}" Margin="6"/>
+                <TextBlock Grid.Column="1" Text="{Binding Title, ElementName=window, FallbackValue=window}" Foreground="#FFF0EFF1" VerticalAlignment="Center" Margin="0" HorizontalAlignment="Center" FontSize="14"/>
+                <Button x:Name="btnCloseWinodw" Grid.Column="4" FontFamily="Segoe MDL2 Assets" Content="&#xE711;" Width="35" Height="35" HorizontalAlignment="Center" VerticalAlignment="Center" Click="btnCloseWinodwClick"/>
+            </Grid>
+            <Grid Grid.Row="1" Margin="15,10,15,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150px"/>
+                    <ColumnDefinition Width="260px"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="tbTagInfo" Text="tag info" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" Foreground="WhiteSmoke"/>
+                <TextBlock x:Name="tbAddTagLabel" Text="add your tag" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Foreground="WhiteSmoke" FontSize="14"/>
+                <TextBox x:Name="tbAddTag" Grid.Row="1" Grid.Column="1" Width="250" Height="30" Margin="0" TextWrapping="NoWrap"/>
+                <Button x:Name="btnAddTag" Grid.Row="1" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Content="&#xE710;" HorizontalAlignment="Left" VerticalAlignment="Center" Width="{Binding Height, ElementName=cbSource}" Height="{Binding Height, ElementName=cbSource}" FontSize="10" Margin="0"/>
+
+                <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,10,0,0" >
+                    <TextBlock x:Name="tbColorLabel" Text="colors"  VerticalAlignment="Center" Foreground="WhiteSmoke" FontSize="14"/>
+
+                    <Controlls:ColorSwitchButton Color="#FF2000" Sign="&#xF16C;" SignColor="WhiteSmoke" SizeWidth="24" SizeHeight="24" SignSize="24" Margin="10,0,0,0" />
+                    <Controlls:ColorSwitchButton Color="#A24615" Sign="&#xF16C;" SignColor="WhiteSmoke" SizeWidth="24" SizeHeight="24" SignSize="24" Margin="5,0,0,0" />
+                    <Controlls:ColorSwitchButton Color="#FF7C00" Sign="&#xF16C;" SignColor="WhiteSmoke" SizeWidth="24" SizeHeight="24" SignSize="24" Margin="5,0,0,0" />
+                    <Controlls:ColorSwitchButton Color="#FF9F9C" Sign="&#xF16C;" SignColor="WhiteSmoke" SizeWidth="24" SizeHeight="24" SignSize="24" Margin="5,0,0,0" />
+                    <Controlls:ColorSwitchButton Color="#FFFA00" Sign="&#xF16C;" SignColor="Black" SizeWidth="24" SizeHeight="24" SignSize="24" Margin="5,0,0,0" />
+                    <Controlls:ColorSwitchButton Color="#FFCF00" Sign="&#xF16C;" SignColor="WhiteSmoke" SizeWidth="24" SizeHeight="24" SignSize="24" Margin="5,0,0,0" />
+                    <Controlls:ColorSwitchButton Color="#90E200" Sign="&#xF16C;" SignColor="WhiteSmoke" SizeWidth="24" SizeHeight="24" SignSize="24" Margin="5,0,0,0" />
+                    <Controlls:ColorSwitchButton Color="#00AB00" Sign="&#xF16C;" SignColor="WhiteSmoke" SizeWidth="24" SizeHeight="24" SignSize="24" Margin="5,0,0,0" />
+                    <Controlls:ColorSwitchButton Color="#00B2D4" Sign="&#xF16C;" SignColor="WhiteSmoke" SizeWidth="24" SizeHeight="24" SignSize="24" Margin="5,0,0,0" />
+                    <Controlls:ColorSwitchButton Color="#0062C6" Sign="&#xF16C;" SignColor="WhiteSmoke" SizeWidth="24" SizeHeight="24" SignSize="24" Margin="5,0,0,0" />
+                    <Controlls:ColorSwitchButton Color="#8C20BA" Sign="&#xF16C;" SignColor="WhiteSmoke" SizeWidth="24" SizeHeight="24" SignSize="24" Margin="5,0,0,0" />
+                    <Controlls:ColorSwitchButton Color="#F52394" Sign="&#xF16C;" SignColor="WhiteSmoke" SizeWidth="24" SizeHeight="24" SignSize="24" Margin="5,0,0,0" />
+                    <Controlls:ColorSwitchButton Color="#FFFFFF" Sign="&#xF16C;" SignColor="Black" SizeWidth="24" SizeHeight="24" SignSize="24" Margin="5,0,0,0" />
+                    <Controlls:ColorSwitchButton Color="#7C7C7C" Sign="&#xF16C;" SignColor="WhiteSmoke" SizeWidth="24" SizeHeight="24" SignSize="24" Margin="5,0,0,0" />
+                    <Controlls:ColorSwitchButton Color="#000000" Sign="&#xF16C;" SignColor="WhiteSmoke" SizeWidth="24" SizeHeight="24" SignSize="24" Margin="5,0,0,0" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,10,0,0" >
+                    <TextBlock x:Name="tbSpecialLabel" Text="special" MinWidth="150"  VerticalAlignment="Center" Foreground="WhiteSmoke" FontSize="14"/>
+
+                    <Controlls:ColorSwitchButton Color="Transparent" Sign="&#xE735;" SignColor="#FFCF00" SizeWidth="48" SizeHeight="24" SignSize="24" Margin="10,0,0,0" SpecialImage="/WallpaperChanger;component/Assets/blackandwhite.png" />
+                    <Controlls:ColorSwitchButton Color="Transparent" Sign="&#xE735;" SignColor="#FFCF00" SizeWidth="48" SizeHeight="24" SignSize="24" Margin="5,0,0,0" SpecialImage="/WallpaperChanger;component/Assets/depthoffield.png" />
+                    <Controlls:ColorSwitchButton Color="Transparent" Sign="&#xE735;" SignColor="#FFCF00" SizeWidth="48" SizeHeight="24" SignSize="24" Margin="5,0,0,0" SpecialImage="/WallpaperChanger;component/Assets/minimalism.png" />
+                    <Controlls:ColorSwitchButton Color="Transparent" Sign="&#xE735;" SignColor="#FFCF00" SizeWidth="48" SizeHeight="24" SignSize="24" Margin="5,0,0,0" SpecialImage="/WallpaperChanger;component/Assets/pattern.png" />
+                </StackPanel>
+
+                <Button x:Name="btnRefresh"  HorizontalAlignment="Right" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="5" Width="150" VerticalAlignment="Bottom" Margin="0,10,0,5">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE72C;" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="tbBtnRefresh" Text="refresh"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

@@ -59,7 +59,7 @@
                             <ComboBoxItem x:Name="cbFlickr" Content="flickr.com"/>
                             <ComboBoxItem x:Name="cbUnsplash" Content="unsplash.com"/>
                         </ComboBox>
-                        <Button x:Name="btnSetupSource" Grid.Row="0" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Content="&#xE713;" HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding Height, ElementName=cbSource}" Height="{Binding Height, ElementName=cbSource}" FontSize="10" Margin="10,0" Visibility="{Binding ElementName=cbSource, Path=SelectedIndex, Converter={StaticResource selectedIndexToVisibilityConvert}}"/>
+                        <Button x:Name="btnSetupSource" Grid.Row="0" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Content="&#xE713;" HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding Height, ElementName=cbSource}" Height="{Binding Height, ElementName=cbSource}" FontSize="10" Margin="10,0" Visibility="{Binding ElementName=cbSource, Path=SelectedIndex, Converter={StaticResource selectedIndexToVisibilityConvert}}" Click="btnSetupSourceClick"/>
                         <Image x:Name="imgImageThumb" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Source="Assets/picture.png"/>
                         <ScrollViewer Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="1" HorizontalScrollBarVisibility="Disabled" Margin="0">
                             <TextBlock x:Name="tbImageInfo" TextWrapping="Wrap"/>

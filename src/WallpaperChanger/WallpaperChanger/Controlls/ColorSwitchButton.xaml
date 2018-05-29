@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="WallpaperChanger.Controlls.ColorSwitchButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WallpaperChanger.Controlls"
+             mc:Ignorable="d" 
+             Width="{Binding Path=SizeWidth, Mode=TwoWay, FallbackValue=64}" 
+             Height="{Binding Path=SizeHeight, Mode=TwoWay, FallbackValue=64}"
+             ToolTip="Hello, im red">
+    <Grid x:Name="gridRoot" MouseLeftButtonDown="gridMouseLeftButtonDown" MouseLeftButtonUp="gridMouseLeftButtonUp" MouseLeave="gridMouseLeave">
+        <Grid x:Name="gridColor" Background="{Binding Path=Color, Mode=TwoWay, FallbackValue=Red}">
+            <Image x:Name="img" Source="{Binding Path=SpecialImage, Mode=TwoWay}"/>
+            <TextBlock x:Name="tbAccepts" Foreground="{Binding Path=SignColor, Mode=TwoWay, FallbackValue=WhiteSmoke}" FontFamily="Segoe MDL2 Assets" Text="{Binding Path=Sign, Mode=TwoWay, FallbackValue=&#xF16C;}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="{Binding Path=SignSize, Mode=TwoWay, FallbackValue=32}"/>
+        </Grid>
+    </Grid>
+</UserControl>
