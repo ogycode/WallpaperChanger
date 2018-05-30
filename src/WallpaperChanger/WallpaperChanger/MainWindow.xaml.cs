@@ -63,7 +63,7 @@ namespace WallpaperChanger
         }
 
         RegSettings rs;
-        Manager Lang;
+        public Manager Lang;
         Timer timer;
         System.Windows.Forms.NotifyIcon notifyIcon;
         Flickr flickr;

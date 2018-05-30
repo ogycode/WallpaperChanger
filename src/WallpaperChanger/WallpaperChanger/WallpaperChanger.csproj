@@ -104,6 +104,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controlls\TagControll.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Core\Source\FlickrSource\FlickrSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -127,6 +131,9 @@
     </Compile>
     <Compile Include="Controlls\StoreButton.xaml.cs">
       <DependentUpon>StoreButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controlls\TagControll.xaml.cs">
+      <DependentUpon>TagControll.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\ApiKeys.cs" />
     <Compile Include="Core\ApiKeysLocal.cs" />

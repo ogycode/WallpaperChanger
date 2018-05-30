@@ -18,7 +18,7 @@ namespace WallpaperChanger.Controlls
     public partial class ColorSwitchButton : UserControl
     {
         bool pressed;
-        public event Action<bool> Clicked;
+        public event Action<bool, string> Clicked;
 
         public SolidColorBrush Color
         {
@@ -66,6 +66,13 @@ namespace WallpaperChanger.Controlls
         }
         public static readonly DependencyProperty SpecialImageProperty = DependencyProperty.Register("SpecialImage", typeof(ImageSource), typeof(FavoritePic), null);
 
+        public string Code
+        {
+            get { return (string)GetValue(CodeProperty); }
+            set { SetValue(CodeProperty, value); }
+        }
+        public static readonly DependencyProperty CodeProperty = DependencyProperty.Register("Code", typeof(string), typeof(FavoritePic), null);
+
         public string Sign
         {
             get { return (string)GetValue(SignProperty); }
@@ -95,7 +102,7 @@ namespace WallpaperChanger.Controlls
             {
                 pressed = false;
                 IsSwitched = !IsSwitched;
-                Clicked?.Invoke(IsSwitched);
+                Clicked?.Invoke(IsSwitched, Code);
             }
         }
         private void gridMouseLeave(object sender, System.Windows.Input.MouseEventArgs e) => pressed = false;
