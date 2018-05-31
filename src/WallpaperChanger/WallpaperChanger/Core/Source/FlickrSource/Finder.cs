@@ -59,9 +59,9 @@ namespace WallpaperChanger.Core.Source.FlickrSource
             {
                 photos = f.PhotosSearch(ops);
             }
-            catch (Exception e)
+            catch
             {
-                throw;
+                return new Tuple<string, string, string>("www.bing.com/az/hprichbg/rb/OchaBatake_ROW10481280883_1366x768.jpg", "www.bing.com/az/hprichbg/rb/OchaBatake_ROW10481280883_400x240.jpg", "Error");
             }
 
             if (ids == null)

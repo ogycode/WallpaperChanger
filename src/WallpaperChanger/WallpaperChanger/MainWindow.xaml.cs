@@ -489,7 +489,7 @@ namespace WallpaperChanger
             }
             catch (Exception e)
             {
-
+                ShowToast(Lang["ErrorTitle"], e.Message);
             }
         }
         void UnlikeWallpaper(string original = "")
