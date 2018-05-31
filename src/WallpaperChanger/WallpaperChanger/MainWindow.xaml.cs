@@ -31,10 +31,14 @@ namespace WallpaperChanger
         private static string VERSION = $"{Assembly.GetExecutingAssembly().GetName().Version.Major}.{Assembly.GetExecutingAssembly().GetName().Version.Minor}.{Assembly.GetExecutingAssembly().GetName().Version.Revision}";
         private static string FavoriteListPath = $@"{AppDomain.CurrentDomain.BaseDirectory}\Data\favorites.json";
 
-        const string WALLPAPER_URL = "ImageUID";
-        const string WALLPAPER_THUMBNAIL = "ImageUIDThumbnail";
-        const string WALLPAPER_COPYRIGHT = "CurrentCopy";
-        const string WALLPAPER_FAVORITE_NUMBER = "FuvNum";
+        public const string WALLPAPER_URL = "ImageUID";
+        public const string WALLPAPER_THUMBNAIL = "ImageUIDThumbnail";
+        public const string WALLPAPER_COPYRIGHT = "CurrentCopy";
+        public const string WALLPAPER_FAVORITE_NUMBER = "FuvNum";
+        public const string WALLPAPER_FLICKR_TAGS = "FlickrTags";
+        public const string WALLPAPER_FLICKR_COLORS = "FlickrColors";
+        public const string WALLPAPER_FLICKR_STYLES = "FlickrStyles";
+        public const string WALLPAPER_FLICKR_TAGS_ALL = "FlickrTagsAll";
 
         public List<Favorite> FavoriteList { get; set; }
         public string FavoritePath = $@"{AppDomain.CurrentDomain.BaseDirectory}\fav";
@@ -62,8 +66,9 @@ namespace WallpaperChanger
             set => rs.SetValue("WallpaperStyle", value);
         }
 
-        RegSettings rs;
+        public RegSettings rs;
         public Manager Lang;
+
         Timer timer;
         System.Windows.Forms.NotifyIcon notifyIcon;
         Flickr flickr;
@@ -139,7 +144,13 @@ namespace WallpaperChanger
             {
                 if (CheckDate() || Update)
                 {
-                    var imgData = Core.Source.FlickrSource.Finder.FindAsync(w, h, rs.GetValue(WALLPAPER_URL, ""), "sex,space,nature,landscape,beautiful,amazing").Result;
+                    var imgData = Core.Source.FlickrSource.Finder.FindAsync(w,
+                                                                            h,
+                                                                            rs.GetValue(WALLPAPER_URL, ""),
+                                                                            rs.GetValue(WALLPAPER_FLICKR_TAGS, "nature"),
+                                                                            rs.GetValue(WALLPAPER_FLICKR_TAGS_ALL, false) ? TagMode.AnyTag : TagMode.AllTags,
+                                                                            GetFlickrColors(),
+                                                                            GetFlickrStyles()).Result;
 
                     rs[WALLPAPER_URL] = imgData.Item1;
                     rs[WALLPAPER_THUMBNAIL] = imgData.Item2;
@@ -373,6 +384,34 @@ namespace WallpaperChanger
 
             Windows.UI.Notifications.ToastNotification toast = new Windows.UI.Notifications.ToastNotification(doc);
             Windows.UI.Notifications.ToastNotificationManager.CreateToastNotifier().Show(toast);
+        }
+        List<string> GetFlickrColors()
+        {
+            if (string.IsNullOrWhiteSpace(rs.GetValue(WALLPAPER_FLICKR_COLORS, "")))
+                return null;
+
+            return rs.GetValue<string>(WALLPAPER_FLICKR_COLORS).Split(',').ToList<string>();
+        }
+        List<FlickrNet.Style> GetFlickrStyles()
+        {
+            if (rs.GetValue(WALLPAPER_FLICKR_STYLES, "0,0,0,0") == "0,0,0,0")
+                return null;
+
+            var a = new List<FlickrNet.Style>();
+
+            if (rs.GetValue<string>(WALLPAPER_FLICKR_STYLES)[0] == '1')
+                a.Add(FlickrNet.Style.BlackAndWhite);
+
+            if (rs.GetValue<string>(WALLPAPER_FLICKR_STYLES)[2] == '1')
+                a.Add(FlickrNet.Style.DepthOfField);
+
+            if (rs.GetValue<string>(WALLPAPER_FLICKR_STYLES)[4] == '1')
+                a.Add(FlickrNet.Style.Minimalism);
+
+            if (rs.GetValue<string>(WALLPAPER_FLICKR_STYLES)[6] == '1')
+                a.Add(FlickrNet.Style.Pattern);
+
+            return a;
         }
 
         //favorites
@@ -686,14 +725,17 @@ namespace WallpaperChanger
 
             WallpaperStyle = cbStyle.SelectedIndex;
             WriteRegistry((Core.Style)WallpaperStyle);
-            
+
             SystemParametersInfo(SPI_SETDESKWALLPAPER, 1, System.IO.Path.Combine(System.IO.Path.GetTempPath(), "wallpaper.bmp"), SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
         }
         private void btnStyleHelpClick(object sender, RoutedEventArgs e) => ShowToast(Lang["MsgInfoTitle"], string.Format(Lang["MsgInfoStyle"], VERSION));
-
         private void btnSetupSourceClick(object sender, RoutedEventArgs e)
         {
-            new Core.Source.FlickrSource.FlickrSettings().Show();
+            var item = new Core.Source.FlickrSource.FlickrSettings();
+            item.FlickrSettingsClosed += ItemFlickrSettingsClosed;
+
+            item.ShowDialog();
         }
+        private void ItemFlickrSettingsClosed() => SetupWallpaper(true);
     }
 }

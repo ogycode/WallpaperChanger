@@ -17,7 +17,7 @@ namespace WallpaperChanger.Core.Source.FlickrSource
         static List<string> ids;
         static string UsedListPath = $@"{AppDomain.CurrentDomain.BaseDirectory}\Data\usedflikr.json";
 
-        public static Task<Tuple<string, string, string>> FindAsync(double w, double h, string l, string tags)
+        public static Task<Tuple<string, string, string>> FindAsync(double w, double h, string l, string tags, TagMode mode = TagMode.None, List<string> colors = null, List<FlickrNet.Style> styles = null)
         {
             return Task.Factory.StartNew(() =>
             {
@@ -31,9 +31,9 @@ namespace WallpaperChanger.Core.Source.FlickrSource
                 var options = new PhotoSearchOptions
                 {
                     Tags = tags,
-                    TagMode = TagMode.AnyTag,
-                    //ColorCodes = new List<string>() { "6" },
-                    Styles = new List<FlickrNet.Style>() { FlickrNet.Style.BlackAndWhite },
+                    TagMode = mode,
+                    ColorCodes = colors,
+                    Styles = styles,
                     PerPage = 20,
                     Page = 1,
                     SafeSearch = SafetyLevel.None,
@@ -64,7 +64,8 @@ namespace WallpaperChanger.Core.Source.FlickrSource
                 throw;
             }
 
-
+            if (ids == null)
+                ids = new List<string>();
 
             foreach (var item in photos)
             {

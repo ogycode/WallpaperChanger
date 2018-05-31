@@ -4,9 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WallpaperChanger.Controlls"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
+             mc:Ignorable="d" >
+    <Grid Height="16" VerticalAlignment="Center" Background="{Binding Path=TabBackground, Mode=TwoWay, FallbackValue=Teal}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="16px"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding Path=TagText, Mode=TwoWay, FallbackValue=text}" Foreground="WhiteSmoke" Grid.Column="0" Margin="5,0,5,0" FontSize="11" VerticalAlignment="Center" MaxWidth="220"/>
+        <Border Grid.Column="0" HorizontalAlignment="Right" BorderThickness="1,0,0,0" BorderBrush="WhiteSmoke" Margin="0,2,-1,2"/>
+        <Grid Grid.Column="1"  MouseLeftButtonDown="gridMouseLeftButtonDown" MouseLeftButtonUp="gridMouseLeftButtonUp" MouseLeave="gridMouseLeave">
+            <Grid Background="Black" Opacity="0.01"/>
+            <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE711;" Foreground="WhiteSmoke" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
     </Grid>
 </UserControl>

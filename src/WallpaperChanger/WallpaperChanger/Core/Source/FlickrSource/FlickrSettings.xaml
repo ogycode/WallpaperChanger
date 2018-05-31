@@ -14,7 +14,7 @@
         SizeToContent="WidthAndHeight" 
         WindowStartupLocation="CenterScreen" 
         Icon="/WallpaperChanger;component/Assets/flickr.png" Loaded="windowLoaded" >
-    <Border x:Name="brd" BorderThickness="1" BorderBrush="#FF007ACC" MaxWidth="640" MaxHeight="400">
+    <Border x:Name="brd" BorderThickness="1" BorderBrush="#FF007ACC" Width="510" MaxHeight="640">
         <Grid Background="#FF2D2D30">
             <Grid.RowDefinitions>
                 <RowDefinition Height="32px"/>
@@ -34,6 +34,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -47,9 +48,15 @@
                 <TextBlock x:Name="tbTagInfo" Text="settings info" MaxWidth="477" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" Foreground="WhiteSmoke" TextWrapping="Wrap" Margin="0,0,0,15"/>
                 <TextBlock x:Name="tbAddTagLabel" Text="add your tag" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Foreground="WhiteSmoke" FontSize="14"/>
                 <TextBox x:Name="tbAddTag" Grid.Row="1" Grid.Column="1" Width="250" Height="30" Margin="0" TextWrapping="NoWrap"/>
-                <Button x:Name="btnAddTag" Grid.Row="1" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Content="&#xE710;" HorizontalAlignment="Left" VerticalAlignment="Center" Width="{Binding Height, ElementName=cbSource}" Height="{Binding Height, ElementName=cbSource}" FontSize="10" Margin="0"/>
+                <Button x:Name="btnAddTag" Grid.Row="1" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Content="&#xE710;" HorizontalAlignment="Left" VerticalAlignment="Center" Width="{Binding Height, ElementName=cbSource}" Height="{Binding Height, ElementName=cbSource}" FontSize="10" Margin="0" Click="btnAddTagClick"/>
 
-                <StackPanel x:Name="spColorButtons" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,10,0,0" >
+                <CheckBox x:Name="cbAllTags" Foreground="WhiteSmoke" IsChecked="{Binding AllTags, Mode=TwoWay, FallbackValue=false}" Content="all tags" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" Margin="0,5,0,0"/>
+
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="5,0,0,5" MaxHeight="200">
+                    <WrapPanel x:Name="wpTags" Width="428" HorizontalAlignment="Left" />
+                </ScrollViewer>
+
+                <StackPanel x:Name="spColorButtons" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,10,0,0" >
                     <TextBlock x:Name="tbColorLabel" Text="colors"  VerticalAlignment="Center" Foreground="WhiteSmoke" FontSize="14"/>
 
                     <Controlls:ColorSwitchButton Code="0" Color="#FF2000" Sign="&#xF16C;" SignColor="WhiteSmoke" SizeWidth="24" SizeHeight="24" SignSize="24" Margin="10,0,0,0" Clicked="ColorButtonClicked" />
@@ -69,16 +76,16 @@
                     <Controlls:ColorSwitchButton Code="e" Color="#000000" Sign="&#xF16C;" SignColor="WhiteSmoke" SizeWidth="24" SizeHeight="24" SignSize="24" Margin="5,0,0,0" Clicked="ColorButtonClicked"/>
                 </StackPanel>
 
-                <StackPanel x:Name="spSpecailas" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,10,0,0" >
+                <StackPanel x:Name="spSpecailas" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="0,10,0,0" >
                     <TextBlock x:Name="tbSpecialLabel" Text="special" MinWidth="150"  VerticalAlignment="Center" Foreground="WhiteSmoke" FontSize="14"/>
 
                     <Controlls:ColorSwitchButton x:Name="csbBlacnAndWhite" Code="blackandwhite" Color="Transparent" Sign="&#xE735;" SignColor="#FFCF00" SizeWidth="48" SizeHeight="24" SignSize="24" Margin="10,0,0,0" SpecialImage="/WallpaperChanger;component/Assets/blackandwhite.png" Clicked="btnSpecialClick" />
-                    <Controlls:ColorSwitchButton Code="depthoffield" Color="Transparent" Sign="&#xE735;" SignColor="#FFCF00" SizeWidth="48" SizeHeight="24" SignSize="24" Margin="5,0,0,0" SpecialImage="/WallpaperChanger;component/Assets/depthoffield.png" Clicked="btnSpecialClick"/>
-                    <Controlls:ColorSwitchButton Code="minimalism" Color="Transparent" Sign="&#xE735;" SignColor="#FFCF00" SizeWidth="48" SizeHeight="24" SignSize="24" Margin="5,0,0,0" SpecialImage="/WallpaperChanger;component/Assets/minimalism.png" Clicked="btnSpecialClick"/>
-                    <Controlls:ColorSwitchButton Code="pattern" Color="Transparent" Sign="&#xE735;" SignColor="#FFCF00" SizeWidth="48" SizeHeight="24" SignSize="24" Margin="5,0,0,0" SpecialImage="/WallpaperChanger;component/Assets/pattern.png" Clicked="btnSpecialClick"/>
+                    <Controlls:ColorSwitchButton x:Name="csbdepthoffield" Code="depthoffield" Color="Transparent" Sign="&#xE735;" SignColor="#FFCF00" SizeWidth="48" SizeHeight="24" SignSize="24" Margin="5,0,0,0" SpecialImage="/WallpaperChanger;component/Assets/depthoffield.png" Clicked="btnSpecialClick"/>
+                    <Controlls:ColorSwitchButton x:Name="csbminimalism" Code="minimalism" Color="Transparent" Sign="&#xE735;" SignColor="#FFCF00" SizeWidth="48" SizeHeight="24" SignSize="24" Margin="5,0,0,0" SpecialImage="/WallpaperChanger;component/Assets/minimalism.png" Clicked="btnSpecialClick"/>
+                    <Controlls:ColorSwitchButton x:Name="csbpattern" Code="pattern" Color="Transparent" Sign="&#xE735;" SignColor="#FFCF00" SizeWidth="48" SizeHeight="24" SignSize="24" Margin="5,0,0,0" SpecialImage="/WallpaperChanger;component/Assets/pattern.png" Clicked="btnSpecialClick"/>
                 </StackPanel>
 
-                <Button x:Name="btnRefresh"  HorizontalAlignment="Right" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="5" Width="150" VerticalAlignment="Bottom" Margin="0,10,0,5">
+                <Button x:Name="btnApply"  HorizontalAlignment="Right" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="6" Width="150" VerticalAlignment="Bottom" Margin="0,10,0,5" Click="btnApplyClick">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE8FB;" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <TextBlock x:Name="tbAcceptButton" Text="apply"/>
