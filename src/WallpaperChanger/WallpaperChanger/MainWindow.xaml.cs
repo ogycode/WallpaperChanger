@@ -79,11 +79,17 @@ namespace WallpaperChanger
 
         public MainWindow()
         {
-            rs = new RegSettings("WallpaperChanger2");
-            Lang = new Manager($@"{AppDomain.CurrentDomain.BaseDirectory}\Data\locales.ini");
-            Lang.Load();
-            Lang.SetCurrent(rs.GetValue("LanguageCode", "en-us"));
-            Lang.LanguageChanged += LangLanguageChanged;
+            try { rs = new RegSettings(ID); }
+            catch (Exception e) { new MessageWindow("Error", e.Message, MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog(); Application.Current.Shutdown(1); }
+
+            try
+            {
+                Lang = new Manager($@"{AppDomain.CurrentDomain.BaseDirectory}\Data\locales.ini");
+                Lang.Load();
+                Lang.SetCurrent(rs.GetValue("LanguageCode", "en-us"));
+                Lang.LanguageChanged += LangLanguageChanged;
+            }
+            catch (Exception e) { new MessageWindow("Error", e.Message, MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog(); Application.Current.Shutdown(1); }
 
             LoadFavorite();
 
@@ -99,6 +105,8 @@ namespace WallpaperChanger
         //wallpaper
         async void SetupWallpaper(bool Update = false)
         {
+            btnRefresh.IsEnabled = false;
+
             switch (rs.GetValue("Source", 1))
             {
                 case 3:
@@ -136,6 +144,8 @@ namespace WallpaperChanger
 
                     SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute));
                 }
+                else
+                    btnRefresh.IsEnabled = true;
             });
         }
         async Task SetupallpaperFlickr(bool Update = false)
@@ -161,6 +171,8 @@ namespace WallpaperChanger
 
                     SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute));
                 }
+                else
+                    btnRefresh.IsEnabled = true;
             });
         }
         async Task SetupWallpaperFavorite(bool Update)
@@ -190,6 +202,8 @@ namespace WallpaperChanger
 
                     SetupImage(new Uri(rs.GetValue<string>(WALLPAPER_URL), UriKind.RelativeOrAbsolute));
                 }
+                else
+                    btnRefresh.IsEnabled = true;
             });
         }
         void SetupWallpaperLeave(bool Update)
@@ -209,6 +223,7 @@ namespace WallpaperChanger
                 if (!GetConnection())
                 {
                     //msg
+                    btnRefresh.IsEnabled = true;
                     return;
                 }
 
@@ -228,6 +243,8 @@ namespace WallpaperChanger
                         SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute));
                     }
                 }
+                else
+                    btnRefresh.IsEnabled = true;
             });
         }
         void WriteDate()
@@ -305,6 +322,11 @@ namespace WallpaperChanger
                 btnLike.IsSwitched = (from i in FavoriteList
                                       where i.Original == rs.GetValue<string>(WALLPAPER_URL)
                                       select i).Count() > 0;
+            });
+
+            btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+            {
+                btnRefresh.IsEnabled = true;
             });
         }
 
@@ -417,44 +439,56 @@ namespace WallpaperChanger
         //favorites
         void SaveFavorite()
         {
-            if (File.Exists(FavoriteListPath))
-                File.Delete(FavoriteListPath);
+            try
+            {
+                if (File.Exists(FavoriteListPath))
+                    File.Delete(FavoriteListPath);
 
-            using (StreamWriter sw = File.CreateText(FavoriteListPath))
-                sw.Write(JsonConvert.SerializeObject(FavoriteList));
+                using (StreamWriter sw = File.CreateText(FavoriteListPath))
+                    sw.Write(JsonConvert.SerializeObject(FavoriteList));
+            }
+            catch (Exception e) { new MessageWindow(Lang["ErrorTitle"], e.Message, MessageWindowIcon.Error, MessageWindowIconColor.Red).Show(); }
         }
         void LoadFavorite()
         {
-            if (File.Exists(FavoriteListPath))
-                using (StreamReader sr = File.OpenText(FavoriteListPath))
-                    FavoriteList = JsonConvert.DeserializeObject<List<Favorite>>(sr.ReadToEnd());
-            else
-                FavoriteList = new List<Favorite>();
+            try
+            {
+                if (File.Exists(FavoriteListPath))
+                    using (StreamReader sr = File.OpenText(FavoriteListPath))
+                        FavoriteList = JsonConvert.DeserializeObject<List<Favorite>>(sr.ReadToEnd());
+                else
+                    FavoriteList = new List<Favorite>();
 
-            foreach (var item in Directory.GetFiles(FavoritePath))
-                if (FavoriteList.FirstOrDefault((x) => x.ThumbnailLocale == item) == null)
-                    try { File.Delete(item); }
-                    catch { }
+                foreach (var item in Directory.GetFiles(FavoritePath))
+                    if (FavoriteList.FirstOrDefault((x) => x.ThumbnailLocale == item) == null)
+                        try { File.Delete(item); }
+                        catch { }
+            }
+            catch (Exception e) { new MessageWindow(Lang["ErrorTitle"], e.Message, MessageWindowIcon.Error, MessageWindowIconColor.Red).Show(); }
         }
         void LoadFavoriteToPanel()
         {
-            wpFavorites.Children.Clear();
-
-            foreach (var item in FavoriteList)
+            try
             {
-                Controlls.FavoritePic pf = new Controlls.FavoritePic()
+                wpFavorites.Children.Clear();
+
+                foreach (var item in FavoriteList)
                 {
-                    Original = item.Original,
-                    Wallpaper = item.ThumbnailLocale,
-                    Copyright = item.Copyright,
-                    Margin = new Thickness(7)
-                };
+                    Controlls.FavoritePic pf = new Controlls.FavoritePic()
+                    {
+                        Original = item.Original,
+                        Wallpaper = item.ThumbnailLocale,
+                        Copyright = item.Copyright,
+                        Margin = new Thickness(7)
+                    };
 
-                pf.ApplyEvent += PfApplyEvent;
-                pf.DeleteEvent += PfDeleteEvent;
+                    pf.ApplyEvent += PfApplyEvent;
+                    pf.DeleteEvent += PfDeleteEvent;
 
-                wpFavorites.Children.Add(pf);
+                    wpFavorites.Children.Add(pf);
+                }
             }
+            catch (Exception e) { new MessageWindow(Lang["ErrorTitle"], e.Message, MessageWindowIcon.Error, MessageWindowIconColor.Red).Show(); }
         }
         string GetFavoritePath(string original)
         {
@@ -553,37 +587,45 @@ namespace WallpaperChanger
         //init
         void SetupTimer()
         {
-            timer = new Timer(GetMilisec(TimerMinutes));
-            timer.Elapsed += TimerElapsed;
-            timer.Enabled = true;
+            try
+            {
+                timer = new Timer(GetMilisec(TimerMinutes));
+                timer.Elapsed += TimerElapsed;
+                timer.Enabled = true;
+            }
+            catch (Exception e) { new MessageWindow(Lang["ErrorTitle"], e.Message, MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog(); Application.Current.Shutdown(1); }
         }
         void SetupNotifyIcon(bool Update = false)
         {
-            System.Windows.Forms.ContextMenu contextMenu = new System.Windows.Forms.ContextMenu();
-            contextMenu.MenuItems.Add(Lang["nfOpenWindow"], (sh, eh) => { Show(); tiCurrent.IsSelected = true; });
-            contextMenu.MenuItems.Add(Lang["nfOpenFavorite"], (sh, eh) => { Show(); tiFavorite.IsSelected = true; });
-            contextMenu.MenuItems.Add(Lang["nfOpenSettings"], (sh, eh) => { Show(); tiOptions.IsSelected = true; });
-            contextMenu.MenuItems.Add("-");
-            contextMenu.MenuItems.Add(Lang["nfRefresh"], (sh, eh) => SetupWallpaper(true));
-            contextMenu.MenuItems.Add(Lang["nfLeave"], (sh, eh) => cbSource.SelectedIndex = -1);
-            contextMenu.MenuItems.Add(Lang["nfAddFav"], (sh, eh) => LikeWallpaper());
-            contextMenu.MenuItems.Add("-");
-            contextMenu.MenuItems.Add(Lang["nfExit"], (sh, eh) => Close());
-
-            if (Update)
-                notifyIcon.ContextMenu = contextMenu;
-            else
+            try
             {
-                notifyIcon = new System.Windows.Forms.NotifyIcon
-                {
-                    Text = "Wallpaper Changer 2",
-                    Icon = Properties.Resources.photo,
-                    Visible = true,
-                    ContextMenu = contextMenu
-                };
+                System.Windows.Forms.ContextMenu contextMenu = new System.Windows.Forms.ContextMenu();
+                contextMenu.MenuItems.Add(Lang["nfOpenWindow"], (sh, eh) => { Show(); tiCurrent.IsSelected = true; });
+                contextMenu.MenuItems.Add(Lang["nfOpenFavorite"], (sh, eh) => { Show(); tiFavorite.IsSelected = true; });
+                contextMenu.MenuItems.Add(Lang["nfOpenSettings"], (sh, eh) => { Show(); tiOptions.IsSelected = true; });
+                contextMenu.MenuItems.Add("-");
+                contextMenu.MenuItems.Add(Lang["nfRefresh"], (sh, eh) => SetupWallpaper(true));
+                contextMenu.MenuItems.Add(Lang["nfLeave"], (sh, eh) => cbSource.SelectedIndex = -1);
+                contextMenu.MenuItems.Add(Lang["nfAddFav"], (sh, eh) => LikeWallpaper());
+                contextMenu.MenuItems.Add("-");
+                contextMenu.MenuItems.Add(Lang["nfExit"], (sh, eh) => Close());
 
-                notifyIcon.DoubleClick += (sh, eh) => Show();
+                if (Update)
+                    notifyIcon.ContextMenu = contextMenu;
+                else
+                {
+                    notifyIcon = new System.Windows.Forms.NotifyIcon
+                    {
+                        Text = "Wallpaper Changer 2",
+                        Icon = Properties.Resources.photo,
+                        Visible = true,
+                        ContextMenu = contextMenu
+                    };
+
+                    notifyIcon.DoubleClick += (sh, eh) => Show();
+                }
             }
+            catch (Exception e) { new MessageWindow(Lang["ErrorTitle"], e.Message, MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog(); Application.Current.Shutdown(1); }
         }
         Task SetupLocale()
         {
