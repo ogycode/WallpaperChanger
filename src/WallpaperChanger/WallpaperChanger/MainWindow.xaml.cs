@@ -1,4 +1,26 @@
-﻿using FlickrNet;
+﻿/*  Error codes:
+ *  0001 - Init RegSettings
+ *  0002 - Init Language Manager
+ *  0003 - LoadFavorite
+ *  0004 - SetupTimer
+ *  0005 - SetupNotifyIcon
+ *  0006 - SetupLocale
+ *  0007 - GetStartup
+ *  0008 - SetStartup
+ *  0009 - SaveFavorite
+ *  0010 - LoadFavoriteToPanel
+ *  0011 - GetFavoritePath
+ *  0012 - LikeWallpaper
+ *  0013 - UnlikeWallpaper
+ *  0014 - SetupWallpaperUnsplash
+ *  0015 - SetupallpaperFlickr
+ *  0016 - SetupWallpaperFavorite
+ *  0017 - SetupWallpaperLeave
+ *  0018 - SetupWallpaperBing
+ *  0019 - SetupImage
+ *  0020 - ShowToast
+*/
+using FlickrNet;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
@@ -24,12 +46,12 @@ namespace WallpaperChanger
 {
     public partial class MainWindow : Window
     {
-        private static string ID = "WallpaperChanger2";
-        private static string AUTHOR = "Verloka Vadim";
-        private static string WEBSITE_AUTHOR = "verloka.github.io";
-        private static string WEBSITE_APP = "changer.pp.ua";
-        private static string VERSION = $"{Assembly.GetExecutingAssembly().GetName().Version.Major}.{Assembly.GetExecutingAssembly().GetName().Version.Minor}.{Assembly.GetExecutingAssembly().GetName().Version.Revision}";
-        private static string FavoriteListPath = $@"{AppDomain.CurrentDomain.BaseDirectory}\Data\favorites.json";
+        static string ID = "WallpaperChanger2";
+        static string AUTHOR = "Verloka Vadim";
+        static string WEBSITE_AUTHOR = "verloka.github.io";
+        static string WEBSITE_APP = "changer.pp.ua";
+        static string VERSION = $"{Assembly.GetExecutingAssembly().GetName().Version.Major}.{Assembly.GetExecutingAssembly().GetName().Version.Minor}.{Assembly.GetExecutingAssembly().GetName().Version.Revision}";
+        static string FavoriteListPath = $@"{AppDomain.CurrentDomain.BaseDirectory}\Data\favorites.json";
 
         public const string WALLPAPER_URL = "ImageUID";
         public const string WALLPAPER_THUMBNAIL = "ImageUIDThumbnail";
@@ -46,7 +68,7 @@ namespace WallpaperChanger
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
 
-        const int SPI_SETDESKWALLPAPER = 0x14;
+        const int SPI_SETDESKWALLPAPER = 20;
         const int SPIF_UPDATEINIFILE = 0x01;
         const int SPIF_SENDWININICHANGE = 0x02;
 
@@ -65,6 +87,16 @@ namespace WallpaperChanger
             get => rs.GetValue("WallpaperStyle", 0);
             set => rs.SetValue("WallpaperStyle", value);
         }
+        public bool ShowErrorMessages
+        {
+            get => rs.GetValue("ShowErrorMessages", true);
+            set => rs.SetValue("ShowErrorMessages", value);
+        }
+        public bool ShowUpdateWallpaerToast
+        {
+            get => rs.GetValue("ShowUpdateWallpaerToast", true);
+            set => rs.SetValue("ShowUpdateWallpaerToast", value);
+        }
 
         public RegSettings rs;
         public Manager Lang;
@@ -72,16 +104,34 @@ namespace WallpaperChanger
         Timer timer;
         System.Windows.Forms.NotifyIcon notifyIcon;
         Flickr flickr;
-
-        double w = SystemParameters.VirtualScreenWidth;
-        double h = SystemParameters.VirtualScreenHeight;
         int TimerMinutes = 30;
 
         public MainWindow()
         {
-            try { rs = new RegSettings(ID); }
-            catch (Exception e) { new MessageWindow("Error", e.Message, MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog(); Application.Current.Shutdown(1); }
+            InitRegSettings();
+            InitLangManager();
+            LoadFavorite();
+            InitializeComponent();
 
+            DataContext = this;
+
+            SetupTimer();
+            SetupNotifyIcon();
+            SetupWallpaper(true);
+        }
+
+        //init
+        void InitRegSettings()
+        {
+            try { rs = new RegSettings(ID); }
+            catch
+            {
+                new MessageWindow("Error", "Error code is 0001", MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                Application.Current.Shutdown(1);
+            }
+        }
+        void InitLangManager()
+        {
             try
             {
                 Lang = new Manager($@"{AppDomain.CurrentDomain.BaseDirectory}\Data\locales.ini");
@@ -89,245 +139,347 @@ namespace WallpaperChanger
                 Lang.SetCurrent(rs.GetValue("LanguageCode", "en-us"));
                 Lang.LanguageChanged += LangLanguageChanged;
             }
-            catch (Exception e) { new MessageWindow("Error", e.Message, MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog(); Application.Current.Shutdown(1); }
-
-            LoadFavorite();
-
-            InitializeComponent();
-            DataContext = this;
-
-            SetupTimer();
-            SetupNotifyIcon();
-
-            SetupWallpaper(true);
-        }
-
-        //wallpaper
-        async void SetupWallpaper(bool Update = false)
-        {
-            btnRefresh.IsEnabled = false;
-
-            switch (rs.GetValue("Source", 1))
+            catch
             {
-                case 3:
-                    await SetupWallpaperUnsplash(Update);
-                    break;
-                case 2:
-                    await SetupallpaperFlickr(Update);
-                    break;
-                default:
-                case 1:
-                    await SetupWallpaperBing(Update);
-                    break;
-                case 0:
-                    await SetupWallpaperFavorite(Update);
-                    break;
-                case -1:
-                    SetupWallpaperLeave(Update);
-                    break;
+                new MessageWindow("Error", "Error code is 0002", MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                Application.Current.Shutdown(2);
             }
         }
-        async Task SetupWallpaperUnsplash(bool Update = false)
-        {
-            Task.Factory.StartNew(() =>
-            {
-                if (CheckDate() || Update)
-                {
-                    var imgData = Core.Source.Unsplash.Unsplash.Get(w, h);
-
-                    rs[WALLPAPER_URL] = imgData.Item1;
-                    rs[WALLPAPER_THUMBNAIL] = imgData.Item2;
-                    rs[WALLPAPER_COPYRIGHT] = Lang["UnsplashCopy"];
-
-                    WriteDate();
-                    WriteThumbCopy(imgData.Item1, Lang["UnsplashCopy"]);
-
-                    SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute));
-                }
-                else
-                    btnRefresh.IsEnabled = true;
-            });
-        }
-        async Task SetupallpaperFlickr(bool Update = false)
-        {
-            Task.Factory.StartNew(() =>
-            {
-                if (CheckDate() || Update)
-                {
-                    var imgData = Core.Source.FlickrSource.Finder.FindAsync(w,
-                                                                            h,
-                                                                            rs.GetValue(WALLPAPER_URL, ""),
-                                                                            rs.GetValue(WALLPAPER_FLICKR_TAGS, "nature"),
-                                                                            rs.GetValue(WALLPAPER_FLICKR_TAGS_ALL, false) ? TagMode.AnyTag : TagMode.AllTags,
-                                                                            GetFlickrColors(),
-                                                                            GetFlickrStyles()).Result;
-
-                    rs[WALLPAPER_URL] = imgData.Item1;
-                    rs[WALLPAPER_THUMBNAIL] = imgData.Item2;
-                    rs[WALLPAPER_COPYRIGHT] = imgData.Item3;
-
-                    WriteDate();
-                    WriteThumbCopy(imgData.Item2, imgData.Item3);
-
-                    SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute));
-                }
-                else
-                    btnRefresh.IsEnabled = true;
-            });
-        }
-        async Task SetupWallpaperFavorite(bool Update)
-        {
-            Task.Factory.StartNew(() =>
-            {
-                if (FavoriteList.Count == 0)
-                {
-                    cbSource.SelectedIndex = 1;
-                    SetupWallpaper(true);
-                    return;
-                }
-
-                if (CheckDate() || Update)
-                {
-                    int number = rs.GetValue(WALLPAPER_FAVORITE_NUMBER, -1) + 1;
-                    number = (number > FavoriteList.Count - 1) ? 0 : number;
-
-                    rs[WALLPAPER_URL] = FavoriteList[number].Original;
-                    rs[WALLPAPER_THUMBNAIL] = FavoriteList[number].Thumbnail;
-                    rs[WALLPAPER_COPYRIGHT] = FavoriteList[number].Copyright;
-
-                    rs[WALLPAPER_FAVORITE_NUMBER] = number;
-
-                    WriteDate();
-                    WriteThumbCopy(FavoriteList[number].Thumbnail, FavoriteList[number].Copyright);
-
-                    SetupImage(new Uri(rs.GetValue<string>(WALLPAPER_URL), UriKind.RelativeOrAbsolute));
-                }
-                else
-                    btnRefresh.IsEnabled = true;
-            });
-        }
-        void SetupWallpaperLeave(bool Update)
-        {
-            if (!Update)
-                return;
-
-            WriteDate();
-            WriteThumbCopy(rs.GetValue<string>(WALLPAPER_THUMBNAIL), rs.GetValue<string>(WALLPAPER_COPYRIGHT));
-
-            SetupImage(new Uri(rs.GetValue<string>(WALLPAPER_URL), UriKind.RelativeOrAbsolute));
-        }
-        async Task SetupWallpaperBing(bool Update = false)
-        {
-            Task.Factory.StartNew(() =>
-            {
-                if (!GetConnection())
-                {
-                    //msg
-                    btnRefresh.IsEnabled = true;
-                    return;
-                }
-
-                var imgData = Core.Source.Bing.Bing.Get(w, h).Result;
-
-                if (CheckDate() || Update)
-                {
-                    if (rs.GetValue(WALLPAPER_URL, "") != imgData.Item1 || Update)
-                    {
-                        rs[WALLPAPER_URL] = imgData.Item1;
-                        rs[WALLPAPER_THUMBNAIL] = imgData.Item2;
-                        rs[WALLPAPER_COPYRIGHT] = imgData.Item3;
-
-                        WriteDate();
-                        WriteThumbCopy(imgData.Item2, imgData.Item3);
-
-                        SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute));
-                    }
-                }
-                else
-                    btnRefresh.IsEnabled = true;
-            });
-        }
-        void WriteDate()
-        {
-            var dt = DateTime.Now.Add(GetTimeSpan(Timetable));
-
-            rs["UpdateWallpaperYear"] = dt.Year;
-            rs["UpdateWallpaperMounth"] = dt.Month;
-            rs["UpdateWallpaperDay"] = dt.Day;
-            rs["UpdateWallpaperHour"] = dt.Hour;
-        }
-        void WriteRegistry(Core.Style style)
-        {
-            //use switch
-            RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true);
-
-            if (style == Core.Style.Fill)
-            {
-                key.SetValue(@"WallpaperStyle", 10.ToString());
-                key.SetValue(@"TileWallpaper", 0.ToString());
-            }
-            if (style == Core.Style.Fit)
-            {
-                key.SetValue(@"WallpaperStyle", 6.ToString());
-                key.SetValue(@"TileWallpaper", 0.ToString());
-            }
-            if (style == Core.Style.Span)
-            {
-                key.SetValue(@"WallpaperStyle", 22.ToString());
-                key.SetValue(@"TileWallpaper", 0.ToString());
-            }
-            if (style == Core.Style.Stretch)
-            {
-                key.SetValue(@"WallpaperStyle", 2.ToString());
-                key.SetValue(@"TileWallpaper", 0.ToString());
-            }
-            if (style == Core.Style.Tile)
-            {
-                key.SetValue(@"WallpaperStyle", 0.ToString());
-                key.SetValue(@"TileWallpaper", 1.ToString());
-            }
-            if (style == Core.Style.Center)
-            {
-                key.SetValue(@"WallpaperStyle", 0.ToString());
-                key.SetValue(@"TileWallpaper", 0.ToString());
-            }
-
-            key.Close();
-        }
-        void WriteThumbCopy(string thumb, string copy)
+        void LoadFavorite()
         {
             try
             {
-                imgImageThumb.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { imgImageThumb.Source = new BitmapImage(new Uri(thumb)); });
-                tbImageInfo.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { tbImageInfo.Text = copy; });
+                if (!Directory.Exists(FavoritePath))
+                    Directory.CreateDirectory(FavoritePath);
+
+                if (File.Exists(FavoriteListPath))
+                {
+                    using (StreamReader sr = File.OpenText(FavoriteListPath))
+                        FavoriteList = JsonConvert.DeserializeObject<List<Favorite>>(sr.ReadToEnd());
+
+                    foreach (var item in Directory.GetFiles(FavoritePath))
+                        if (FavoriteList.FirstOrDefault((x) => x.ThumbnailLocale == item) == null)
+                            try { File.Delete(item); }
+                            catch { }
+                }
+                else
+                    FavoriteList = new List<Favorite>();
             }
             catch
             {
-                imgImageThumb.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { imgImageThumb.Source = new BitmapImage(new Uri("www.bing.com/az/hprichbg/rb/OchaBatake_ROW10481280883_400x240.jpg")); });
-                tbImageInfo.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { tbImageInfo.Text = "Error"; });
+                if (ShowErrorMessages)
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                    {
+                        new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["ErrorCode"], 0003), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                    });
+            }
+            finally
+            {
+                if (FavoriteList == null)
+                    FavoriteList = new List<Favorite>();
             }
         }
-        async void SetupImage(Uri uri)
+        void SetupTimer()
         {
-            Stream s = new WebClient().OpenRead(uri.ToString());
-
-            System.Drawing.Image img = System.Drawing.Image.FromStream(s);
-            string tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "wallpaper.bmp");
-            img.Save(tempPath, System.Drawing.Imaging.ImageFormat.Bmp);
-
-            SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, tempPath, SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
-
-            btnLike.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+            try
             {
-                btnLike.IsSwitched = (from i in FavoriteList
-                                      where i.Original == rs.GetValue<string>(WALLPAPER_URL)
-                                      select i).Count() > 0;
-            });
-
-            btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                timer = new Timer(GetMilisec(TimerMinutes));
+                timer.Elapsed += TimerElapsed;
+                timer.Enabled = true;
+            }
+            catch
             {
-                btnRefresh.IsEnabled = true;
+                if (ShowErrorMessages)
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                    {
+                        new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["ErrorCode"], 0004), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                    });
+            }
+        }
+        void SetupNotifyIcon(bool Update = false)
+        {
+            try
+            {
+                System.Windows.Forms.ContextMenu contextMenu = new System.Windows.Forms.ContextMenu();
+                contextMenu.MenuItems.Add(Lang["nfOpenWindow"], (sh, eh) => { Show(); tiCurrent.IsSelected = true; });
+                contextMenu.MenuItems.Add(Lang["nfOpenFavorite"], (sh, eh) => { Show(); tiFavorite.IsSelected = true; });
+                contextMenu.MenuItems.Add(Lang["nfOpenSettings"], (sh, eh) => { Show(); tiOptions.IsSelected = true; });
+                contextMenu.MenuItems.Add("-");
+                contextMenu.MenuItems.Add(Lang["nfRefresh"], (sh, eh) => SetupWallpaper(true));
+                contextMenu.MenuItems.Add(Lang["nfLeave"], (sh, eh) => cbSource.SelectedIndex = -1);
+                contextMenu.MenuItems.Add(Lang["nfAddFav"], (sh, eh) => LikeWallpaper());
+                contextMenu.MenuItems.Add("-");
+                contextMenu.MenuItems.Add(Lang["nfExit"], (sh, eh) => Close());
+
+                if (Update)
+                    notifyIcon.ContextMenu = contextMenu;
+                else
+                {
+                    notifyIcon = new System.Windows.Forms.NotifyIcon
+                    {
+                        Text = "Wallpaper Changer 2",
+                        Icon = Properties.Resources.photo,
+                        Visible = true,
+                        ContextMenu = contextMenu
+                    };
+
+                    notifyIcon.DoubleClick += (sh, eh) => Show();
+                }
+            }
+            catch
+            {
+                if (ShowErrorMessages)
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                    {
+                        new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["ErrorCode"], 0005), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                    });
+            }
+        }
+
+        //window loaded
+        async Task SetupLocale()
+        {
+            Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                    {
+                        tbSourceName.Text = Lang["Source"];
+                        tbLanguage.Text = Lang["tbLanguage"];
+                        tbTimetable.Text = Lang["tbTimetable"];
+                        tbStyle.Text = Lang["tbStyle"];
+
+                        cbiTimetable0.Content = Lang["cbiTimetable0"];
+                        cbiTimetable1.Content = Lang["cbiTimetable1"];
+                        cbiTimetable2.Content = Lang["cbiTimetable2"];
+                        cbiTimetable3.Content = Lang["cbiTimetable3"];
+                        cbiTimetable4.Content = Lang["cbiTimetable4"];
+                        cbiTimetable5.Content = Lang["cbiTimetable5"];
+                        cbiTimetable6.Content = Lang["cbiTimetable6"];
+                        cbiTimetable7.Content = Lang["cbiTimetable7"];
+                        cbiTimetable8.Content = Lang["cbiTimetable8"];
+
+                        cbStyle0.Content = Lang["cbStyle0"];
+                        cbStyle1.Content = Lang["cbStyle1"];
+                        cbStyle2.Content = Lang["cbStyle2"];
+                        cbStyle3.Content = Lang["cbStyle3"];
+                        cbStyle4.Content = Lang["cbStyle4"];
+                        cbStyle5.Content = Lang["cbStyle5"];
+
+                        cbStartup.Content = Lang["cbStartup"];
+                        cbShowError.Content = Lang["cbShowError"];
+                        cbShowWallpaperTost.Content = Lang["cbShowWallpaperTost"];
+
+                        cbBing.Content = Lang["cbBing"];
+                        cbFavorite.Content = Lang["cbFavorite"];
+                        cbFlickr.Content = Lang["cbFlickr"];
+                        cbUnsplash.Content = Lang["cbUnsplash"];
+
+                        tbBtnRefresh.Text = Lang["btnRefresh"];
+
+                        tiCurrent.Header = Lang["tiCurrent"];
+                        tiFavorite.Header = Lang["tiFavorite"];
+                        tiOptions.Header = Lang["tiOptions"];
+                    }));
+                }
+                catch
+                {
+                    if (ShowErrorMessages)
+                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                        {
+                            new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["ErrorCode"], 0006), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                        });
+                }
             });
+        }
+
+        //startup
+        async void GetStartup()
+        {
+            try
+            {
+                var startupTask = await Windows.ApplicationModel.StartupTask.GetAsync(ID);
+                switch (startupTask.State)
+                {
+                    case Windows.ApplicationModel.StartupTaskState.Disabled:
+                        cbStartup.IsChecked = false;
+                        break;
+                    case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
+                        cbStartup.IsChecked = false;
+                        break;
+                    case Windows.ApplicationModel.StartupTaskState.Enabled:
+                        cbStartup.IsChecked = true;
+                        break;
+                }
+
+                cbStartup.Click += CbStartupClick;
+            }
+            catch
+            {
+                if (ShowErrorMessages)
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                    {
+                        new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["ErrorCode"], 0007), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                    });
+            }
+        }
+        async void SetStartup()
+        {
+            try
+            {
+                var startupTask = await Windows.ApplicationModel.StartupTask.GetAsync(ID);
+                if (startupTask.State == Windows.ApplicationModel.StartupTaskState.Enabled)
+                {
+                    startupTask.Disable();
+                    cbStartup.IsChecked = false;
+                }
+                else
+                {
+                    var state = await startupTask.RequestEnableAsync();
+                    switch (state)
+                    {
+                        case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
+                            cbStartup.IsChecked = false;
+                            break;
+                        case Windows.ApplicationModel.StartupTaskState.Enabled:
+                            cbStartup.IsChecked = true;
+                            break;
+                    }
+                }
+            }
+            catch
+            {
+                if (ShowErrorMessages)
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                    {
+                        new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["ErrorCode"], 0008), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                    });
+            }
+        }
+
+        //favorites
+        void SaveFavorite()
+        {
+            try
+            {
+                if (File.Exists(FavoriteListPath))
+                    File.Delete(FavoriteListPath);
+
+                using (StreamWriter sw = File.CreateText(FavoriteListPath))
+                    sw.Write(JsonConvert.SerializeObject(FavoriteList));
+            }
+            catch
+            {
+                if (ShowErrorMessages)
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                    {
+                        new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["ErrorCode"], 0009), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                    });
+            }
+        }
+        void LoadFavoriteToPanel()
+        {
+            try
+            {
+                wpFavorites.Children.Clear();
+
+                foreach (var item in FavoriteList)
+                {
+                    Controlls.FavoritePic pf = new Controlls.FavoritePic()
+                    {
+                        Original = item.Original,
+                        Wallpaper = item.ThumbnailLocale,
+                        Copyright = item.Copyright,
+                        Margin = new Thickness(7)
+                    };
+
+                    pf.ApplyEvent += PfApplyEvent;
+                    pf.DeleteEvent += PfDeleteEvent;
+
+                    wpFavorites.Children.Add(pf);
+                }
+            }
+            catch
+            {
+                if (ShowErrorMessages)
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                    {
+                        new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["ErrorCode"], 0010), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                    });
+            }
+        }
+        string GetFavoritePath(string original)
+        {
+            if (string.IsNullOrWhiteSpace(original))
+            {
+                if (ShowErrorMessages)
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                    {
+                        new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["ErrorCode"], 0011), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                    }); return string.Empty;
+            }
+
+            original = original.Remove(0, original.Length - 10);
+            return $@"{FavoritePath}\{original.Replace(":", "").Replace("/", "")}.jpg";
+        }
+        void LikeWallpaper()
+        {
+            if (!Directory.Exists(FavoritePath))
+                Directory.CreateDirectory(FavoritePath);
+
+            try
+            {
+                if (!File.Exists(GetFavoritePath(rs.GetValue<string>(WALLPAPER_URL))))
+                    using (WebClient wc = new WebClient())
+                        wc.DownloadFile(rs.GetValue<string>(WALLPAPER_THUMBNAIL), GetFavoritePath(rs.GetValue<string>(WALLPAPER_URL)));
+
+                FavoriteList.Add(new Favorite()
+                {
+                    Original = rs.GetValue<string>(WALLPAPER_URL),
+                    Thumbnail = rs.GetValue<string>(WALLPAPER_THUMBNAIL),
+                    Copyright = rs.GetValue<string>(WALLPAPER_COPYRIGHT),
+                    ThumbnailLocale = GetFavoritePath(rs.GetValue<string>(WALLPAPER_URL))
+                });
+
+                LoadFavoriteToPanel();
+                btnLike.IsSwitched = true;
+
+            }
+            catch
+            {
+                if (ShowErrorMessages)
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                    {
+                        new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["ErrorCode"], 0012), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                    });
+            }
+        }
+        void UnlikeWallpaper(string original = "")
+        {
+            try
+            {
+                var a = rs.GetValue<string>(WALLPAPER_URL);
+                string path = string.IsNullOrWhiteSpace(original) ? rs.GetValue<string>(WALLPAPER_URL) : original;
+
+                if (FavoriteList.RemoveAll((x) => x.Original == path) > 0)
+                {
+                    LoadFavoriteToPanel();
+
+                    try { File.Delete(GetFavoritePath(path)); }
+                    catch { }
+
+                    btnLike.IsSwitched = false;
+                }
+            }
+            catch
+            {
+                if (ShowErrorMessages)
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                    {
+                        new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["ErrorCode"], 0013), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                    });
+            }
         }
 
         //help
@@ -390,22 +542,48 @@ namespace WallpaperChanger
             }
             catch { return false; }
         }
-        void ShowToast(string title, string msg)
+        void ShowToast(string title, string msg, string img = "", string via = "")
         {
-            string xml = $@"<toast>
+            try
+            {
+                string imageBlock = string.IsNullOrWhiteSpace(img) ? "" :
+                                                                $"<image placement='hero' src='{img}'/>";
+
+                string viaBlock = string.IsNullOrWhiteSpace(via) ? "" :
+                                                                  $"<text placement='attribution'>{via}</text>";
+
+                string xml = string.Format(
+                    @"<toast>
                     <visual>
                         <binding template='ToastGeneric'>
-                            <text>{title}</text>
-                            <text>{msg}</text>
+                            <text>{0}</text>
+                            <text>{1}</text>
+                            {2}
+                            {3}
                         </binding>
                     </visual>
-                </toast>";
+                </toast>",
+                    title,
+                    msg,
+                    imageBlock,
+                    viaBlock);
 
-            Windows.Data.Xml.Dom.XmlDocument doc = new Windows.Data.Xml.Dom.XmlDocument();
-            doc.LoadXml(xml);
+                Windows.Data.Xml.Dom.XmlDocument doc = new Windows.Data.Xml.Dom.XmlDocument();
+                doc.LoadXml(xml);
 
-            Windows.UI.Notifications.ToastNotification toast = new Windows.UI.Notifications.ToastNotification(doc);
-            Windows.UI.Notifications.ToastNotificationManager.CreateToastNotifier().Show(toast);
+                Windows.UI.Notifications.ToastNotification toast = new Windows.UI.Notifications.ToastNotification(doc);
+                Windows.UI.Notifications.ToastNotificationManager.CreateToastNotifier().Show(toast);
+            }
+            catch
+            {
+                if (string.IsNullOrWhiteSpace(img) && ShowErrorMessages)
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                    {
+                        new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["ErrorCode"], 0020), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                    });
+                else
+                    ShowToast(title, msg, via: via);
+            }
         }
         List<string> GetFlickrColors()
         {
@@ -436,239 +614,352 @@ namespace WallpaperChanger
             return a;
         }
 
-        //favorites
-        void SaveFavorite()
+        //wallpaper
+        async void SetupWallpaper(bool Update = false)
         {
-            try
+            btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
             {
-                if (File.Exists(FavoriteListPath))
-                    File.Delete(FavoriteListPath);
+                btnRefresh.IsEnabled = false;
+            });
 
-                using (StreamWriter sw = File.CreateText(FavoriteListPath))
-                    sw.Write(JsonConvert.SerializeObject(FavoriteList));
+            switch (rs.GetValue("Source", 1))
+            {
+                case 3:
+                    await SetupWallpaperUnsplash(Update);
+                    break;
+                case 2:
+                    await SetupallpaperFlickr(Update);
+                    break;
+                default:
+                case 1:
+                    await SetupWallpaperBing(Update);
+                    break;
+                case 0:
+                    await SetupWallpaperFavorite(Update);
+                    break;
+                case -1:
+                    SetupWallpaperLeave(Update);
+                    break;
             }
-            catch (Exception e) { new MessageWindow(Lang["ErrorTitle"], e.Message, MessageWindowIcon.Error, MessageWindowIconColor.Red).Show(); }
         }
-        void LoadFavorite()
+        async Task SetupWallpaperUnsplash(bool Update = false)
         {
-            try
+            Task.Factory.StartNew(() =>
             {
-                if (File.Exists(FavoriteListPath))
-                    using (StreamReader sr = File.OpenText(FavoriteListPath))
-                        FavoriteList = JsonConvert.DeserializeObject<List<Favorite>>(sr.ReadToEnd());
-                else
-                    FavoriteList = new List<Favorite>();
-
-                foreach (var item in Directory.GetFiles(FavoritePath))
-                    if (FavoriteList.FirstOrDefault((x) => x.ThumbnailLocale == item) == null)
-                        try { File.Delete(item); }
-                        catch { }
-            }
-            catch (Exception e) { new MessageWindow(Lang["ErrorTitle"], e.Message, MessageWindowIcon.Error, MessageWindowIconColor.Red).Show(); }
-        }
-        void LoadFavoriteToPanel()
-        {
-            try
-            {
-                wpFavorites.Children.Clear();
-
-                foreach (var item in FavoriteList)
+                try
                 {
-                    Controlls.FavoritePic pf = new Controlls.FavoritePic()
+                    if (CheckDate() || Update)
                     {
-                        Original = item.Original,
-                        Wallpaper = item.ThumbnailLocale,
-                        Copyright = item.Copyright,
-                        Margin = new Thickness(7)
-                    };
+                        var imgData = Core.Source.Unsplash.Unsplash.Get(SystemParameters.VirtualScreenWidth, SystemParameters.VirtualScreenHeight);
 
-                    pf.ApplyEvent += PfApplyEvent;
-                    pf.DeleteEvent += PfDeleteEvent;
+                        rs[WALLPAPER_URL] = imgData.Item1;
+                        rs[WALLPAPER_THUMBNAIL] = imgData.Item2;
+                        rs[WALLPAPER_COPYRIGHT] = Lang["UnsplashCopy"];
 
-                    wpFavorites.Children.Add(pf);
+                        WriteDate();
+                        WriteThumbCopy(imgData.Item1, Lang["UnsplashCopy"]);
+
+                        SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute), Lang["cbUnsplash"]);
+                    }
+                    else
+                        btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                        {
+                            btnRefresh.IsEnabled = false;
+                        });
                 }
+                catch
+                {
+                    if (ShowErrorMessages)
+                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                        {
+                            new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["CannotSetupWallpaper"], 0014), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                        });
+
+                    btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                    {
+                        btnRefresh.IsEnabled = false;
+                    });
+                }
+            });
+        }
+        async Task SetupallpaperFlickr(bool Update = false)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    if (CheckDate() || Update)
+                    {
+                        var imgData = Core.Source.FlickrSource.Finder.FindAsync(SystemParameters.VirtualScreenWidth,
+                                                                                SystemParameters.VirtualScreenHeight,
+                                                                                rs.GetValue(WALLPAPER_URL, ""),
+                                                                                rs.GetValue(WALLPAPER_FLICKR_TAGS, "nature"),
+                                                                                rs.GetValue(WALLPAPER_FLICKR_TAGS_ALL, false) ? TagMode.AnyTag : TagMode.AllTags,
+                                                                                GetFlickrColors(),
+                                                                                GetFlickrStyles()).Result;
+
+                        rs[WALLPAPER_URL] = imgData.Item1;
+                        rs[WALLPAPER_THUMBNAIL] = imgData.Item2;
+                        rs[WALLPAPER_COPYRIGHT] = imgData.Item3;
+
+                        WriteDate();
+                        WriteThumbCopy(imgData.Item2, imgData.Item3);
+
+                        SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute), Lang["cbFlickr"]);
+                    }
+                    else
+                        btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                        {
+                            btnRefresh.IsEnabled = false;
+                        });
+                }
+                catch
+                {
+                    if (ShowErrorMessages)
+                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                        {
+                            new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["CannotSetupWallpaper"], 0015), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                        });
+
+                    btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                    {
+                        btnRefresh.IsEnabled = false;
+                    });
+                }
+            });
+        }
+        async Task SetupWallpaperFavorite(bool Update)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    if (FavoriteList.Count == 0)
+                    {
+                        cbSource.SelectedIndex = 1;
+                        SetupWallpaper(true);
+                        return;
+                    }
+
+                    if (CheckDate() || Update)
+                    {
+                        int number = rs.GetValue(WALLPAPER_FAVORITE_NUMBER, -1) + 1;
+                        number = (number > FavoriteList.Count - 1) ? 0 : number;
+
+                        rs[WALLPAPER_URL] = FavoriteList[number].Original;
+                        rs[WALLPAPER_THUMBNAIL] = FavoriteList[number].Thumbnail;
+                        rs[WALLPAPER_COPYRIGHT] = FavoriteList[number].Copyright;
+
+                        rs[WALLPAPER_FAVORITE_NUMBER] = number;
+
+                        WriteDate();
+                        WriteThumbCopy(FavoriteList[number].Thumbnail, FavoriteList[number].Copyright);
+
+                        SetupImage(new Uri(rs.GetValue<string>(WALLPAPER_URL), UriKind.RelativeOrAbsolute), Lang["cbFavorite"]);
+                    }
+                    else
+                        btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                        {
+                            btnRefresh.IsEnabled = false;
+                        });
+                }
+                catch
+                {
+                    if (ShowErrorMessages)
+                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                        {
+                            new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["CannotSetupWallpaper"], 0016), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                        });
+
+                    btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                    {
+                        btnRefresh.IsEnabled = false;
+                    });
+                }
+            });
+        }
+        async Task SetupWallpaperLeave(bool Update)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    if (!Update)
+                        return;
+
+                    WriteDate();
+                    WriteThumbCopy(rs.GetValue<string>(WALLPAPER_THUMBNAIL), rs.GetValue<string>(WALLPAPER_COPYRIGHT));
+
+                    SetupImage(new Uri(rs.GetValue<string>(WALLPAPER_URL), UriKind.RelativeOrAbsolute), "");
+                }
+                catch
+                {
+                    if (ShowErrorMessages)
+                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                        {
+                            new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["CannotSetupWallpaper"], 0017), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                        });
+
+                    btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                    {
+                        btnRefresh.IsEnabled = false;
+                    });
+                }
+            });
+        }
+        async Task SetupWallpaperBing(bool Update = false)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    if (!GetConnection())
+                    {
+                        //msg
+                        btnRefresh.IsEnabled = true;
+                        return;
+                    }
+
+                    var imgData = Core.Source.Bing.Bing.Get(SystemParameters.VirtualScreenWidth, SystemParameters.VirtualScreenHeight).Result;
+
+                    if (CheckDate() || Update)
+                    {
+                        if (rs.GetValue(WALLPAPER_URL, "") != imgData.Item1 || Update)
+                        {
+                            rs[WALLPAPER_URL] = imgData.Item1;
+                            rs[WALLPAPER_THUMBNAIL] = imgData.Item2;
+                            rs[WALLPAPER_COPYRIGHT] = imgData.Item3;
+
+                            WriteDate();
+                            WriteThumbCopy(imgData.Item2, imgData.Item3);
+
+                            SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute), Lang["cbBing"]);
+                        }
+                    }
+                    else
+                        btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                        {
+                            btnRefresh.IsEnabled = false;
+                        });
+                }
+                catch
+                {
+                    if (ShowErrorMessages)
+                        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                        {
+                            new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["CannotSetupWallpaper"], 0018), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                        });
+
+                    btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                    {
+                        btnRefresh.IsEnabled = false;
+                    });
+                }
+            });
+        }
+        void WriteDate()
+        {
+            var dt = DateTime.Now.Add(GetTimeSpan(Timetable));
+
+            rs["UpdateWallpaperYear"] = dt.Year;
+            rs["UpdateWallpaperMounth"] = dt.Month;
+            rs["UpdateWallpaperDay"] = dt.Day;
+            rs["UpdateWallpaperHour"] = dt.Hour;
+        }
+        void WriteRegistry(Core.Style style)
+        {
+            //use switch
+            RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Control Panel\Desktop", true);
+
+            switch (style)
+            {
+                case Core.Style.Tile:
+                    key.SetValue(@"WallpaperStyle", 0.ToString());
+                    key.SetValue(@"TileWallpaper", 1.ToString());
+                    break;
+                case Core.Style.Center:
+                    key.SetValue(@"WallpaperStyle", 0.ToString());
+                    key.SetValue(@"TileWallpaper", 0.ToString());
+                    break;
+                default:
+                case Core.Style.Stretch:
+                    key.SetValue(@"WallpaperStyle", 2.ToString());
+                    key.SetValue(@"TileWallpaper", 0.ToString());
+                    break;
+                case Core.Style.Span:
+                    key.SetValue(@"WallpaperStyle", 22.ToString());
+                    key.SetValue(@"TileWallpaper", 0.ToString());
+                    break;
+                case Core.Style.Fit:
+                    key.SetValue(@"WallpaperStyle", 6.ToString());
+                    key.SetValue(@"TileWallpaper", 0.ToString());
+                    break;
+                case Core.Style.Fill:
+                    key.SetValue(@"WallpaperStyle", 10.ToString());
+                    key.SetValue(@"TileWallpaper", 0.ToString());
+                    break;
             }
-            catch (Exception e) { new MessageWindow(Lang["ErrorTitle"], e.Message, MessageWindowIcon.Error, MessageWindowIconColor.Red).Show(); }
+
+            key.Close();
         }
-        string GetFavoritePath(string original)
+        void WriteThumbCopy(string thumb, string copy)
         {
-            original = original.Remove(0, original.Length - 10);
-
-
-            return $@"{FavoritePath}\{original.Replace(":", "").Replace("/", "")}.jpg";
-        }
-
-        void LikeWallpaper()
-        {
-            if (!Directory.Exists(FavoritePath))
-                Directory.CreateDirectory(FavoritePath);
-
             try
             {
-                if (!File.Exists(GetFavoritePath(rs.GetValue<string>(WALLPAPER_URL))))
-                    using (WebClient wc = new WebClient())
-                        wc.DownloadFile(rs.GetValue<string>(WALLPAPER_THUMBNAIL), GetFavoritePath(rs.GetValue<string>(WALLPAPER_URL)));
+                imgImageThumb.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { imgImageThumb.Source = new BitmapImage(new Uri(thumb)); });
+                tbImageInfo.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { tbImageInfo.Text = copy; });
+            }
+            catch
+            {
+                imgImageThumb.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { imgImageThumb.Source = new BitmapImage(new Uri("www.bing.com/az/hprichbg/rb/OchaBatake_ROW10481280883_400x240.jpg")); });
+                tbImageInfo.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate () { tbImageInfo.Text = "Error"; });
+            }
+        }
+        async void SetupImage(Uri uri, string sourceName)
+        {
+            try
+            {
+                Stream s = new WebClient().OpenRead(uri.ToString());
 
-                FavoriteList.Add(new Favorite()
-                {
-                    Original = rs.GetValue<string>(WALLPAPER_URL),
-                    Thumbnail = rs.GetValue<string>(WALLPAPER_THUMBNAIL),
-                    Copyright = rs.GetValue<string>(WALLPAPER_COPYRIGHT),
-                    ThumbnailLocale = GetFavoritePath(rs.GetValue<string>(WALLPAPER_URL))
-                });
+                System.Drawing.Image img = System.Drawing.Image.FromStream(s);
+                string tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "wallpaper.bmp");
+                img.Save(tempPath, System.Drawing.Imaging.ImageFormat.Bmp);
 
-                LoadFavoriteToPanel();
-                btnLike.IsSwitched = true;
+                SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, tempPath, SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
 
+                if (ShowUpdateWallpaerToast)
+                    ShowToast(Lang["TitleWallpaperSetuped"],
+                              Lang["MsgWallpaperSetuped"],
+                              rs.GetValue<string>(WALLPAPER_THUMBNAIL),
+                              sourceName);
             }
             catch (Exception e)
             {
-                ShowToast(Lang["ErrorTitle"], e.Message);
-            }
-        }
-        void UnlikeWallpaper(string original = "")
-        {
-            var a = rs.GetValue<string>(WALLPAPER_URL);
-            string path = string.IsNullOrWhiteSpace(original) ? rs.GetValue<string>(WALLPAPER_URL) : original;
-
-            if (FavoriteList.RemoveAll((x) => x.Original == path) > 0)
-            {
-                LoadFavoriteToPanel();
-
-                try { File.Delete(GetFavoritePath(path)); }
-                catch { }
-
-                btnLike.IsSwitched = false;
-            }
-        }
-
-        //startup
-        async void GetStartup()
-        {
-            var startupTask = await Windows.ApplicationModel.StartupTask.GetAsync(ID);
-            switch (startupTask.State)
-            {
-                case Windows.ApplicationModel.StartupTaskState.Disabled:
-                    cbStartup.IsChecked = false;
-                    break;
-                case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
-                    cbStartup.IsChecked = false;
-                    break;
-                case Windows.ApplicationModel.StartupTaskState.Enabled:
-                    cbStartup.IsChecked = true;
-                    break;
-            }
-
-            cbStartup.Click += CbStartupClick;
-        }
-        async void SetStartup()
-        {
-            var startupTask = await Windows.ApplicationModel.StartupTask.GetAsync(ID);
-            if (startupTask.State == Windows.ApplicationModel.StartupTaskState.Enabled)
-            {
-                startupTask.Disable();
-                cbStartup.IsChecked = false;
-            }
-            else
-            {
-                var state = await startupTask.RequestEnableAsync();
-                switch (state)
-                {
-                    case Windows.ApplicationModel.StartupTaskState.DisabledByUser:
-                        cbStartup.IsChecked = false;
-                        break;
-                    case Windows.ApplicationModel.StartupTaskState.Enabled:
-                        cbStartup.IsChecked = true;
-                        break;
-                }
-            }
-        }
-
-        //init
-        void SetupTimer()
-        {
-            try
-            {
-                timer = new Timer(GetMilisec(TimerMinutes));
-                timer.Elapsed += TimerElapsed;
-                timer.Enabled = true;
-            }
-            catch (Exception e) { new MessageWindow(Lang["ErrorTitle"], e.Message, MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog(); Application.Current.Shutdown(1); }
-        }
-        void SetupNotifyIcon(bool Update = false)
-        {
-            try
-            {
-                System.Windows.Forms.ContextMenu contextMenu = new System.Windows.Forms.ContextMenu();
-                contextMenu.MenuItems.Add(Lang["nfOpenWindow"], (sh, eh) => { Show(); tiCurrent.IsSelected = true; });
-                contextMenu.MenuItems.Add(Lang["nfOpenFavorite"], (sh, eh) => { Show(); tiFavorite.IsSelected = true; });
-                contextMenu.MenuItems.Add(Lang["nfOpenSettings"], (sh, eh) => { Show(); tiOptions.IsSelected = true; });
-                contextMenu.MenuItems.Add("-");
-                contextMenu.MenuItems.Add(Lang["nfRefresh"], (sh, eh) => SetupWallpaper(true));
-                contextMenu.MenuItems.Add(Lang["nfLeave"], (sh, eh) => cbSource.SelectedIndex = -1);
-                contextMenu.MenuItems.Add(Lang["nfAddFav"], (sh, eh) => LikeWallpaper());
-                contextMenu.MenuItems.Add("-");
-                contextMenu.MenuItems.Add(Lang["nfExit"], (sh, eh) => Close());
-
-                if (Update)
-                    notifyIcon.ContextMenu = contextMenu;
-                else
-                {
-                    notifyIcon = new System.Windows.Forms.NotifyIcon
+                if (ShowErrorMessages)
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
                     {
-                        Text = "Wallpaper Changer 2",
-                        Icon = Properties.Resources.photo,
-                        Visible = true,
-                        ContextMenu = contextMenu
-                    };
+                        new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["CannotSetupWallpaper"], 0019), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
+                    });
 
-                    notifyIcon.DoubleClick += (sh, eh) => Show();
-                }
-            }
-            catch (Exception e) { new MessageWindow(Lang["ErrorTitle"], e.Message, MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog(); Application.Current.Shutdown(1); }
-        }
-        Task SetupLocale()
-        {
-            return Task.Factory.StartNew(() =>
-            {
-                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+                btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
                 {
-                    tbSourceName.Text = Lang["Source"];
-                    tbLanguage.Text = Lang["tbLanguage"];
-                    tbTimetable.Text = Lang["tbTimetable"];
-                    tbStyle.Text = Lang["tbStyle"];
+                    btnRefresh.IsEnabled = false;
+                });
+            }
+            finally
+            {
+                btnLike.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                {
+                    btnLike.IsSwitched = (from i in FavoriteList
+                                          where i.Original == rs.GetValue<string>(WALLPAPER_URL)
+                                          select i).Count() > 0;
+                });
 
-                    cbiTimetable0.Content = Lang["cbiTimetable0"];
-                    cbiTimetable1.Content = Lang["cbiTimetable1"];
-                    cbiTimetable2.Content = Lang["cbiTimetable2"];
-                    cbiTimetable3.Content = Lang["cbiTimetable3"];
-                    cbiTimetable4.Content = Lang["cbiTimetable4"];
-                    cbiTimetable5.Content = Lang["cbiTimetable5"];
-                    cbiTimetable6.Content = Lang["cbiTimetable6"];
-                    cbiTimetable7.Content = Lang["cbiTimetable7"];
-                    cbiTimetable8.Content = Lang["cbiTimetable8"];
-
-                    cbStyle0.Content = Lang["cbStyle0"];
-                    cbStyle1.Content = Lang["cbStyle1"];
-                    cbStyle2.Content = Lang["cbStyle2"];
-                    cbStyle3.Content = Lang["cbStyle3"];
-                    cbStyle4.Content = Lang["cbStyle4"];
-                    cbStyle5.Content = Lang["cbStyle5"];
-
-                    cbStartup.Content = Lang["cbStartup"];
-
-                    cbBing.Content = Lang["cbBing"];
-                    cbFavorite.Content = Lang["cbFavorite"];
-                    cbFlickr.Content = Lang["cbFlickr"];
-                    cbUnsplash.Content = Lang["cbUnsplash"];
-
-                    tbBtnRefresh.Text = Lang["btnRefresh"];
-
-                    tiCurrent.Header = Lang["tiCurrent"];
-                    tiFavorite.Header = Lang["tiFavorite"];
-                    tiOptions.Header = Lang["tiOptions"];
-                }));
-            });
+                btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
+                {
+                    btnRefresh.IsEnabled = true;
+                });
+            }
         }
 
         #region Window Events

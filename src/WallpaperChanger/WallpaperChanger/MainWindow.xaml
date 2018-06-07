@@ -128,6 +128,8 @@
                                 <Button x:Name="btnStyleHelp" Grid.Column="2" FontFamily="Segoe MDL2 Assets" Content="&#xF142;" HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding Height, ElementName=cbTimetable}" Height="{Binding Height, ElementName=cbSource}" FontSize="11" Margin="10,0" Click="btnStyleHelpClick"/>
                             </Grid>
                             <CheckBox x:Name="cbStartup" Content="startup with windows" VerticalContentAlignment="Center" FontSize="18" Margin="0,5,0,0"/>
+                            <CheckBox x:Name="cbShowError" Content="show error" IsChecked="{Binding Path=ShowErrorMessages, Mode=TwoWay, FallbackValue=false}" VerticalContentAlignment="Center" FontSize="18" Margin="0,5,0,0"/>
+                            <CheckBox x:Name="cbShowWallpaperTost" Content="show wallpaper toast" IsChecked="{Binding Path=ShowUpdateWallpaerToast, Mode=TwoWay, FallbackValue=false}" VerticalContentAlignment="Center" FontSize="18" Margin="0,5,0,0"/>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>
