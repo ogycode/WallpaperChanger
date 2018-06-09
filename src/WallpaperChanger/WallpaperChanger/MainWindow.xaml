@@ -80,7 +80,7 @@
                 </TabItem>
                 <TabItem x:Name="tiOptions" Header="options" Tag="&#xE713;">
                     <ScrollViewer Margin="15,15,0,0">
-                        <StackPanel>
+                        <StackPanel VerticalAlignment="Top" Margin="0,0,0,50">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="250"/>
@@ -130,6 +130,10 @@
                             <CheckBox x:Name="cbStartup" Content="startup with windows" VerticalContentAlignment="Center" FontSize="18" Margin="0,5,0,0"/>
                             <CheckBox x:Name="cbShowError" Content="show error" IsChecked="{Binding Path=ShowErrorMessages, Mode=TwoWay, FallbackValue=false}" VerticalContentAlignment="Center" FontSize="18" Margin="0,5,0,0"/>
                             <CheckBox x:Name="cbShowWallpaperTost" Content="show wallpaper toast" IsChecked="{Binding Path=ShowUpdateWallpaerToast, Mode=TwoWay, FallbackValue=false}" VerticalContentAlignment="Center" FontSize="18" Margin="0,5,0,0"/>
+
+                            <TextBlock Text="my other staff:" Margin="10,25,0,10" FontSize="22"/>
+                            <Controlls:StoreButton Margin="10"/>
+                            <Controlls:StoreButton Margin="10"/>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>
