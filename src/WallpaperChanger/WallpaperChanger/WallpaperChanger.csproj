@@ -237,6 +237,9 @@
   <ItemGroup>
     <Resource Include="Assets\flickr.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\jpasslogo.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>cd $(ProjectDir)Core\

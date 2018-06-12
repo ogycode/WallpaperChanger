@@ -48,31 +48,31 @@ namespace WallpaperChanger.Controlls
         }
         public static readonly DependencyProperty IconBrushProperty = DependencyProperty.Register("IconBrush", typeof(SolidColorBrush), typeof(StoreButton), null);
 
-        public bool IsConsole
+        public Visibility IsConsole
         {
-            get { return ((Visibility)GetValue(IsConsoleProperty)) == Visibility.Visible; }
-            set { SetValue(IsConsoleProperty, value ? Visibility.Visible : Visibility.Collapsed); }
+            get { return (Visibility)GetValue(IsConsoleProperty); }
+            set { SetValue(IsConsoleProperty, value); }
         }
-        public static readonly DependencyProperty IsConsoleProperty = DependencyProperty.Register("IsConsole", typeof(bool), typeof(StoreButton), null);
+        public static readonly DependencyProperty IsConsoleProperty = DependencyProperty.Register("IsConsole", typeof(Visibility), typeof(StoreButton), null);
 
-        public bool IsVR
+        public Visibility IsVR
         {
-            get { return ((Visibility)GetValue(IsVRProperty)) == Visibility.Visible; }
-            set { SetValue(IsVRProperty, value ? Visibility.Visible : Visibility.Collapsed); }
+            get { return (Visibility)GetValue(IsVRProperty); }
+            set { SetValue(IsConsoleProperty, value); }
         }
         public static readonly DependencyProperty IsVRProperty = DependencyProperty.Register("IsVR", typeof(Visibility), typeof(StoreButton), null);
 
-        public bool IsPC
+        public Visibility IsPC
         {
-            get { return ((Visibility)GetValue(IsPCProperty)) == Visibility.Visible; }
-            set { SetValue(IsPCProperty, value ? Visibility.Visible : Visibility.Collapsed); }
+            get { return (Visibility)GetValue(IsPCProperty); }
+            set { SetValue(IsConsoleProperty, value); }
         }
         public static readonly DependencyProperty IsPCProperty = DependencyProperty.Register("IsPC", typeof(Visibility), typeof(StoreButton), null);
 
-        public bool IsMobile
+        public Visibility IsMobile
         {
-            get { return ((Visibility)GetValue(IsMobileProperty)) == Visibility.Visible; }
-            set { SetValue(IsMobileProperty, value ? Visibility.Visible : Visibility.Collapsed); }
+            get { return (Visibility)GetValue(IsMobileProperty); }
+            set { SetValue(IsConsoleProperty, value); }
         }
         public static readonly DependencyProperty IsMobileProperty = DependencyProperty.Register("IsMobile", typeof(Visibility), typeof(StoreButton), null);
 

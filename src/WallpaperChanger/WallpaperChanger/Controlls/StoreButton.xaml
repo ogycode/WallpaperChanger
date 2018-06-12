@@ -62,23 +62,23 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Text="{Binding Path=AppName, Mode=TwoWay, FallbackValue='Lorem ipsum'}" Grid.Row="0" FontSize="24" Foreground="{Binding Path=ForegroundBrush, Mode=TwoWay, FallbackValue=WhiteSmoke}" Margin="20,0,0,0"/>
-            <Grid Grid.Row="1" MaxHeight="84">
+            <TextBlock Text="{Binding Path=AppName, Mode=TwoWay, FallbackValue='Lorem ipsum'}" Grid.Row="0" FontSize="24" Foreground="{Binding Path=ForegroundBrush, Mode=TwoWay, FallbackValue=WhiteSmoke}" Margin="10,0,0,0"/>
+            <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="148px"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Image Width="128" Height="64" Grid.Column="0" Margin="10" Source="{Binding Path=AppLogo, Mode=TwoWay}"/>
+                <Image Width="128" Height="64" Grid.Column="0" Margin="10" Source="{Binding Path=AppLogo, Mode=TwoWay}" VerticalAlignment="Top"/>
                 <TextBlock Text="{Binding Path=AppDescription, Mode=TwoWay, FallbackValue='Vestibulum vestibulum quam nulla. Nullam dictum consequat elit vel laoreet. Nunc nec efficitur diam. Ut orci tortor, gravida quis tincidunt et, vulputate sed elit.'}" Grid.Column="1" TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,0,10,0" Foreground="{Binding Path=ForegroundBrush, Mode=TwoWay, FallbackValue=WhiteSmoke}"/>
             </Grid>
         </Grid>
         <Grid Grid.Row="1" Background="{Binding Path=BackgroundBrush, Mode=TwoWay, FallbackValue=Black}">
             <Grid Width="128" HorizontalAlignment="Left" Margin="10,0,0,0">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="-10,0,0,0">
-                    <TextBlock Visibility="{Binding Path=IsConsole, Mode=TwoWay, FallbackValue=Visible}" FontFamily="Segoe MDL2 Assets" Text="&#xE990;" Foreground="{Binding Path=IconBrush, Mode=TwoWay, FallbackValue=WhiteSmoke}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="16"/>
-                    <TextBlock Visibility="{Binding Path=IsVR, Mode=TwoWay, FallbackValue=Visible}"  FontFamily="Segoe MDL2 Assets" Text="&#xF119;" Foreground="{Binding Path=IconBrush, Mode=TwoWay, FallbackValue=WhiteSmoke}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="16"/>
-                    <TextBlock Visibility="{Binding Path=IsPC, Mode=TwoWay, FallbackValue=Visible}"  FontFamily="Segoe MDL2 Assets" Text="&#xE977;" Foreground="{Binding Path=IconBrush, Mode=TwoWay, FallbackValue=WhiteSmoke}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="16"/>
-                    <TextBlock Visibility="{Binding Path=IsMobile, Mode=TwoWay, FallbackValue=Visible}"  FontFamily="Segoe MDL2 Assets" Text="&#xE8CC;" Foreground="{Binding Path=IconBrush, Mode=TwoWay, FallbackValue=WhiteSmoke}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="16"/>
+                    <TextBlock Visibility="{Binding Path=IsConsole, Mode=TwoWay, FallbackValue=Collapsed}" FontFamily="Segoe MDL2 Assets" Text="&#xE990;" Foreground="{Binding Path=IconBrush, Mode=TwoWay, FallbackValue=WhiteSmoke}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="16"/>
+                    <TextBlock Visibility="{Binding Path=IsVR, Mode=TwoWay, FallbackValue=Collapsed}"  FontFamily="Segoe MDL2 Assets" Text="&#xF119;" Foreground="{Binding Path=IconBrush, Mode=TwoWay, FallbackValue=WhiteSmoke}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="16"/>
+                    <TextBlock Visibility="{Binding Path=IsPC, Mode=TwoWay, FallbackValue=Collapsed}"  FontFamily="Segoe MDL2 Assets" Text="&#xE977;" Foreground="{Binding Path=IconBrush, Mode=TwoWay, FallbackValue=WhiteSmoke}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="16"/>
+                    <TextBlock Visibility="{Binding Path=IsMobile, Mode=TwoWay, FallbackValue=Collapsed}"  FontFamily="Segoe MDL2 Assets" Text="&#xE8CC;" Foreground="{Binding Path=IconBrush, Mode=TwoWay, FallbackValue=WhiteSmoke}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="16"/>
                 </StackPanel>
             </Grid>
         </Grid>

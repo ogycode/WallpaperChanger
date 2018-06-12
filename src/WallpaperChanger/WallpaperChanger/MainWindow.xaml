@@ -131,9 +131,8 @@
                             <CheckBox x:Name="cbShowError" Content="show error" IsChecked="{Binding Path=ShowErrorMessages, Mode=TwoWay, FallbackValue=false}" VerticalContentAlignment="Center" FontSize="18" Margin="0,5,0,0"/>
                             <CheckBox x:Name="cbShowWallpaperTost" Content="show wallpaper toast" IsChecked="{Binding Path=ShowUpdateWallpaerToast, Mode=TwoWay, FallbackValue=false}" VerticalContentAlignment="Center" FontSize="18" Margin="0,5,0,0"/>
 
-                            <TextBlock Text="my other staff:" Margin="10,25,0,10" FontSize="22"/>
-                            <Controlls:StoreButton Margin="10" AppName="Jesus Password" AppDescription="Password Manager" TitleButton="Get it from Microsoft" BackgroundBrush="#FF1E1E1E" BackgroundButtonBrush="Black" ForegroundBrush="#FFC7C7C7" ForegroundButtonBrush="#FFC7C7C7" AppLogo="Assets/minimalism.png" IsConsole="True"/>
-                            <Controlls:StoreButton Margin="10"/>
+                            <TextBlock x:Name="tbOtherStaff" Text="my other staff:" Margin="10,25,0,10" FontSize="22"/>
+                            <Controlls:StoreButton x:Name="sbJesusPassword" Margin="10" AppName="Jesus Password" AppDescription="" TitleButton="Get it from Microsoft" BackgroundBrush="#FF1E1E1E" BackgroundButtonBrush="Black" ForegroundBrush="#FFC7C7C7" ForegroundButtonBrush="#FFC7C7C7" IconBrush="#FFC7C7C7" AppLogo="Assets/jpasslogo.png" Clicked="sbJesusPasswordClicked"/>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>
