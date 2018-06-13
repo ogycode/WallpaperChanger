@@ -661,10 +661,6 @@ namespace WallpaperChanger
                     if (!GetConnection())
                     {
                         ShowToast(Lang["AlertTitle"], Lang["NoInternetMsg"]);
-                        btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
-                        {
-                            btnRefresh.IsEnabled = false;
-                        });
                         return;
                     }
 
@@ -681,11 +677,6 @@ namespace WallpaperChanger
 
                         SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute), Lang["cbUnsplash"]);
                     }
-                    else
-                        btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
-                        {
-                            btnRefresh.IsEnabled = false;
-                        });
                 }
                 catch
                 {
@@ -694,10 +685,12 @@ namespace WallpaperChanger
                         {
                             new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["CannotSetupWallpaper"], 0014), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
                         });
-
+                }
+                finally
+                {
                     btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
                     {
-                        btnRefresh.IsEnabled = false;
+                        btnRefresh.IsEnabled = true;
                     });
                 }
             });
@@ -711,10 +704,6 @@ namespace WallpaperChanger
                     if (!GetConnection())
                     {
                         ShowToast(Lang["AlertTitle"], Lang["NoInternetMsg"]);
-                        btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
-                        {
-                            btnRefresh.IsEnabled = false;
-                        });
                         return;
                     }
 
@@ -737,11 +726,6 @@ namespace WallpaperChanger
 
                         SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute), Lang["cbFlickr"]);
                     }
-                    else
-                        btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
-                        {
-                            btnRefresh.IsEnabled = false;
-                        });
                 }
                 catch
                 {
@@ -750,10 +734,12 @@ namespace WallpaperChanger
                         {
                             new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["CannotSetupWallpaper"], 0015), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
                         });
-
+                }
+                finally
+                {
                     btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
                     {
-                        btnRefresh.IsEnabled = false;
+                        btnRefresh.IsEnabled = true;
                     });
                 }
             });
@@ -767,10 +753,6 @@ namespace WallpaperChanger
                     if (!GetConnection())
                     {
                         ShowToast(Lang["AlertTitle"], Lang["NoInternetMsg"]);
-                        btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
-                        {
-                            btnRefresh.IsEnabled = false;
-                        });
                         return;
                     }
 
@@ -801,11 +783,6 @@ namespace WallpaperChanger
 
                         SetupImage(new Uri(rs.GetValue<string>(WALLPAPER_URL), UriKind.RelativeOrAbsolute), Lang["cbFavorite"]);
                     }
-                    else
-                        btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
-                        {
-                            btnRefresh.IsEnabled = false;
-                        });
                 }
                 catch
                 {
@@ -814,10 +791,12 @@ namespace WallpaperChanger
                         {
                             new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["CannotSetupWallpaper"], 0016), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
                         });
-
+                }
+                finally
+                {
                     btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
                     {
-                        btnRefresh.IsEnabled = false;
+                        btnRefresh.IsEnabled = true;
                     });
                 }
             });
@@ -828,16 +807,6 @@ namespace WallpaperChanger
             {
                 try
                 {
-                    if (!GetConnection())
-                    {
-                        ShowToast(Lang["AlertTitle"], Lang["NoInternetMsg"]);
-                        btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
-                        {
-                            btnRefresh.IsEnabled = false;
-                        });
-                        return;
-                    }
-
                     if (!Update)
                         return;
 
@@ -853,10 +822,12 @@ namespace WallpaperChanger
                         {
                             new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["CannotSetupWallpaper"], 0017), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
                         });
-
+                }
+                finally
+                {
                     btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
                     {
-                        btnRefresh.IsEnabled = false;
+                        btnRefresh.IsEnabled = true;
                     });
                 }
             });
@@ -870,10 +841,6 @@ namespace WallpaperChanger
                     if (!GetConnection())
                     {
                         ShowToast(Lang["AlertTitle"], Lang["NoInternetMsg"]);
-                        btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
-                        {
-                            btnRefresh.IsEnabled = false;
-                        });
                         return;
                     }
 
@@ -893,11 +860,6 @@ namespace WallpaperChanger
                             SetupImage(new Uri(imgData.Item1, UriKind.RelativeOrAbsolute), Lang["cbBing"]);
                         }
                     }
-                    else
-                        btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
-                        {
-                            btnRefresh.IsEnabled = false;
-                        });
                 }
                 catch
                 {
@@ -906,10 +868,12 @@ namespace WallpaperChanger
                         {
                             new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["CannotSetupWallpaper"], 0018), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
                         });
-
+                }
+                finally
+                {
                     btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
                     {
-                        btnRefresh.IsEnabled = false;
+                        btnRefresh.IsEnabled = true;
                     });
                 }
             });
@@ -997,11 +961,6 @@ namespace WallpaperChanger
                     {
                         new MessageWindow(Lang["ErrorTitle"], string.Format(Lang["CannotSetupWallpaper"], 0019), MessageWindowIcon.Error, MessageWindowIconColor.Red).ShowDialog();
                     });
-
-                btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
-                {
-                    btnRefresh.IsEnabled = false;
-                });
             }
             finally
             {
@@ -1010,11 +969,6 @@ namespace WallpaperChanger
                     btnLike.IsSwitched = (from i in FavoriteList
                                           where i.Original == rs.GetValue<string>(WALLPAPER_URL)
                                           select i).Count() > 0;
-                });
-
-                btnRefresh.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
-                {
-                    btnRefresh.IsEnabled = true;
                 });
             }
         }
