@@ -20,12 +20,19 @@ namespace WallpaperChanger.Controlls
         public event Action<string, string, string> ApplyEvent;
         public event Action<string, string> DeleteEvent;
 
-        public string Wallpaper
+        public string Thumbnail
         {
-            get { return (string)GetValue(WallpaperProperty); }
-            set { SetValue(WallpaperProperty, value); }
+            get { return (string)GetValue(ThumbnailProperty); }
+            set { SetValue(ThumbnailProperty, value); }
         }
-        public static readonly DependencyProperty WallpaperProperty = DependencyProperty.Register("Wallpaper", typeof(string), typeof(FavoritePic), null);
+        public static readonly DependencyProperty ThumbnailProperty = DependencyProperty.Register("Thumbnail", typeof(string), typeof(FavoritePic), null);
+
+        public string ThumbnailLocale
+        {
+            get { return (string)GetValue(ThumbnailLocalProperty); }
+            set { SetValue(ThumbnailLocalProperty, value); }
+        }
+        public static readonly DependencyProperty ThumbnailLocalProperty = DependencyProperty.Register("ThumbnailLocale", typeof(string), typeof(FavoritePic), null);
 
         public string Original
     {
@@ -47,7 +54,7 @@ namespace WallpaperChanger.Controlls
             DataContext = this;
         }
 
-        private void btnApplyClick(object sender, RoutedEventArgs e) => ApplyEvent?.Invoke(Original, Wallpaper, Copyright);
-        private void btnRemoveClick(object sender, RoutedEventArgs e) => DeleteEvent?.Invoke(Original, Wallpaper);
+        private void btnApplyClick(object sender, RoutedEventArgs e) => ApplyEvent?.Invoke(Original, ThumbnailLocale, Copyright);
+        private void btnRemoveClick(object sender, RoutedEventArgs e) => DeleteEvent?.Invoke(Original, ThumbnailLocale);
     }
 }

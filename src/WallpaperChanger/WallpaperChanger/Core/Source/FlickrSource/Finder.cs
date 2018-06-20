@@ -11,11 +11,14 @@ namespace WallpaperChanger.Core.Source.FlickrSource
 {
     public static class Finder
     {
+        public static bool IsSaving = true;
+        public static bool IsLoading = true;
+
         static PhotoCollection photos;
         static double width, height;
         static string last;
         static List<string> ids;
-        static string UsedListPath = $@"{AppDomain.CurrentDomain.BaseDirectory}\Data\usedflikr.json";
+        static string FLICKR_FILE_NAME = "flickr.json";
 
         public static Task<Tuple<string, string, string>> FindAsync(double w, double h, string l, string tags, TagMode mode = TagMode.None, List<string> colors = null, List<FlickrNet.Style> styles = null)
         {
@@ -27,6 +30,9 @@ namespace WallpaperChanger.Core.Source.FlickrSource
 
                 if (ids == null)
                     LoadUsed();
+
+                while (IsLoading)
+                    Task.Delay(500).Wait();
 
                 var options = new PhotoSearchOptions
                 {
@@ -44,13 +50,22 @@ namespace WallpaperChanger.Core.Source.FlickrSource
                 return getPhotoCollection(new Flickr(ApiKeys.FlikrAPIKey), options);
             });
         }
-        public static void SaveUsed()
+        public static async Task SaveUsed()
         {
-            if (File.Exists(UsedListPath))
-                File.Delete(UsedListPath);
+            Task.Factory.StartNew(async() =>
+            {
+                try
+                {
+                    Windows.Storage.StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+                    Windows.Storage.StorageFile flickrFile = await localFolder.CreateFileAsync(FLICKR_FILE_NAME, Windows.Storage.CreationCollisionOption.ReplaceExisting);
 
-            using (StreamWriter sw = File.CreateText(UsedListPath))
-                sw.Write(JsonConvert.SerializeObject(ids));
+                    await Windows.Storage.FileIO.WriteTextAsync(flickrFile, JsonConvert.SerializeObject(ids));
+                }
+                finally
+                {
+                    IsSaving = false;
+                }
+            });
         }
 
         static Tuple<string, string, string> getPhotoCollection(Flickr f, PhotoSearchOptions ops)
@@ -93,13 +108,19 @@ namespace WallpaperChanger.Core.Source.FlickrSource
             ops.Page = ops.Page + 1;
             return getPhotoCollection(f, ops);
         }
-        static void LoadUsed()
+        async static void LoadUsed()
         {
-            if (File.Exists(UsedListPath))
-                using (StreamReader sr = File.OpenText(UsedListPath))
-                    ids = JsonConvert.DeserializeObject<List<string>>(sr.ReadToEnd());
-            else
-                ids = new List<string>();
+            try
+            {
+                Windows.Storage.StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+                Windows.Storage.StorageFile favoriteFile = await localFolder.TryGetItemAsync(FLICKR_FILE_NAME) as Windows.Storage.StorageFile;
+
+                ids = favoriteFile != null ? JsonConvert.DeserializeObject<List<string>>(await Windows.Storage.FileIO.ReadTextAsync(favoriteFile)) : new List<string>();
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
     }
 }

@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using WallpaperChanger.Core;
 
 namespace WallpaperChanger
 {
-    public partial class MessageWindow : Window
+    public partial class ErrorWindow : Window
     {
-        public MessageWindow(string title, string message, MessageWindowIcon icon, MessageWindowIconColor iconColor, double maxWidth = 640, double maxHeight = 250)
+        public ErrorWindow(string title, string message, MessageWindowIcon icon, MessageWindowIconColor iconColor, double maxWidth = 0, double maxHeight = 0, string additionalText = "")
         {
             InitializeComponent();
 
-            brd.MaxWidth = maxWidth;
-            brd.MaxHeight = maxHeight;
+            if (maxWidth != 0)
+                brd.MaxWidth = maxWidth;
+
+            if (maxHeight != 0)
+                brd.MaxHeight = maxHeight;
 
             Title = title;
             tbMsg.Text = message;
@@ -47,6 +51,14 @@ namespace WallpaperChanger
                     tbIcon.Foreground = new SolidColorBrush(Color.FromRgb(239, 83, 80));
                     brd.BorderBrush = new SolidColorBrush(Color.FromRgb(239, 83, 80));
                     break;
+            }
+
+            if (string.IsNullOrWhiteSpace(additionalText))
+                rtbAdditional.Visibility = Visibility.Collapsed;
+            else
+            {
+                rtbAdditional.Document.Blocks.Clear();
+                rtbAdditional.Document.Blocks.Add(new Paragraph(new Run($"\n{additionalText}\n\n")));
             }
         }
 

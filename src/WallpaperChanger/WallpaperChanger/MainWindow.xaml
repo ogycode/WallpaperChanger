@@ -75,7 +75,13 @@
                 </TabItem>
                 <TabItem x:Name="tiFavorite" Header="favorite" Tag="&#xE728;" BorderBrush="#FFC107">
                     <ScrollViewer>
-                        <WrapPanel x:Name="wpFavorites" VerticalAlignment="Top" Margin="10,0,0,0"/>
+                        <ItemsControl x:Name="wpFavorites" ItemsSource="{Binding FavoriteList}" VerticalAlignment="Top" Margin="10,0,0,0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
                     </ScrollViewer>
                 </TabItem>
                 <TabItem x:Name="tiOptions" Header="options" Tag="&#xE713;">

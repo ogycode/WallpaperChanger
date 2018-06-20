@@ -29,7 +29,7 @@
         </EventTrigger>
     </UserControl.Triggers>
     <Grid>
-        <Image x:Name="img" Source="{Binding Path=Wallpaper, Mode=TwoWay}"/>
+        <Image x:Name="img" Source="{Binding Path=ThumbnailLocale, Mode=TwoWay}"/>
         <Grid Background="#3FFFFFFF" x:Name="gridBtn" Opacity="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>

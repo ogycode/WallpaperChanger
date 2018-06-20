@@ -1,4 +1,4 @@
-﻿<Window x:Class="WallpaperChanger.MessageWindow"
+﻿<Window x:Class="WallpaperChanger.ErrorWindow"
         x:Name="window"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -11,7 +11,7 @@
         SizeToContent="WidthAndHeight" 
         WindowStartupLocation="CenterScreen" 
         Icon="Assets/photo.png" >
-    <Border x:Name="brd" BorderThickness="1" BorderBrush="#FF007ACC" MaxWidth="640" MaxHeight="250">
+    <Border x:Name="brd" BorderThickness="1" BorderBrush="#FF007ACC">
         <Grid Background="#FF2D2D30">
             <Grid.RowDefinitions>
                 <RowDefinition Height="32px"/>
@@ -29,16 +29,18 @@
             </Grid>
             <Grid Grid.Row="1" Margin="30,10,30,5">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
                     <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock x:Name="tbIcon" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" FontFamily="Segoe MDL2 Assets" Text="&#xF142;" FontSize="128" Margin="0,15"/>
-                <TextBlock x:Name="tbMsg" Grid.Column="1" Grid.Row="0" Text="message text" FontSize="18" VerticalAlignment="Center" Foreground="#FFC5C5C5" TextWrapping="Wrap" Margin="20,0,0,0"/>
-                <Button x:Name="btnOK" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Width="100" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,5" Click="btnOKClick">
+                <TextBlock x:Name="tbIcon" Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" FontFamily="Segoe MDL2 Assets" Text="&#xF142;" FontSize="128" Margin="0" VerticalAlignment="Center"/>
+                <RichTextBox x:Name="rtbAdditional" IsReadOnly="True" Grid.Column="1" Grid.Row="1" Margin="15,0,0,0" Background="#FF181818" BorderBrush="#FFC7C7C7" Foreground="#FFC7C7C7" SelectionBrush="#FF007ACC" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled" AcceptsReturn="True"/>
+                <TextBlock x:Name="tbMsg" Grid.Column="1" Grid.Row="0" Text="message text" FontSize="18" Foreground="#FFC5C5C5" TextWrapping="Wrap" Margin="20,5,0,5" VerticalAlignment="Center"/>
+                <Button x:Name="btnOK" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Width="100" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,7" Click="btnOKClick" Height="30">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE8FB;" Margin="0,0,10,0" VerticalAlignment="Center"/>
                         <TextBlock Text="OK"/>
