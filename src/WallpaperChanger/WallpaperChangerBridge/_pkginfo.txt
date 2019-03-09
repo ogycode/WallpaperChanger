@@ -1,0 +1,1 @@
+C:\Projects\App\WallpaperChanger\src\WallpaperChanger\WallpaperChangerBridge\bin\AnyCPU\Release\Upload\WallpaperChangerBridge_19.3.0.0\WallpaperChangerBridge_19.3.0.0_AnyCPU.appxbundle
