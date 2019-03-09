@@ -77,6 +77,32 @@ namespace WallpaperChanger
             get => rs.GetValue("ShowUpdateWallpaerToast", true);
             set => rs.SetValue("ShowUpdateWallpaerToast", value);
         }
+        public int ResolutionSource
+        {
+            //0 - auto
+            //1 - custom
+            //2 - selected
+            get => rs.GetValue("ResSource", 0);
+            set => rs.SetValue("ResSource", value);
+        }
+        public int ResolutionSourceSI
+        {
+            get => rs.GetValue("ResSourceSI", 0);
+            set => rs.SetValue("ResSourceSI", value);
+        }
+        public int ResolutionW
+        {
+            get => rs.GetValue("ResW", 1366);
+            set => rs.SetValue("ResW", value == 0 ? 1366 : value);
+        }
+        public int ResolutionH
+        {
+            get => rs.GetValue("ResH", 768);
+            set => rs.SetValue("ResH", value == 0 ? 768 : value);
+        }
+
+        public int WallpaperWidth { get => ResolutionSource == 0 ? (int)SystemParameters.VirtualScreenWidth : ResolutionW; }
+        public int WallpaperHeight { get => ResolutionSource == 0 ? (int)SystemParameters.VirtualScreenHeight : ResolutionH; }
 
         public RegSettings rs;
         public Manager Lang;
@@ -651,7 +677,7 @@ namespace WallpaperChanger
 
                     if (CheckDate() || Update)
                     {
-                        var imgData = Core.Source.Unsplash.Unsplash.Get(SystemParameters.VirtualScreenWidth, SystemParameters.VirtualScreenHeight);
+                        var imgData = Core.Source.Unsplash.Unsplash.Get(WallpaperWidth, WallpaperHeight);
 
                         rs[WALLPAPER_URL] = imgData.Item1;
                         rs[WALLPAPER_THUMBNAIL] = imgData.Item2;
@@ -695,8 +721,8 @@ namespace WallpaperChanger
 
                     if (CheckDate() || Update)
                     {
-                        var imgData = Core.Source.FlickrSource.Finder.FindAsync(SystemParameters.VirtualScreenWidth,
-                                                                                SystemParameters.VirtualScreenHeight,
+                        var imgData = Core.Source.FlickrSource.Finder.FindAsync(WallpaperWidth,
+                                                                                WallpaperHeight,
                                                                                 rs.GetValue(WALLPAPER_URL, ""),
                                                                                 rs.GetValue(WALLPAPER_FLICKR_TAGS, "nature"),
                                                                                 rs.GetValue(WALLPAPER_FLICKR_TAGS_ALL, false) ? TagMode.AllTags : TagMode.AnyTag,
@@ -840,7 +866,7 @@ namespace WallpaperChanger
                         return;
                     }
 
-                    var imgData = Core.Source.Bing.Bing.Get(SystemParameters.VirtualScreenWidth, SystemParameters.VirtualScreenHeight).Result;
+                    var imgData = Core.Source.Bing.Bing.Get(WallpaperWidth, WallpaperHeight).Result;
 
                     if (CheckDate() || Update)
                     {
@@ -934,7 +960,7 @@ namespace WallpaperChanger
             {
                 Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate ()
                 {
-                    imgImageThumb.Source = imgImageThumb.Source = new BitmapImage(new Uri("www.bing.com/az/hprichbg/rb/OchaBatake_ROW10481280883_400x240.jpg")); ;
+                    //imgImageThumb.Source = imgImageThumb.Source = new BitmapImage(new Uri("www.bing.com/az/hprichbg/rb/OchaBatake_ROW10481280883_400x240.jpg"));
                     tbImageInfo.Text = tbImageInfo.Text = "Error"; ;
                 });
             }
@@ -1011,6 +1037,19 @@ namespace WallpaperChanger
 
             cbStyle.SelectedIndex = Source;
             cbStyle.SelectionChanged += CbStyleSelectionChanged;
+
+            cbResolution.SelectedIndex = ResolutionSourceSI;
+            cbResolution.SelectionChanged += cbResolutionSelectionChanged;
+
+            if(cbResolution.SelectedIndex == 1)
+            {
+                RW.Text = ResolutionW.ToString();
+                RH.Text = ResolutionH.ToString();
+                gridCustomRes.Visibility = Visibility.Visible;
+            }
+
+            RW.TextChanged += ResolutionTextChanged;
+            RH.TextChanged += ResolutionTextChanged;
 
             GetStartup();
         }
@@ -1090,5 +1129,43 @@ namespace WallpaperChanger
         }
         private void ItemFlickrSettingsClosed() => SetupWallpaper(true);
         private void sbJesusPasswordClicked() => Process.Start("ms-windows-store://pdp/?ProductId=9nblggh691x4");
+        private void cbResolutionSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ResolutionSourceSI = cbResolution.SelectedIndex;
+
+            switch (cbResolution.SelectedIndex)
+            {
+                case 0:
+                    ResolutionSource = 0;
+                    gridCustomRes.Visibility = Visibility.Collapsed;
+                    break;
+                case 1:
+                    ResolutionSource = 1;
+                    RW.Text = ResolutionW.ToString();
+                    RH.Text = ResolutionH.ToString();
+                    gridCustomRes.Visibility = Visibility.Visible;
+                    break;
+                default:
+                    ResolutionSource = 2;
+                    var selected = (sender as ComboBox).SelectedItem as ComboBoxItem;
+                    var sizeStr = selected.Content.ToString().Split('×');
+                    int.TryParse(sizeStr[0], out int w);
+                    int.TryParse(sizeStr[1], out int h);
+                    ResolutionW = w;
+                    ResolutionH = h;
+                    break;
+            }
+        }
+        private void ResolutionTextChanged(object sender, TextChangedEventArgs e)
+        {
+            var tb = sender as TextBox;
+
+            int.TryParse(tb.Text, out int s);
+
+            if (tb.Tag.ToString() == "h")
+                ResolutionH = s;
+            else
+                ResolutionW = s;
+        }
     }
 }

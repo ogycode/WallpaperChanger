@@ -19,6 +19,6 @@ In Walpaper Chnager 2 there is a parametric search for images by color, by tag (
  ## How to build'n'run:
   - Install Microsoft Visual Studio 2017 v15.7 or higher
   - Install Microsoft .Net Framework 4.7 or higher
-  - Running
+  - Running:
     - Select the project WalppaperChangerBridg as autorun
     - Push the button 'Run'
