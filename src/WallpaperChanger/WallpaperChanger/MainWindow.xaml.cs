@@ -308,6 +308,11 @@ namespace WallpaperChanger
                         cbStyle4.Content = Lang["cbStyle4"];
                         cbStyle5.Content = Lang["cbStyle5"];
 
+                        tbResolution.Text = Lang["tbResolution"];
+                        tbResolutionCustom.Text = Lang["tbResolutionCustom"];
+                        cbAutoResolution.Content = Lang["cbAutoResolution"];
+                        cbCustomResolution.Content = Lang["cbCustomResolution"];
+
                         cbStartup.Content = Lang["cbStartup"];
                         cbShowError.Content = Lang["cbShowError"];
                         cbShowWallpaperTost.Content = Lang["cbShowWallpaperTost"];
